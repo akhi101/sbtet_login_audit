@@ -1,6 +1,7 @@
 ﻿define(['app'], function (app) {
     app.controller("AcademicController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, SystemUserService, MarksEntryService, ElectivesService,  AssessmentService) {
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authData.SystemUserTypeId;
         $scope.userName = authData.userName;
         $scope.College_Code = authData.College_Code;

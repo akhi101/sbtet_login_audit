@@ -1,10 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("ChangePasswordController", function ($scope, $state, $filter, $localStorage, $stateParams, $crypto, AppSettings, ChangePasswordService, MenuService, SystemUserService) {
       
-            var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+
         $scope.NewPassword = "";
-            $scope.userType = authData.SystemUserTypeId
-            $scope.userName = authData.userName;
+            //$scope.userType = authData.SystemUserTypeId
+            $scope.userName = authData.UserName;
 
             AppSettings.userName = authData.userName;
             AppSettings.LoggedUserId = authData.SysUserID;
@@ -30,7 +32,7 @@
                     alert("Enter Old Password");
                     return false;
                 }
-                let reqdata = $crypto.encrypt($scope.OldPassword, sessionStorage.Ekey) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.Ekey) + "$$@@$$" + sessionStorage.Ekey;
+                let reqdata = $crypto.encrypt($scope.OldPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.SessionID) + "$$@@$$" + sessionStorage.SessionID;
                 var getPromise = ChangePasswordService.GetCheckOldPassword(reqdata);
                 getPromise.then(function (data) {
                     if (data == 0) {
@@ -60,9 +62,24 @@
                 if ($scope.NewPassword != $scope.ConfirmPassword) {
                     alert("New Password and Confirm Password did not match.");
                     return;
-                }
-            let reqdata = $crypto.encrypt($scope.NewPassword, sessionStorage.Ekey) + "$$@@$$" + $crypto.encrypt($scope.OldPassword, sessionStorage.Ekey) + "$$@@$$"+ $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.Ekey) + "$$@@$$" + sessionStorage.Ekey;
-                var getPromise = ChangePasswordService.GetChangePassword(reqdata);
+            }
+            if (($scope.NewPassword == $scope.OldPassword) || ($scope.ConfirmPassword == $scope.OldPassword)) {
+                alert("New Password and Old Password must not be same");
+                return;
+            }
+            var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?!.*(?:yourUserId|yourAppName)).{8,}$/;
+            if (passwordRegex.test($scope.NewPassword)) {
+            } else {
+                alert('Password does not meet the requirements');
+                return;
+            }
+            if (passwordRegex.test($scope.ConfirmPassword)) {
+            } else {
+                alert('Password does not meet the requirements');
+                return;
+            }
+            let reqdata = $crypto.encrypt($scope.NewPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt($scope.OldPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.SessionID) + "$$@@$$" + sessionStorage.SessionID;
+            var getPromise = ChangePasswordService.GetChangePassword(reqdata);
             getPromise.then(function (data) {
                 if (data.ResponceCode == "200") {
                     alert(data.ResponceDescription);

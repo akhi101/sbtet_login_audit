@@ -32,6 +32,10 @@
                 alert("New Password and Confirm Password did not match.");
                 return false;
             }
+            if (($scope.NewPassword == $scope.OldPassword) || ($scope.ConfirmPassword == $scope.OldPassword)) {
+                alert("New Password and Old Password must not be same");
+                return;
+            }
             var getPromise = ChangePasswordService.GetChangePassword(AppSettings.LoggedUserId, $scope.NewPassword);
             getPromise.then(function (data) {
                 alert("Password Changed successfully");

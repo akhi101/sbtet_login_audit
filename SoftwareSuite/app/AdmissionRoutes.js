@@ -775,7 +775,7 @@
             'index.WebsiteLogin': {
                 url: "/WebsiteLogin",
                 templateUrl: 'app/views/newwebsite/WebsiteLogin.html',
-                dependencies: ['views/newwebsite/controllers/WebsiteLoginController', 'services/SystemAdministration/SystemUserService']
+                dependencies: ['views/newwebsite/controllers/WebsiteLoginController', 'services/SystemAdministration/SystemUserService', 'services/PreExamination/PreExaminationService']
             },
 
             'index.Timetable': {
@@ -2725,11 +2725,11 @@
                 dependencies: ['controllers/MasterSettings/ExamYearMonthController', 'services/Admission/AdmissionService', 'services/PreExamination/PreExaminationService', 'services/Assessment/AssessmentService', 'services/Assessment/MarksEntryService', 'services/MasterSettings/MasterSettingsService']
             },
 
-            'Dashboard.MasterSettings.HomePagePhotos': {
-                url: "/HomePagePhotos",
-                templateUrl: 'app/views/MasterSettings/HomePagePhotos.html',
-                dependencies: ['controllers/MasterSettings/HomePagePhotosController', 'services/Admission/AdmissionService', 'services/PreExamination/PreExaminationService', 'services/Assessment/AssessmentService', 'services/Assessment/MarksEntryService', 'services/MasterSettings/MasterSettingsService']
-            },
+            //'Dashboard.MasterSettings.HomePagePhotos': {
+            //    url: "/HomePagePhotos",
+            //    templateUrl: 'app/views/MasterSettings/HomePagePhotos.html',
+            //    dependencies: ['controllers/MasterSettings/HomePagePhotosController', 'services/Admission/AdmissionService', 'services/PreExamination/PreExaminationService', 'services/Assessment/AssessmentService', 'services/Assessment/MarksEntryService', 'services/MasterSettings/MasterSettingsService']
+            //},
 
 
 
@@ -3860,7 +3860,7 @@
             'ForgetPassword': {
                 url: "/ForgetPassword",
                 templateUrl: 'app/views/ForgetPassword.html',
-                dependencies: ['controllers/ForgetPasswordController', 'services/ForgetPasswordService']
+                dependencies: ['controllers/ForgetPasswordController', 'services/ForgetPasswordService', 'services/SystemAdministration/SystemUserService']
             },
 
 

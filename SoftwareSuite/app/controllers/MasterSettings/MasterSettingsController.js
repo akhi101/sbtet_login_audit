@@ -1,6 +1,7 @@
 ﻿define(['app'], function (app) {
     app.controller("MasterSettingsController", function ($scope, $http, $localStorage, $state, AppSettings, SystemUserService) {
-        var authdata = $localStorage.authorizationData;
+        //var authdata = $localStorage.authorizationData;
+        var authdata = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authdata.SystemUserTypeId;
         $scope.AssessmentModules = [];
 

@@ -1,5 +1,5 @@
 ﻿define(['app'], function (app) {
-    app.controller("DashboardController", function ($scope, $stateParams, $localStorage, $state, AppSettings, SystemUserService, AdminService) {
+    app.controller("DashboardController", function ($scope, $timeout, $stateParams, $localStorage, $state, AppSettings, SystemUserService, AdminService) {
         $scope.$on('showLoading', function (evt, data) {
             $('.overlayCss').css('display', 'block');
         });
@@ -7,12 +7,48 @@
         $scope.$on('hideLoading', function (evt, data) {
             $('.overlayCss').css('display', 'none');
         });
-        var authData = $localStorage.authorizationData;
+
+        var logoutTimer;
+
+        // Start the timer on controller load or when user logs in
+        startTimer();
+
+        function startTimer() {
+            logoutTimer = $timeout(function () {
+                logout();
+            }, 20 * 60 * 1000); // 20 minutes
+        }
+
+        function resetTimer() {
+            $timeout.cancel(logoutTimer);
+            startTimer();
+        }
+
+        function logout() {
+            // Perform logout actions, e.g., clear session storage
+            //$window.sessionStorage.clear();
+            $state.go('index.WebsiteLogin') // Redirect to login page
+        }
+
+        // Reset timer on user activity
+        document.addEventListener('mousemove', function () {
+            resetTimer();
+        });
+
+        document.addEventListener('keypress', function () {
+            resetTimer();
+        });
+
+
+        //var authData = $localStorage.authorizationData;
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+
         if (authData == undefined) {
             $state.go('index.WebsiteLogin');
         } else {
-            $scope.userName = authData.userName;
-            AppSettings.userName = authData.userName;
+            $scope.userName = authData.UserName;
+            AppSettings.userName = authData.UserName;
             AppSettings.LoggedUserId = authData.SysUserID;
            
             $scope.userType = authData.SystemUserTypeId;
@@ -216,7 +252,7 @@
                 $scope.authentication = {
                     isAuth: false,
                     UserId: 0,
-                    userName: ""
+                    UserName: ""
                 };
                 $state.go('index.WebsiteLogin')
             }
