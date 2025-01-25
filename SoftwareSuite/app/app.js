@@ -186,9 +186,7 @@
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
             console.log(event);
-            //var WebApiUrl = 'http://testapi.hebeon.com/';
             var WebApiUrl = '/api/';
-            //var WebApiUrl = http://sbptest.hebeon.com/API/;
             var authData = $localStorage.authorizationData;
             //if ((sessionStorage.loggedIn == "no" || authData == undefined) && toState.name != 'login' && toState.name !== 'ForgetPassword' && toState.name !== 'ForgetPasswordSaved' && toState.name !== 'GovtColEnroll' && toState.name !== 'GovtColEnrollExist' && toState.name !== 'GovtColEnrollList' && toState.name !== 'ReportViewer1Controller' && (toState.name.indexOf("StudentOnlineRequest") != 0)) {
             if ((authData == undefined) && toState.name != 'login' && toState.name !== 'Components' && toState.name !== 'ForgetPassword' && toState.name !== 'ForgetPasswordSaved' && toState.name !== 'GovtColEnroll' && toState.name !== 'GovtColEnrollExist' && toState.name !== 'GovtColEnrollList' && toState.name !== 'ReportViewer1Controller' && toState.name !== 'StudentResult' && toState.name !== 'ComingSoon' && (toState.name.indexOf("StudentOnlineRequest") != 0)) {
@@ -456,15 +454,11 @@
         })
     });
 
-    //var serviceBase = 'http://testapi.hebeon.com/';
     var serviceBase = 'http://sbptest.hebeon.com/API/';
-    //var serviceBase = 'http://192.168.1.98:85/';
 
     app.constant('ngAuthSettings', {
         apiServiceBaseUri: serviceBase,
         clientId: 'baseApp',
-        //WebApiUrl: 'http://localhost:65322/',
-        //WebApiUrl: 'http://202.62.85.194/',
         ExportToExcelUrl: '',
         ExportToWordUrl: '',
         ExportToPdfUrl: '',

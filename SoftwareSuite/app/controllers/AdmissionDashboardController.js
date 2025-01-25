@@ -1,6 +1,7 @@
 ﻿define(['app'], function (app) {
     app.controller("AdmissionDashboardController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, SystemUserService) {
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.loading = true;
         $scope.userType = authData.SystemUserTypeId
         $scope.userName = authData.userName;

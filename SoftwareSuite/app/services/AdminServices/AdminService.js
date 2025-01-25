@@ -566,5 +566,27 @@
         }
 
 
+        this.AddAccountStatus = function (DataType, UserName) {
+            var paramObject = {
+                "DataType": DataType,
+                "UserName": UserName
+            };
+            return DataAccessService.postData('api/AdminService/AddorGetAccountStatus', paramObject);
+        };
+
+        this.GetAccountStatus = function (DataType, UserName) {
+            var paramObject = {
+                "DataType": DataType,
+                "UserName": UserName
+            };
+            return DataAccessService.postData('api/AdminService/AddorGetAccountStatus', paramObject);
+        };
+
+        this.ValidateCaptcha = function (SessionId, Captcha) {
+            var paramObject = { "SessionId": SessionId, "Captcha": Captcha };
+            return DataAccessService.postData('api/AdminService/ValidateCaptcha', paramObject);
+        };
+
+
     })
 })

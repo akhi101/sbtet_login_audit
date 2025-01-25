@@ -1,6 +1,7 @@
 ﻿define(['app'], function (app) {
     app.controller("PostExamController", function ($scope, $http, $localStorage, $state, AppSettings, MenuService) {
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.userName = authData.userName;
         AppSettings.LoggedUserId = authData.SysUserID;
         AppSettings.CollegeID = authData.CollegeID;
