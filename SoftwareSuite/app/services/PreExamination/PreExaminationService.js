@@ -3668,5 +3668,10 @@
             return promise;
         };
 
+        this.GetCaptchaString = function (SessionId) {
+            var paramObject = { "SessionId": SessionId };
+            return DataAccessService.postData('api/AdminService/GetCaptchaString', paramObject);
+        };
+
     });
 });

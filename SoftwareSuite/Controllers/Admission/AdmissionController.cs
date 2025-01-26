@@ -780,18 +780,72 @@ namespace SoftwareSuite.Controllers.Admission
 
 
         }
+
+        public class person3
+        {
+            public string Aadhar { get; set; }
+            public string FAadhar { get; set; }
+            public string MAadhar { get; set; }
+            public string ProfilePhoto { get; set; }
+            public string Data { get; set; }
+
+        }
         [HttpGet, ActionName("GetStudentByPin")]
         public string GetStudentByPin(string Pin)
         {
             try
             {
+                string maskedFAadhar = String.Empty;
+                string maskedMAadhar = String.Empty;
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@pin", Pin);
                 var ds = dbHandler.ReturnDataWithStoredProcedure("USP_GET_STUDENT_BY_PIN_dup", param);
-                // HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                //  response.Content = new StringContent(JsonConvert.SerializeObject(ds), System.Text.Encoding.UTF8, "application/json");
-                return JsonConvert.SerializeObject(ds);
+                string Aadhar = ds.Tables[2].Rows[0]["AadharNo"].ToString();
+                string FAadhar = ds.Tables[2].Rows[0]["FatherAadhaarNo"].ToString();
+                string MAadhar = ds.Tables[2].Rows[0]["MotherAadhaarNo"].ToString();
+                //string ProfilePhoto = ds.Tables[2].Rows[0]["ProfilePhoto"].ToString();
+                //const string prefix = "data:image/png;base64,";
+                //if (ProfilePhoto.StartsWith(prefix))
+                //{
+                //    // Remove the prefix to extract the Base64 string
+                //    string NewProfilePhoto = ProfilePhoto.Substring(prefix.Length);
+
+                //    var resultsuee = DynamicEncryptionHelper.EncryptBase64(NewProfilePhoto);
+                //}
+
+                    string maskedAadhar = Aadhar.Substring(0, 8).Replace(Aadhar.Substring(0, 8), "XXXXXXXX") + Aadhar.Substring(8, 4);
+                    if (FAadhar != "")
+                    {
+                        maskedFAadhar = FAadhar.Substring(0, 8).Replace(FAadhar.Substring(0, 8), "XXXXXXXX") + FAadhar.Substring(8, 4);
+                    }
+                    else
+                    {
+                        maskedFAadhar = "";
+                    }
+                    if (MAadhar != "")
+                    {
+                        maskedMAadhar = MAadhar.Substring(0, 8).Replace(MAadhar.Substring(0, 8), "XXXXXXXX") + MAadhar.Substring(8, 4);
+                    }
+                    else
+                    {
+                        maskedMAadhar = "";
+
+                    }
+                    List<person3> p = new List<person3>();
+                    person3 p3 = new person3();
+                    ds.Tables[2].Columns.Remove("AadharNo");
+                    ds.Tables[2].Columns.Remove("FatherAadhaarNo");
+                    ds.Tables[2].Columns.Remove("MotherAadhaarNo");
+                    ds.Tables[2].Columns.Remove("ProfilePhoto");
+                    p3.Data = JsonConvert.SerializeObject(ds);
+                    p3.Aadhar = JsonConvert.SerializeObject(maskedAadhar);
+                    p3.FAadhar = JsonConvert.SerializeObject(maskedFAadhar);
+                    p3.MAadhar = JsonConvert.SerializeObject(maskedMAadhar);
+                    //p3.ProfilePhoto = resultsuee;
+                    p.Add(p3);
+                    return JsonConvert.SerializeObject(p);
+                
             }
             catch (Exception ex)
             {
@@ -834,9 +888,15 @@ namespace SoftwareSuite.Controllers.Admission
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@aadhar", AadhaarNo);
                 var ds = dbHandler.ReturnDataWithStoredProcedure("USP_GET_STUDENT_BY_AADHAR", param);
-                //   HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                //  response.Content = new StringContent(JsonConvert.SerializeObject(ds), System.Text.Encoding.UTF8, "application/json");
-                return JsonConvert.SerializeObject(ds);
+                string Aadhar = ds.Tables[2].Rows[0]["AadharNo"].ToString();
+                string maskedAadhar = Aadhar.Substring(0, 8).Replace(Aadhar.Substring(0, 8), "XXXXXXXX") + Aadhar.Substring(8, 4);
+                List<person3> p = new List<person3>();
+                person3 p3 = new person3();
+                ds.Tables[2].Columns.Remove("AadharNo");
+                p3.Data = JsonConvert.SerializeObject(ds);
+                p3.Aadhar = JsonConvert.SerializeObject(maskedAadhar);
+                p.Add(p3);
+                return JsonConvert.SerializeObject(p);
             }
             catch (Exception ex)
             {
@@ -880,9 +940,15 @@ namespace SoftwareSuite.Controllers.Admission
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@AttendeeId", AttendeeId);
                 var ds = dbHandler.ReturnDataWithStoredProcedure("USP_GET_STUDENT_BY_ATTENDEE", param);
-                //    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                //    response.Content = new StringContent(JsonConvert.SerializeObject(ds), System.Text.Encoding.UTF8, "application/json");
-                return JsonConvert.SerializeObject(ds);
+                string Aadhar = ds.Tables[0].Rows[0]["AadharNo"].ToString();
+                string maskedAadhar = Aadhar.Substring(0, 8).Replace(Aadhar.Substring(0, 8), "XXXXXXXX") + Aadhar.Substring(8, 4);
+                List<person3> p = new List<person3>();
+                person3 p3 = new person3();
+                ds.Tables[0].Columns.Remove("AadharNo");
+                p3.Data = JsonConvert.SerializeObject(ds);
+                p3.Aadhar = JsonConvert.SerializeObject(maskedAadhar);
+                p.Add(p3);
+                return JsonConvert.SerializeObject(p);
             }
             catch (Exception ex)
             {

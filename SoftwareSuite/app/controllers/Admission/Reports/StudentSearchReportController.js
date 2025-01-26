@@ -461,39 +461,73 @@
                 $('#stdPhotoImg').attr('src', '');
                 $('#userImg').attr('src', '');
                 var SearchstudentInfo = ReportService.GetStudentByPin(filter);
-                SearchstudentInfo.then(function (data) {
+                SearchstudentInfo.then(function (response) {
                     $scope.searchResult = true;
                     $scope.LoadImg = false;
-                    if (data.Table.length > 0 || data.Table1.length > 0 || data.Table2.length > 0) {
-                        if (data.Table.length == 0) {
+
+                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+                    $scope.MaskedFAadhar = JSON.parse(response[0].FAadhar);
+                    $scope.MaskedMAadhar = JSON.parse(response[0].MAadhar);
+                    $scope.ProfilePhoto = JSON.parse(response[0].ProfilePhoto);
+
+                    const encryptedImage = response[0].data.ProfilePhoto;
+                    const key = CryptoJS.enc.Base64.parse(response.data.Key); // Parse the key
+                    const iv = CryptoJS.enc.Base64.parse(response.data.IV);   // Parse the IV
+
+                    // Decrypt the image
+                    const encryptedBytes = CryptoJS.enc.Base64.parse(encryptedImage);
+                    const decrypted = CryptoJS.AES.decrypt(
+                        { ciphertext: encryptedBytes },
+                        key,
+                        {
+                            iv: iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7
+                        }
+                    );
+
+                    // Convert decrypted data back to Base64
+                    $scope.decryptedImage = 'data:image/png;base64,' + CryptoJS.enc.Base64.stringify(decrypted);
+
+                    $scope.OriginalPhoto = $scope.decryptedImage;
+
+                    $scope.Table1Details = response[0].Data;
+                    //$scope.Table2Details = response[0].Data;
+                    //$scope.Table3Details = response[0].Data;
+
+                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                    $scope.Table1Details = $scope.Table1Details1.Table[0];
+
+                    if ($scope.Table1Details1.Table.length > 0 || $scope.Table1Details1.Table1.length > 0 || $scope.Table1Details1.Table2.length > 0) {
+                        if ($scope.Table1Details1.Table.length == 0) {
                             $scope.Table = false;
                             alert("No Data Found in Assessment")
-                        } else if (data.Table1.length == 0) {
+                        } else if ($scope.Table1Details1.Table1.lengthh == 0) {
                             $scope.Table = false;
                             alert("No Data Found in Attendance")
-                        } else if (data.Table2.length == 0) {
+                        } else if ($scope.Table1Details1.Table2.length == 0) {
                             $scope.Table = false;
                             alert("No Data Found in Addmission")
                         } else{
                              $scope.Table = true;
                          }
                         $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = data.Table;
-                        if( data.Table1.length > 0){
-                            $scope.StudentAttendanceReports = data.Table1;
-                            $scope.StudentPin = data.Table1[0].Pin;
-                            $scope.attName = data.Table1[0].name;
+                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
+                        if ($scope.Table1Details1.Table1.length > 0){
+                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
+                            $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
+                            $scope.attName = $scope.Table1Details1.Table1[0].name;
                         }
                         try {
-                            $scope.AdmissioneReports = data.Table2[0];
+                            $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
 
                             if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
                                 $scope.polycet = false;
                             } else {
                                 $scope.polycet = true;;
                             }
-                            $scope.signature = data.Table2[0].CandidateSign;
-                            $scope.userPic = data.Table2[0].ProfilePhoto;
+                            $scope.signature = $scope.Table1Details1.Table2[0].CandidateSign;
+                            $scope.userPic = $scope.Table1Details1.Table2[0].ProfilePhoto;
                         } catch (err) { }
                         $('#userImg').attr('src', $scope.userPic);
                         $("#stdPhotoImg").attr('src', $scope.signature);
@@ -520,26 +554,33 @@
                 $('#stdPhotoImg').attr('src', '');
                 $('#userImg').attr('src', '');
                 var SearchstudentInfos = ReportService.GetSudentByAadhaar(filter);
-                SearchstudentInfos.then(function (data) {
+                SearchstudentInfos.then(function (response) {
                     $scope.searchResult = true;
                     $scope.LoadImg = false;
-                    if (data.Table.length > 0) {
+
+                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+
+                    $scope.Table1Details = response[0].Data;
+
+                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                    $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    if ($scope.Table1Details1.Table.length > 0) {
                       
                         $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = data.Table;
-                        if( data.Table1.length > 0){
-                            $scope.StudentAttendanceReports = data.Table1;
-                            $scope.StudentPin = data.Table1[0].Pin;
-                            $scope.attName = data.Table1[0].name;
+                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
+                        if ($scope.Table1Details1.Table1.length > 0){
+                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
+                            $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
+                            $scope.attName = $scope.Table1Details1.Table1[0].name;
                         }
-                        $scope.AdmissioneReports = data.Table2[0];
+                        $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
                         if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
                             $scope.polycet = false;
                         } else {
                             $scope.polycet = true;;
                         }
-                        $scope.signature = data.Table2[0].CandidateSign;
-                        $scope.userPic = data.Table2[0].ProfilePhoto;
+                        $scope.signature = $scope.Table1Details1.Table2[0].CandidateSign;
+                        $scope.userPic = $scope.Table1Details1.Table2[0].ProfilePhoto;
                         $('#userImg').attr('src', $scope.userPic);
                         $("#stdPhotoImg").attr('src', $scope.signature);
                       
@@ -561,26 +602,33 @@
                 $('#stdPhotoImg').attr('src', '');
                 $('#userImg').attr('src', '');
                 var SearchstudentInfo = ReportService.GetStudentByattendeeId(filter);
-                SearchstudentInfo.then(function (data) {
+                SearchstudentInfo.then(function (response) {
                     $scope.searchResult = true;
                     $scope.LoadImg = false;
-                    if (data.Table.length > 0) {
+
+                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+
+                    $scope.Table1Details = response[0].Data;
+
+                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                    $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    if ($scope.Table1Details1.Table.length > 0) {
                       
                         $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = data.Table;                       
-                        if( data.Table1.length > 0){
-                            $scope.StudentAttendanceReports = data.Table1;
-                            $scope.StudentPin = data.Table1[0].Pin;
-                            $scope.attName = data.Table1[0].name;
+                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;                       
+                        if ($scope.Table1Details1.Table.length > 0){
+                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table;
+                            $scope.StudentPin = $scope.Table1Details1.Table[0].Pin;
+                            $scope.attName = $scope.Table1Details1.Table[0].name;
                         }
-                        $scope.AdmissioneReports = data.Table2[0];
+                        $scope.AdmissioneReports = $scope.Table1Details1.Table[0];
                         if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
                             $scope.polycet = false;
                         } else {
                             $scope.polycet = true;;
                         }
-                        $scope.signature = data.Table2[0].CandidateSign;
-                        $scope.userPic = data.Table2[0].ProfilePhoto;
+                        $scope.signature = $scope.Table1Details1.Table[0].CandidateSign;
+                        $scope.userPic = $scope.Table1Details1.Table[0].ProfilePhoto;
                         $('#userImg').attr('src', $scope.userPic);
                         $("#stdPhotoImg").attr('src', $scope.signature);
                   //      console.log($scope.StudentSearchReportStats)

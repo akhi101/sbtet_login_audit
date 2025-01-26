@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,36 +165,6 @@
             /*  padding-right: 33px; */
             text-align: center !important;
         }
-        img.w-100.ris_logo {
-            float: left;
-            cursor: pointer;
-            margin-right: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
-
-            @media only screen and (max-width: 480px) {
-                .logo-c img {
-                    display: block !important;
-                }
-
-                img.w-100.ris_logo {
-                    height: 100px;
-                    width: 100px !important;
-                    position: relative;
-                    /* left: 32%; */
-                    left: 32%;
-                    border: 1px solid #ddd;
-                    border-radius: 15%;
-                    opacity: 100;
-                }
-
-                .top_logos {
-                    display: inline-flex;
-                    /* border-top: 1px solid #ddd; */
-                    padding-top: 10px;
-                }
-            }
     </style>
 
     <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>-->
@@ -259,10 +229,10 @@
                         </div>
                     </div>
                     <!--<div class="col-sm-3">
-        <div class="site-name main-content">
-            <h2 class="">STATE BOARD OF TECHNICAL EDUCATION AND TRAINING TELANGANA</h2>
-        </div>
-    </div>-->
+                        <div class="site-name main-content">
+                            <h2 class="">STATE BOARD OF TECHNICAL EDUCATION AND TRAINING TELANGANA</h2>
+                        </div>
+                    </div>-->
                     <div class="col-sm-3 top_logos">
                         <div class="col-md-6">
                             <div class="logo-c">
@@ -293,15 +263,15 @@
                     <div class="col-md-4">
 
                         <!--<div class="time">
-            <p id="example"></p>
-        </div>-->
+                            <p id="example"></p>
+                        </div>-->
                         <div class="controllSize">
                             <div class="boxCtrl" style="font-size: 23.5px;">
                                 <a href="javascript:void(0);" class="decrease" id="decrease-text" title="Decrease Font Size">A-</a>
                                 <a href="javascript:void(0);" class="increase" id="increase-text" title="Increase Font Size">A+</a>
                                 <a href="javascript:void(0);" class="reset" id="normal-text" title="Normal Font Size">A</a>
                                 <!--<a href="javascript:void(0);" id="contrast-b" title="Contraste preto/branco">A</a>
-                <a href="javascript:void(0);" id="contrast-w" title="Contraste branco/preto">A</a>-->
+                                <a href="javascript:void(0);" id="contrast-w" title="Contraste branco/preto">A</a>-->
                             </div>
                         </div>
                         <div class="info-menus">
@@ -378,7 +348,7 @@
                                                     <li ng-click="OpenModule('index.MercyFee')"><a class="MobileSidebar" id="index.MercyFee" ui-sref="index.MercyFee">Special Mercy Exam Fee Payment</a></li>
                                                     <li ng-click="OpenModule('index.DiplomaHallticket')"><a class="MobileSidebar" id="index.DiplomaHallticket" ui-sref="index.DiplomaHallticket">Hall Ticket download & Condonation Fee</a></li>
                                                     <li ng-click="OpenModule('index.DiplomaStudentResult')"><a class="MobileSidebar" id="index.DiplomaStudentResult" ui-sref="index.DiplomaStudentResult">Results</a></li>
-                                                    <li ng-click="OpenModule('index.StudentConsolidatedResult')"><a class="MobileSidebar" id="index.StudentConsolidated" ui-sref="index.StudentConsolidatedResult">Consolidated Result</a></li>
+                                                    <li ng-click="OpenModule('index.StudentConsolidatedResult')"><a class="MobileSidebar" id="index.StudentConsolidated" ui-sref="index.StudentConsolidated">Consolidated Result</a></li>
                                                     <li><a class="MobileSidebar" target="_blank" href="https://osdes.sbtet.telangana.gov.in/pcrv/">Photo Copy & Revaluation</a></li>
                                                     <li ng-click="OpenModule('index.StudentRequestForm',2)"><a class="MobileSidebar" id="index.StudentRequestForm" ui-sref="index.StudentRequestForm">Interim Certificate</a></li>
                                                     <li ng-click="OpenModule('index.StudentRequestForm',6)"><a class="MobileSidebar" id="index.StudentRequestForm" ui-sref="index.StudentRequestForm">Transfer Certificate(TC)</a></li>
@@ -402,7 +372,6 @@
                                                     <li ng-click="OpenModule('index.TwshHallticket')"><a class="MobileSidebar" id="index.TwshHallticket" ui-sref="index.TwshHallticket">Hallticket Download</a></li>
                                                     <li><a class="MobileSidebar" target="_blank" href="https://sbtet.telangana.gov.in/TwshCbt">CBT Practice</a></li>
                                                     <li><a class="MobileSidebar" download href="/Cbt_Instructions/CBT INSTRUCTIONS TO THE  CANDIDATES WITH FORMATS  12-04-2022.pdf">CBT Instructions</a></li>
-                                                    <li><a class="MobileSidebar" target="_blank" href="https://drive.google.com/drive/folders/1ab8A9iQVb4sQtc1mOpQ0NA5ixKkbzpIF?usp=sharing">TW & SH Previous Question Papers</a></li>
                                                     <li ng-click="OpenModule('index.TypingAndShorthandResults')"><a class="MobileSidebar" id="index.TypingAndShorthandResults" ui-sref="index.TypingAndShorthandResults">Results</a></li>
                                                     <li><a class="MobileSidebar" target="_blank" href="https://osdes.sbtet.telangana.gov.in/pcrv">Photo Copy & Revaluation</a></li>
 
@@ -608,8 +577,8 @@
 
                                                     {{data.Notification}}
                                                     <!--<a href="https://polycet.sbtet.telangana.gov.in/Downloads/POLYCET-2024_KEY.pdf" target="_blank">
-        Provisional Key of POLYCET-2024 is published, click here.
-    </a>-->
+                                                        Provisional Key of POLYCET-2024 is published, click here.
+                                                    </a>-->
                                                 </a>
                                                 <!--<a class="MobileSidebar"href="#">SBTET-Hyderabad- Academics- VI sem of C-16 Curriculum - Industrial Training/ In house Project - Instructions communicated - Reg.</a>
                                                 <a href="#">SBTET-TS-Hyderabad-Academics-C-18 (DGT,DHMCT,DHS,DLT,DME,DMET,DMG,DPKG,DPT,DTT) Curriculum-II Semester syllabus for 2018-19 - Communicated - Part-II - Reg</a>
@@ -1020,33 +989,33 @@
                                             <div class="col-sm-8">
                                                 <div class="row">
                                                     <!--<div class="col-sm-12">
-        <h2 class="section-title" style="width: 100%; text-align: left;">Social Media</h2>
-    </div>-->
+                                                        <h2 class="section-title" style="width: 100%; text-align: left;">Social Media</h2>
+                                                    </div>-->
                                                     <div class="col-sm-6">
                                                         <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FSBTET-Telangana-1994473487332437%2F&tabs=timeline&width=400&height=390px&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="100%" height="390px" style="border:none;overflow:hidden;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
                                                     </div>
                                                     <!--<div class="col-sm-6">
-        <div style="height:390px;overflow:auto;border: 1px solid #ddd;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;">
-            <a target="_blank" class="twitter-timeline" href="https://twitter.com/tsbtet?ref_src=twsrc%5Etfw">Tweets by tsbtet</a>
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-    </div>-->
+                                                        <div style="height:390px;overflow:auto;border: 1px solid #ddd;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;">
+                                                            <a target="_blank" class="twitter-timeline" href="https://twitter.com/tsbtet?ref_src=twsrc%5Etfw">Tweets by tsbtet</a>
+                                                            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                                                        </div>
+                                                    </div>-->
                                                     <div class="col-md-6">
 
                                                         <div class="Not_height">
                                                             <h5 class="my_Clr" style="margin:0px;">
-                                                                <i class="far fa-list-alt"></i> <a >Latest News</a>
+                                                                <i class="far fa-list-alt"></i> <a>Latest News</a>
                                                             </h5>
                                                             <div class="holder">
                                                                 <ul id="ticker01">
 
                                                                     <li class="not_bord" ng-repeat="data in Notifications">
-                                                                        <i class="far fa-newspaper"></i> 
-                                                                      <!--  <span>{{data.NotificationDate|date:'dd-MM-yyyy'}} </span>-->
+                                                                        <i class="far fa-newspaper"></i>
+                                                                        <!--  <span>{{data.NotificationDate|date:'dd-MM-yyyy'}} </span>-->
                                                                         <img class="gifImg" height="25" width="40" src="../../contents/img/gif.gif" />
-                                                                    <a>{{data.Notification}}</a>
+                                                                        <a>{{data.Notification}}</a>
                                                                     </li>
-                                                                   
+
                                                                 </ul>
                                                                 <a ui-sref="index.Latestnews" class="btn btn-outline-black float-right rounded-0 my-3">View All</a>
                                                             </div>
@@ -1342,7 +1311,7 @@
                             <div class="col-md-6">
                                 <h5>Contacts Us</h5>
                                 <dl class="contact-list">
-                                    <dt>Email : <span><a href="mailto:#">sbtet-helpdesk@telangana.gov.in</a></span>, Phone : <span><a href="tel:#">+918031404549</a></span></dt>
+                                    <dt>Email : <span><a href="mailto:#">sbtet-helpdesk[at]telangana[dot]gov[dot]in</a></span>, Phone : <span><a href="tel:#">+918031404549</a></span></dt>
                                     <!--<dt></dt>-->
                                 </dl>
                                 <!--<dl class="contact-list">

@@ -1,7 +1,17 @@
 ﻿define(['app'], function (app) {
-    app.controller("ForgetPasswordController", function ($scope, $state, $filter, $stateParams, AppSettings, $crypto, ForgetPasswordService) {
+    app.controller("ForgetPasswordController", function ($scope, $state, $filter, $stateParams, AppSettings, $crypto, ForgetPasswordService, SystemUserService) {
         $scope.ForgetPassword = {};
         $scope.ShowLoading = false;
+
+        const $ctrl = this;
+
+        $ctrl.$onInit = () => {
+            var eKey = SystemUserService.GetEKey();
+            eKey.then(function (res) {
+                $scope.SessionEKey = res;
+
+            });
+        }
         $scope.SavePreDetails = function () {
             $scope.Smsbtndisable = true;
             if (($scope.ForgetPassword.LoginName == undefined) || ($scope.ForgetPassword.LoginName == "")) {
@@ -19,7 +29,7 @@
             }
             $scope.SysUserID = 0;
             $scope.ShowLoading = true;
-            let reqdata = $crypto.encrypt($scope.ForgetPassword.LoginName, sessionStorage.Ekey) + "$$@@$$" + $crypto.encrypt($scope.ForgetPassword.CellNo, sessionStorage.Ekey) + "$$@@$$" + sessionStorage.Ekey;
+            let reqdata = $crypto.encrypt($scope.ForgetPassword.LoginName, $scope.SessionEKey) + "$$@@$$" + $crypto.encrypt($scope.ForgetPassword.CellNo, $scope.SessionEKey) + "$$@@$$" + $scope.SessionEKey;
             var getPromise = ForgetPasswordService.GetForgetPassword(reqdata);
             getPromise.then(function (data) {
                 try {
@@ -27,7 +37,7 @@
 
                 } catch ( ex) {
                 }
-                if (res.status == "200") {
+                if (res.Status == "200") {
                     $scope.Smsbtndisable = false;
                     $scope.ShowLoading = false;
 
@@ -38,7 +48,7 @@
                     alert("Login Credentials sent to the registered mobile number. Please check.");
                     RedirectToListPage();
                 } else {
-                    alert(res.statusdesc);
+                    alert(res.Description);
                     $scope.Smsbtndisable = false;
                     $scope.ShowLoading = false;
                     $scope.RollEditDisable = false;

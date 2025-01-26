@@ -1,7 +1,8 @@
 ﻿define(['app'], function (app) {
     app.controller("PreExaminationController", function ($scope, $http, $localStorage, $state, AppSettings, SystemUserService) {
        
-        var authdata = $localStorage.authorizationData;
+        //var authdata = $localStorage.authorizationData;
+        var authdata = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authdata.SystemUserTypeId;
         $scope.hide = false;
         if ($scope.userType != 3) {

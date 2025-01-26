@@ -77,7 +77,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
             {
                 var u = User.SystemUser[0];
-                AuthToken t = new AuthToken { UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType=u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
+                AuthToken t = new AuthToken { UserName=u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType=u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
 
                 token = crypt.Encrypt(JsonConvert.SerializeObject(t));
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User, clientIpAddress });
@@ -87,7 +87,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             else
             {
                 var u = User.SystemUser[0];
-                AuthToken t = new AuthToken { UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
+                AuthToken t = new AuthToken { UserName = u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
 
                 token = crypt.Encrypt(JsonConvert.SerializeObject(t));
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User });
@@ -148,6 +148,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
             return response;
         }
+
         [HttpPost]
         public async Task<HttpResponseMessage> GetForgetPassword()
         {
@@ -167,21 +168,32 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             {
                 try {
                     string decryptpassword = passcrypt.Decrypt(ForgetRes.Password);
-                    string url = ConfigurationManager.AppSettings["SMS_API"].ToString();
-                    //string smsusername = ConfigurationManager.AppSettings["SMS_Service_Username"].ToString();
-                    //string smspassword = ConfigurationManager.AppSettings["SMS_Service_Password"].ToString();
-                    //SBTET Portal Login Credentials, UserName = {#var#}, Password = {#var#}, Secretary,SBTET TS.1007161786891783450
 
 
-                    string Msg = "SBTET Portal Login Credentials, UserName = {0}, Password = {1}, Secretary,SBTET TS.";
-                    var Message = string.Format(Msg, LoginName.Replace("'", "''"), decryptpassword);
-                    string urlParameters = "?mobile=" + mobile + "&message=" + HttpUtility.UrlEncode(Message) +"&templateid=1007161786891783450"; 
-                    HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri(url);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-                    retMsg = "{\"status\":\"" + ForgetRes.ResponceCode + "\",\"statusdesc\": \"" + ForgetRes.ResponceDescription + "\"}";
-                    return Request.CreateResponse(HttpStatusCode.OK, retMsg);
+                    SMSServiceController smsService = new SMSServiceController();
+                    string SMSCount = smsService.SendSMS(mobile.ToString());
+                    if (SMSCount != "{\"Status\" : \"200\", \"Description\" : \"SMS sent successfully.\"}")
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, SMSCount);
+                    }
+                    else
+                    {
+                        string url = ConfigurationManager.AppSettings["SMS_API"].ToString();
+                        string Msg = "SBTET Portal Login Credentials, UserName = {0}, Password = {1}, Secretary,SBTET TS.";
+                        var Message = string.Format(Msg, LoginName.Replace("'", "''"), decryptpassword);
+                        string urlParameters = "?mobile=" + mobile + "&message=" + HttpUtility.UrlEncode(Message) + "&templateid=1007161786891783450";
+                        HttpClient client = new HttpClient();
+                        client.BaseAddress = new Uri(url);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+                        return Request.CreateResponse(HttpStatusCode.OK, SMSCount);
+                    }
+
+
+
+
+                    //retMsg = "{\"status\":\"" + ForgetRes.ResponceCode + "\",\"statusdesc\": \"" + ForgetRes.ResponceDescription + "\"}";
+
                 } catch (Exception ex) {
                     retMsg = "{\"status\":\"400\",\"statusdesc\": \"" + ex.Message + "\"}";
                     return Request.CreateResponse(HttpStatusCode.OK, retMsg);
