@@ -16715,15 +16715,15 @@ namespace SoftwareSuite.Controllers.PreExamination
                 byte[] imageBytes1 = Convert.FromBase64String(base64Data1);
                 byte[] imageBytes2 = Convert.FromBase64String(base64Data2);
 
-                string savePhotoPath = @"D:\sbtet_login_audit\SoftwareSuite\Photos\" + NameofPhoto;
-                string saveSignPath = @"D:\sbtet_login_audit\SoftwareSuite\Photos\" + NameofSign;
+                string savePhotoPath = @"D:\SBTET_LOGIN_AUDIT\publish\Photos\" + NameofPhoto;
+                string saveSignPath = @"D:\SBTET_LOGIN_AUDIT\publish\Photos\" + NameofSign;
 
                 File.WriteAllBytes(savePhotoPath, imageBytes1);
                 File.WriteAllBytes(saveSignPath, imageBytes2);
 
 
-                string PP = "http://localhost:50421/Photos/" + NameofPhoto;
-                string SP = "http://localhost:50421/Photos/" + NameofSign;
+                string PP = "http://eliteqa.in/Photos/" + NameofPhoto;
+                string SP = "http://eliteqa.in/Photos/" + NameofSign;
 
 
                 string Qwerty = UpdatePhotoSignPath(StudentID, PP, SignUrl);
