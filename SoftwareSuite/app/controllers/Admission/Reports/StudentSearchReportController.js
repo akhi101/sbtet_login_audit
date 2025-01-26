@@ -516,6 +516,7 @@
                             $scope.userPicurl = Res[0].StudentPhoto;
                             $scope.userPic = $scope.userPicurl.replace(/^"|"$/g, '');
                             $scope.signature = $scope.signatureurl.replace(/^"|"$/g, '');
+
                         } catch (err) { }
                         //$('#userImg').attr('src', $scope.userPic);
                         //$("#stdPhotoImg").attr('src', $scope.signature);
