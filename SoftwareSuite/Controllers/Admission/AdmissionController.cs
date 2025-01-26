@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Data;
 using System.Net.Http;
 using System.Configuration;
@@ -16,11 +17,8 @@ using SoftwareSuite.Models.Admission;
 using System.Net;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
-using System.IO;
-using RestSharp;
-//using DocumentFormat.OpenXml.Drawing.Charts;
-using SoftwareSuite.Models.Security;
 using DataTable = System.Data.DataTable;
+using System.Timers;
 // using X15 = DocumentFormat.OpenXml.Office2013.Excel;
 
 
@@ -786,9 +784,17 @@ namespace SoftwareSuite.Controllers.Admission
             public string Aadhar { get; set; }
             public string FAadhar { get; set; }
             public string MAadhar { get; set; }
-            public string ProfilePhoto { get; set; }
             public string Data { get; set; }
+            public string StudentPhoto { get; set; }
+            public string StudentSign { get; set; }
 
+        }
+
+        private static void elapse(object sender, ElapsedEventArgs e, string s)
+        {
+            System.IO.File.Delete(s);
+            ((Timer)sender).Stop();
+            ((Timer)sender).Dispose();
         }
         [HttpGet, ActionName("GetStudentByPin")]
         public string GetStudentByPin(string Pin)
@@ -804,15 +810,6 @@ namespace SoftwareSuite.Controllers.Admission
                 string Aadhar = ds.Tables[2].Rows[0]["AadharNo"].ToString();
                 string FAadhar = ds.Tables[2].Rows[0]["FatherAadhaarNo"].ToString();
                 string MAadhar = ds.Tables[2].Rows[0]["MotherAadhaarNo"].ToString();
-                //string ProfilePhoto = ds.Tables[2].Rows[0]["ProfilePhoto"].ToString();
-                //const string prefix = "data:image/png;base64,";
-                //if (ProfilePhoto.StartsWith(prefix))
-                //{
-                //    // Remove the prefix to extract the Base64 string
-                //    string NewProfilePhoto = ProfilePhoto.Substring(prefix.Length);
-
-                //    var resultsuee = DynamicEncryptionHelper.EncryptBase64(NewProfilePhoto);
-                //}
 
                     string maskedAadhar = Aadhar.Substring(0, 8).Replace(Aadhar.Substring(0, 8), "XXXXXXXX") + Aadhar.Substring(8, 4);
                     if (FAadhar != "")
@@ -832,18 +829,27 @@ namespace SoftwareSuite.Controllers.Admission
                         maskedMAadhar = "";
 
                     }
+
+                string PhotoUrl = ds.Tables[2].Rows[0]["ProfilePhoto"].ToString();
+                string NameofPhoto = "StudentPhoto";
+                string savePhotoPath = @"D:\sbtet_login_audit\SoftwareSuite\Photos\" + NameofPhoto;
+
+
+                ds.Tables[2].Columns.Remove("ProfilePhoto");
+
+                string PP = "http://localhost:50421/Photos/" + NameofPhoto;
                     List<person3> p = new List<person3>();
                     person3 p3 = new person3();
                     ds.Tables[2].Columns.Remove("AadharNo");
                     ds.Tables[2].Columns.Remove("FatherAadhaarNo");
                     ds.Tables[2].Columns.Remove("MotherAadhaarNo");
-                    ds.Tables[2].Columns.Remove("ProfilePhoto");
                     p3.Data = JsonConvert.SerializeObject(ds);
                     p3.Aadhar = JsonConvert.SerializeObject(maskedAadhar);
                     p3.FAadhar = JsonConvert.SerializeObject(maskedFAadhar);
                     p3.MAadhar = JsonConvert.SerializeObject(maskedMAadhar);
-                    //p3.ProfilePhoto = resultsuee;
+                    //p3.StudentPhoto = JsonConvert.SerializeObject(PP);
                     p.Add(p3);
+               
                     return JsonConvert.SerializeObject(p);
                 
             }

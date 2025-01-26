@@ -465,35 +465,17 @@
                     $scope.searchResult = true;
                     $scope.LoadImg = false;
 
-                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
-                    $scope.MaskedFAadhar = JSON.parse(response[0].FAadhar);
-                    $scope.MaskedMAadhar = JSON.parse(response[0].MAadhar);
-                    $scope.ProfilePhoto = JSON.parse(response[0].ProfilePhoto);
+                    var Res = JSON.parse(response);
 
-                    const encryptedImage = response[0].data.ProfilePhoto;
-                    const key = CryptoJS.enc.Base64.parse(response.data.Key); // Parse the key
-                    const iv = CryptoJS.enc.Base64.parse(response.data.IV);   // Parse the IV
+                    $scope.MaskedAadhar =  Res[0].Aadhar;
+                    $scope.MaskedFAadhar = Res[0].FAadhar;
+                    $scope.MaskedMAadhar = Res[0].MAadhar;
 
-                    // Decrypt the image
-                    const encryptedBytes = CryptoJS.enc.Base64.parse(encryptedImage);
-                    const decrypted = CryptoJS.AES.decrypt(
-                        { ciphertext: encryptedBytes },
-                        key,
-                        {
-                            iv: iv,
-                            mode: CryptoJS.mode.CBC,
-                            padding: CryptoJS.pad.Pkcs7
-                        }
-                    );
 
-                    // Convert decrypted data back to Base64
-                    $scope.decryptedImage = 'data:image/png;base64,' + CryptoJS.enc.Base64.stringify(decrypted);
 
-                    $scope.OriginalPhoto = $scope.decryptedImage;
 
-                    $scope.Table1Details = response[0].Data;
-                    //$scope.Table2Details = response[0].Data;
-                    //$scope.Table3Details = response[0].Data;
+                    $scope.Table1Details = Res[0].Data;
+ 
 
                     $scope.Table1Details1 = JSON.parse($scope.Table1Details)
                     $scope.Table1Details = $scope.Table1Details1.Table[0];
@@ -526,11 +508,17 @@
                             } else {
                                 $scope.polycet = true;;
                             }
-                            $scope.signature = $scope.Table1Details1.Table2[0].CandidateSign;
-                            $scope.userPic = $scope.Table1Details1.Table2[0].ProfilePhoto;
+
+                            //$scope.StudentPhoto = Res[0].StudentPhoto;
+                            //$scope.StudentSign = Res[0].StudentSign;
+
+                            $scope.signatureurl = Res[0].StudentSign;
+                            $scope.userPicurl = Res[0].StudentPhoto;
+                            $scope.userPic = $scope.userPicurl.replace(/^"|"$/g, '');
+                            $scope.signature = $scope.signatureurl.replace(/^"|"$/g, '');
                         } catch (err) { }
-                        $('#userImg').attr('src', $scope.userPic);
-                        $("#stdPhotoImg").attr('src', $scope.signature);
+                        //$('#userImg').attr('src', $scope.userPic);
+                        //$("#stdPhotoImg").attr('src', $scope.signature);
                     
                         $scope.studentData = $scope.StudentSearchReportStats;
                         $scope.updateMandals($scope.AdmissioneReports.DistrictId)

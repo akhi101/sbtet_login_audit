@@ -1,5 +1,6 @@
 ﻿extern alias itextalias;
-
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.FileProviders;
 using System;
 
 using Microsoft.AspNetCore.StaticFiles;
@@ -49,6 +50,8 @@ using DocumentFormat.OpenXml.Drawing.Diagrams;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static OTPServiceController;
 using System.Text;
+using static SoftwareSuite.Controllers.Admission.AdmissionController;
+using Microsoft.Graph;
 
 namespace SoftwareSuite.Controllers.PreExamination
 {
@@ -16633,6 +16636,151 @@ namespace SoftwareSuite.Controllers.PreExamination
                 dbHandler.SaveErorr("SPB_GET_MercyFeePaidPinList", 0, ex.Message);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
+
+        [HttpGet, ActionName("UpdatePhotoSignPath")]
+        public string UpdatePhotoSignPath(string StudentID,string PhotoPath,string SignPath)
+        {
+            try
+            {
+                var dbHandler = new dbHandler();
+                var param = new SqlParameter[3];
+                param[0] = new SqlParameter("@StudentID", StudentID);
+                param[1] = new SqlParameter("@PhotoPath", PhotoPath);
+                param[2] = new SqlParameter("@SignPath", SignPath);
+                var dt = dbHandler.ReturnDataWithStoredProcedure("SP_Update_Photo_Sign_Urls", param);
+                return JsonConvert.SerializeObject(dt);
+            }
+            catch (Exception ex)
+            {
+
+                dbHandler.SaveErorr("SP_Update_Photo_Sign_Urls", 0, ex.Message);
+                return ex.Message;
+            }
+
+        }
+
+        //public class person4
+        //{
+        //    public string StudentSign { get; set; }
+        //    public string StudentPhoto { get; set; }
+
+        //}
+
+        [HttpGet, ActionName("GetStudentByPin")]
+        public string GetStudentByPin(string Pin)
+        {
+            try
+            {
+                string maskedFAadhar = String.Empty;
+                string maskedMAadhar = String.Empty;
+                var dbHandler = new dbHandler();
+                var param = new SqlParameter[1];
+                param[0] = new SqlParameter("@pin", Pin);
+                var ds = dbHandler.ReturnDataWithStoredProcedure("USP_GET_STUDENT_BY_PIN_dup", param);
+                string StudentID = ds.Tables[2].Rows[0]["studentid"].ToString();
+                string Aadhar = ds.Tables[2].Rows[0]["AadharNo"].ToString();
+                string FAadhar = ds.Tables[2].Rows[0]["FatherAadhaarNo"].ToString();
+                string MAadhar = ds.Tables[2].Rows[0]["MotherAadhaarNo"].ToString();
+
+                string maskedAadhar = Aadhar.Substring(0, 8).Replace(Aadhar.Substring(0, 8), "XXXXXXXX") + Aadhar.Substring(8, 4);
+                if (FAadhar != "")
+                {
+                    maskedFAadhar = FAadhar.Substring(0, 8).Replace(FAadhar.Substring(0, 8), "XXXXXXXX") + FAadhar.Substring(8, 4);
+                }
+                else
+                {
+                    maskedFAadhar = "";
+                }
+                if (MAadhar != "")
+                {
+                    maskedMAadhar = MAadhar.Substring(0, 8).Replace(MAadhar.Substring(0, 8), "XXXXXXXX") + MAadhar.Substring(8, 4);
+                }
+                else
+                {
+                    maskedMAadhar = "";
+
+                }
+
+                string PhotoUrl = ds.Tables[2].Rows[0]["ProfilePhoto"].ToString();
+                string SignUrl = ds.Tables[2].Rows[0]["CandidateSign"].ToString();
+
+                string NameofPhoto = "Photo_" + ds.Tables[0].Rows[0]["pin"].ToString() + ".png";
+                string NameofSign = "Sign_" + ds.Tables[0].Rows[0]["pin"].ToString() + ".png";
+                
+                string base64Data1 = PhotoUrl.Split(',')[1];
+                string base64Data2 = SignUrl.Split(',')[1];
+
+                // Decode the Base64 string into a byte array
+                byte[] imageBytes1 = Convert.FromBase64String(base64Data1);
+                byte[] imageBytes2 = Convert.FromBase64String(base64Data2);
+
+                string savePhotoPath = @"D:\sbtet_login_audit\SoftwareSuite\Photos\" + NameofPhoto;
+                string saveSignPath = @"D:\sbtet_login_audit\SoftwareSuite\Photos\" + NameofSign;
+
+                File.WriteAllBytes(savePhotoPath, imageBytes1);
+                File.WriteAllBytes(saveSignPath, imageBytes2);
+
+
+                string PP = "http://localhost:50421/Photos/" + NameofPhoto;
+                string SP = "http://localhost:50421/Photos/" + NameofSign;
+
+
+                string Qwerty = UpdatePhotoSignPath(StudentID, PP, SignUrl);
+
+
+                List<person3> p = new List<person3>();
+                person3 p3 = new person3();
+                ds.Tables[2].Columns.Remove("AadharNo");
+                ds.Tables[2].Columns.Remove("FatherAadhaarNo");
+                ds.Tables[2].Columns.Remove("MotherAadhaarNo");
+
+
+                ds.Tables[2].Columns.Remove("ProfilePhoto");
+                ds.Tables[2].Columns.Remove("CandidateSign");
+
+                p3.Data = JsonConvert.SerializeObject(ds);
+                p3.Aadhar = JsonConvert.SerializeObject(maskedAadhar);
+                p3.FAadhar = JsonConvert.SerializeObject(maskedFAadhar);
+                p3.MAadhar = JsonConvert.SerializeObject(maskedMAadhar);
+
+                p3.StudentPhoto = JsonConvert.SerializeObject(PP);
+                p3.StudentSign = JsonConvert.SerializeObject(SP);
+                p.Add(p3);
+                _ = Task.Run(() =>
+                {
+                    //string result = filePath;
+
+                    // Schedule file deletion in a background task
+                    Task.Run(async () =>
+                    {
+                        int delayInSeconds = 2;
+                        await Task.Delay(delayInSeconds * 150); // Wait for the specified delay
+                        if (File.Exists(savePhotoPath))
+                        {
+                            File.Delete(savePhotoPath);
+                        }
+                        if (File.Exists(saveSignPath))
+                        {
+                            File.Delete(saveSignPath);
+                        }
+                        else
+                        {
+                            //Console.WriteLine("File does not exist.");
+                        }
+                    });
+                });
+                return JsonConvert.SerializeObject(p);
+
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("USP_GET_STUDENT_BY_PIN_dup", 0, ex.Message);
+                return ex.Message;
+            }
+
+
+
         }
 
         internal string getUserDataByPin(string studentTypeID, string pin)

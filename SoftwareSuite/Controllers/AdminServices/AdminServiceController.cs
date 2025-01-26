@@ -25,6 +25,7 @@ using SoftwareSuite.Controllers.Results;
 using System.Web.Http.Filters;
 using System.Web.Http.Controllers;
 using Microsoft.AspNetCore.StaticFiles;
+using static SoftwareSuite.Controllers.Admission.AdmissionController;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -3525,7 +3526,6 @@ namespace SoftwareSuite.Controllers.AdminServices
             return "0";
         }
 
-       
 
 
     }

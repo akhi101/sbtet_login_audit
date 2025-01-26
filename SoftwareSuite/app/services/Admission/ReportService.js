@@ -8,7 +8,7 @@ define(['app'], function (app) {
         }
         this.GetStudentByPin = function (pin) {
             var paramsobject = { "Pin": pin };
-            var promise = DataAccessService.getDataWithPara('Admission/GetStudentByPin', paramsobject);
+            var promise = DataAccessService.getDataWithPara('api/PreExamination/GetStudentByPin', paramsobject);
             return promise;
         }
         this.GetStudentBackLogByPin = function (pin) {
