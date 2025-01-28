@@ -245,17 +245,17 @@
             var file = input.files[0];
             $scope.TenderFileName = file.name;
 
-            //var allowedTypes = ['image/jpeg', 'image/png'];
+            var allowedTypes = ['image/jpeg', 'image/png','application/pdf'];
 
-            //if (file) {
-            //    if (allowedTypes.indexOf(file.type) === -1) {
-            //        alert('Invalid file type. Only JPEG, PNG files are allowed.');
-            //        input.value = '';// Clear the input
-            //        return false;
-            //    } else {
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,.PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
 
-            //    }
-            //}
+                }
+            }
 
 
             if (input.files && input.files[0]) {

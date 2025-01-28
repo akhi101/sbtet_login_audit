@@ -1,0 +1,97 @@
+﻿<div ng-controller="TwshAuthorizationReportGradeWiseController">
+    <div class="sm-spacer"></div>
+    <div class="container">
+        <div class="col-md-12 " ng-if="userType == '2'|| userType == '3'">
+            <div class="alert text-center " ng-class="{'{{statusclass}}': showStatus}" ng-if="showStatus">
+                UnAuthorized Access
+            </div>
+        </div>
+    </div>
+    <div class="container" ng-show="userType == '1' ||userType == '5' ||userType == '1007'|| userType == '1002'|| userType == '1009'">
+        <!-- -->
+        <div class="row">
+            <div class="col-md-12 pull-left mtp-50">
+                <div class="col-md-12">
+                    <button class="btn bck_btn"><a ng-click="back()" class="backA"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>  Back</a></button>
+                </div>
+
+            </div>
+
+            <div class="col-md-12 " ng-if="showStatus">
+                <div class="sm-spacer"></div>
+                <div class="alert text-center " ng-class="{'{{statusclass}}': showStatus}" ng-if="showStatus">
+                    {{StatusMessage}}
+                </div>
+            </div>
+            <!--<div class="col-md-12 " ng-show="data">
+                <div class="pull-right">
+                    <a class="ExportToExcel1 pointer"
+                       id="ExportToExcel1" ng-click="DownloadtoExcel()">
+                        <i class="fa fa-file-excel-o"></i>
+                        Export to Excel
+                    </a>
+                </div>
+
+            </div>-->
+            <div class="col-md-12" ng-show="data">
+                <div class="pull-right" style="color:red">Click on the row count to View Candidates List</div>
+            </div>
+            <div class="col-md-12">
+                <div class="cl-details">
+                    <h2>TWSH Authorization Report Gradewise</h2>
+                </div>
+                <div style="width:100%;text-align:center;">
+                    <img src="../../../../contents/img/loading2.gif" ng-show="LoadImg" width="100" />
+                </div>
+
+                <div id="attendanceReport" class="table-responsive table-custom-tables-tb ">
+                    <table class="table table-bordered  table-striped table-rounded">
+                        <thead>
+                            <tr class="cb-1">
+                                <th style="width: 2%" ng-click="sort('Sno')">S.No</th>
+                                <th class="" style="width: 40%" ng-click="sort('Scheme')">Examination Center</th>
+                                <!--<th class="text-center" ng-click="sort('Scheme')">Course</th>-->
+                                <th class="text-center" ng-click="sort('Scheme')">Grade Code</th>
+                                <th class="text-center" ng-click="sort('Scheme')">Grade</th>
+                                <th class="text-center" ng-click="sort('Scheme')">Registered</th>
+                                <th class="text-center" ng-click="sort('Semester')">Approved</th>
+                                <th class="text-center" ng-click="sort('Scheme')">Pending</th>
+                                <th class="text-center" ng-click="sort('Semester')">Rejected</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ng-repeat="data in QualifiedList" style="background-color:#fff!important;" ng-click="OpenData(data)">
+
+                                <td>{{$index+1}}</td>
+                                <td class="">{{data.CollegeCode}} - {{data.CollegeName}}</td>
+                                <!--<td>{{data.course}}</td>-->
+                                <td>{{data.gradecode}}</td>
+                                <td>{{data.grade}}</td>
+                                <td class="text-center" ng-click="OpenCountData(1,data)"><b><a>{{data.registered}}</a></b></td>
+                                <td class="text-center" ng-click="OpenCountData(2,data)"><b><a>{{data.Approved}}</a></b></td>
+                                <td class="text-center" ng-click="OpenCountData(3,data)"><b><a>{{data.ApprovalPending}}</a></b></td>
+                                <td class="text-center" ng-click="OpenCountData(4,data)"><b><a>{{data.rejected}}</a></b></td>
+
+
+                            </tr>
+
+
+                            <tr class="">
+                                <td class="text-center" colspan="4">Total</td>
+                                <td class="text-center">{{Registered}}</td>
+                                <td class="text-center">{{Approved}}</td>
+                                <td class="text-center">{{Rejected}}</td>
+                                <td class="text-center">{{ApprovalPending}}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="sm-spacer"></div>
+        <div class="sm-spacer"></div>
+    </div>
+</div>

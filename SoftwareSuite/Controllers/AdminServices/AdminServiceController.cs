@@ -25,6 +25,8 @@ using SoftwareSuite.Controllers.Results;
 using System.Web.Http.Filters;
 using System.Web.Http.Controllers;
 using Microsoft.AspNetCore.StaticFiles;
+using static SoftwareSuite.Controllers.Admission.AdmissionController;
+using SoftwareSuite.Controllers.SystemAdministration;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -237,6 +239,80 @@ namespace SoftwareSuite.Controllers.AdminServices
                 //return ex.Message;
             }
         }
+
+        public class ForgetPasswordRequest
+        {
+            public string LoginName { get; set; }
+            public string CellNo { get; set; }
+        }
+        [HttpPost, ActionName("ValidateForgetPasswordCaptcha")]
+        public string ValidateForgetPasswordCaptcha(JsonObject data)
+        {
+            var dbHandler = new dbHandler();
+            List<Output> p = new List<Output>();
+            Output p1 = new Output();
+            var captcha = string.Empty;
+            try
+            {
+                //var res = data["SessionId"].ToString().Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                //var crypt = new HbCrypt(res[1]);
+                //var encrypt = new HbCrypt();
+                //string sessionid = crypt.AesDecrypt(res[0]);
+                //string decryptsessionid = encrypt.AesDecrypt(sessionid);
+
+                //var res1 = data["Captcha"].ToString().Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                //var crypt1 = new HbCrypt(res1[1]);
+                //var encrypt1 = new HbCrypt();
+                //string Captcha = crypt1.AesDecrypt(res1[0]);
+                //string decryptCaptcha = encrypt1.AesDecrypt(Captcha);
+
+
+                string decryptsessionid = GetDecryptedData(data["SessionId"].ToString());
+                string decryptCaptcha = GetDecryptedData(data["Captcha"].ToString());
+                string decryptLoginname = GetDecryptedData(data["LoginName"].ToString());
+                string decryptCell = GetDecryptedData(data["CellNo"].ToString());
+
+                var param = new SqlParameter[2];
+                param[0] = new SqlParameter("@SessionId", decryptsessionid);
+                param[1] = new SqlParameter("@Captcha", decryptCaptcha);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
+
+                if (dt.Rows[0]["ResponseCode"].ToString() == "200")
+                {
+                    SystemUserController sysuser = new SystemUserController();
+                    //p1.Data = sysuser.GetForgetPassword(request);
+                    captcha = GetCaptchaString(data);
+                    p1.ResponceCode = dt.Rows[0]["ResponseCode"].ToString();
+                    p1.ResponceDescription = dt.Rows[0]["ResponseDescription"].ToString();
+                    p1.Captcha = captcha;
+                    p.Add(p1);
+                    return JsonConvert.SerializeObject(p);
+
+                }
+                else
+                {
+                    captcha = GetCaptchaString(data);
+                    p1.ResponceCode = "400";
+                    p1.ResponceDescription = dt.Rows[0]["ResponseDescription"].ToString();
+                    p1.Captcha = captcha;
+                    p.Add(p1);
+                    return JsonConvert.SerializeObject(p);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("USP_GET_ExamsCaptchaSessionLog", 0, ex.Message);
+                captcha = GetCaptchaString(data);
+                p1.ResponceCode = "400";
+                p1.ResponceDescription = ex.Message;
+                p1.Captcha = captcha;
+                p.Add(p1);
+                return JsonConvert.SerializeObject(p);
+                //return ex.Message;
+            }
+        }
+
 
         public class AccountStatus
         {
@@ -3525,7 +3601,6 @@ namespace SoftwareSuite.Controllers.AdminServices
             return "0";
         }
 
-       
 
 
     }

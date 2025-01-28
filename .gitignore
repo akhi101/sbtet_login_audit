@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs/SoftwareSuite
+/SoftwareSuite/bin/publish
+/SoftwareSuite/bin/publish.7z
+/SoftwareSuite/Properties/PublishProfiles

@@ -27,7 +27,8 @@ namespace SoftwareSuite.Controllers.PreExamination
 {
     public class PreExaminationReportController : BaseController
     {
-        [AuthorizationFilter()][HttpPost, ActionName("GetFeePaymentReports")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetFeePaymentReports")]
         public string GetFeePaymentReports(int StudentTypeId, string StartDate, string EndDate, int examType)
         {
             try
@@ -59,7 +60,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             return "";
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("ThreeBacklogODCReports")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("ThreeBacklogODCReports")]
         public string ThreeBacklogODCReports(string fromdate, string todate, string day, string month, string year, string ExamYearMonth)
         {
             try
@@ -93,7 +95,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             return "";
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetSubBillerReport")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetSubBillerReport")]
         public string GetSubBillerReport(string SubBillerId, string StartDate, string EndDate)
         {
             try
@@ -107,7 +110,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 param[2] = new SqlParameter("@toData", SqlDbType.Date);
                 param[2].Value = EndDate;
                 var ds = dbHandler.ReturnDataWithStoredProcedure(StrQuery, param);
-                var filename = "SubBillerReport_"  + ".xlsx";
+                var filename = "SubBillerReport_" + ".xlsx";
                 var eh = new ExcelHelper();
                 var path = ConfigurationManager.AppSettings["DownloadsFolderPath"];
                 bool folderExists = Directory.Exists(path);
@@ -126,7 +129,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetDayWiseSubBillerCountExcel")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetDayWiseSubBillerCountExcel")]
         public string GetDayWiseSubBillerCountExcel(string Date)
         {
             try
@@ -155,8 +159,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetDayWiseSubBillerReport")]
-        public string GetDayWiseSubBillerReport(int DataType,string subbillerid, string Date)
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetDayWiseSubBillerReport")]
+        public string GetDayWiseSubBillerReport(int DataType, string subbillerid, string Date)
         {
             try
             {
@@ -188,9 +193,10 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        
 
-        [AuthorizationFilter()][HttpPost, ActionName("ThreeBacklogODCByPin")]
+
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("ThreeBacklogODCByPin")]
         public string ThreeBacklogODCByPin(string fromdate, string todate, string PIN)
         {
             try
@@ -233,7 +239,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetFromExalReports")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetFromExalReports")]
         public string GetFromExalReports([FromBody] HttpPostedFileBase file)
         {
             var path = string.Empty;
@@ -278,7 +285,8 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetS2SPaymentReports")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetS2SPaymentReports")]
         public string GetS2SPaymentReports(int DataTypeId, string EndDate, string StartDate, int StudentTypeId)
         {
             try
@@ -314,7 +322,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetS2SPaymentDetails")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetS2SPaymentDetails")]
         public string GetS2SPaymentDetails(int UserTypeId, string ChallanNumber, int StudentTypeId)
         {
             try
@@ -335,8 +344,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("NrExcelReports")]
-        public string NrExcelReports(int StudentTypeId, string CollegeCode, int ExamTypeId,int ExamMonthYearId)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NrExcelReports")]
+        public string NrExcelReports(int StudentTypeId, string CollegeCode, int ExamTypeId, int ExamMonthYearId)
         {
             try
             {
@@ -366,7 +376,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             return "";
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("FeeNotPaidExcelReport")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("FeeNotPaidExcelReport")]
         public string FeeNotPaidExcelReport()
         {
             try
@@ -394,8 +405,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             return "";
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("PrinterNrDownloadExcelReport")]
-        public string PrinterNrDownloadExcelReport(int ExamMonthYearId, int AcademicYearId, int StudentTypeId,int ExamTypeId = 0,string semid = null)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PrinterNrDownloadExcelReport")]
+        public string PrinterNrDownloadExcelReport(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId = 0, string semid = null)
         {
             try
             {
@@ -445,7 +457,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             return "";
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("PrinterNrAttendanceExcelReport")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PrinterNrAttendanceExcelReport")]
         public string PrinterNrAttendanceExcelReport(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId = 0, string semid = null)
         {
             try
@@ -511,7 +524,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             public int Studentid { get; set; }
         }
 
-            [AuthorizationFilter()][HttpGet, ActionName("PrinterNrDownload")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PrinterNrDownload")]
         public string PrinterNrDownload(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId = 0, string semid = null)
         {
             try
@@ -537,7 +551,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var DipomaPrinterNrData = DataTableHelper.ConvertDataTable<NRPhotosData>(Photods.Tables[1]);
                 //var DipomaPrinterNrData = DataTableHelper.ConvertDataTable<NRPhotosData>(Photods.Tables[1]);
 
-                if (DipomaPrinterNrData.Count > 0) {
+                if (DipomaPrinterNrData.Count > 0)
+                {
                     var Photos = DipomaPrinterNrData.Select(x => new { x.PIN, x.Studentid }).Distinct().ToList();
                     foreach (var stu in Photos)
                     {
@@ -556,7 +571,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                         }
                     }
                 }
-               
+
                 GenerateNR GenerateNR = new GenerateNR();
                 return GenerateNR.GetNrForPrinter(ds, ds.Tables[0].Rows[0]["ExamMonthYear"].ToString());
             }
@@ -566,8 +581,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("PrinterNrCollegeVsBranchReport")]
-        public string PrinterNrCollegeVsBranchReport(int ExamMonthYearId, int AcademicYearId, int StudentTypeId,int ExamTypeId)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PrinterNrCollegeVsBranchReport")]
+        public string PrinterNrCollegeVsBranchReport(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId)
         {
             try
             {
@@ -580,7 +596,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 DataSet ds = dbHandler.ReturnDataWithStoredProcedure("USP_GET_NR_CollegeVsBranchReport", param);
                 if (ds.Tables[0].Rows[0]["ResponceCode"].ToString() == "200")
                 {
-                    var filename = "NRCollegeVsBranchReport" + "_"+ ds.Tables[0].Rows[0]["ExamMonthYear"].ToString()+"_" + Guid.NewGuid() + ".xlsx";
+                    var filename = "NRCollegeVsBranchReport" + "_" + ds.Tables[0].Rows[0]["ExamMonthYear"].ToString() + "_" + Guid.NewGuid() + ".xlsx";
                     var eh = new ExcelHelper();
                     var path = ConfigurationManager.AppSettings["DownloadsFolderPath"];
                     DataSet excelds = ds;
@@ -615,7 +631,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("NrReports")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NrReports")]
         public string NrReports(int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
         {
             string NRReportDir = @"Reports\NR\";
@@ -640,7 +657,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetCurrentExamDatesForNr")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetCurrentExamDatesForNr")]
         public string GetCurrentExamDatesForNr(int ExamMonthYearId, int StudentTypeId, int ExamTypeId)
         {
             try
@@ -667,8 +685,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             ((Timer)sender).Dispose();
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetSubBillerDayWiseCount")]
-        public string GetSubBillerDayWiseCount(string Date )
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetSubBillerDayWiseCount")]
+        public string GetSubBillerDayWiseCount(string Date)
         {
             try
             {
@@ -685,7 +704,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("addorUpdateFeeSettings")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("addorUpdateFeeSettings")]
         public string addorUpdateFeeSettings(int DataType, int ID, string Name, bool Is_Active, int Price, int ServiceType, string ChallanPrefix, string UserName)
         {
             try
@@ -711,7 +731,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetSemesterWiseStatisticsExcel")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetSemesterWiseStatisticsExcel")]
         public string GetSemesterWiseStatisticsExcel(int DataType, int AcademicYearId, int Exammonthyearid, string CollegeCode, string BranchCode)
         {
             try
@@ -744,7 +765,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetCollegeWiseStatisticsExcel")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetCollegeWiseStatisticsExcel")]
         public string GetCollegeWiseStatisticsExcel(int DataType, int AcademicYearId, int Exammonthyearid, string CollegeCode, string BranchCode)
         {
             try
@@ -777,7 +799,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetBranchWiseStatisticsExcel")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetBranchWiseStatisticsExcel")]
         public string GetBranchWiseStatisticsExcel(int DataType, int AcademicYearId, int Exammonthyearid, string CollegeCode, string BranchCode)
         {
             try
@@ -813,7 +836,8 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetMonthlyAbstractCount")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetMonthlyAbstractCount")]
         public string GetMonthlyAbstractCount(string fromDate, string toDate)
         {
             try
@@ -834,7 +858,8 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetMonthwiseAbstractReport")]
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetMonthwiseAbstractReport")]
         public string GetMonthwiseAbstractReport(int DataType, string subbillerid, string fromDate, string toDate)
         {
             try
@@ -848,7 +873,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 param[3] = new SqlParameter("@toDate", toDate);
                 //param[2].Value = Date;
                 var ds = dbHandler.ReturnDataWithStoredProcedure(StrQuery, param);
-                if (DataType==1)
+                if (DataType == 1)
                 {
                     var filename = "MonthlyAbstract_TotalRecords_" + subbillerid + ".xlsx";
                     var eh = new ExcelHelper();
@@ -915,8 +940,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("GetMonthlywiseAbstractCountExcel")]
-        public string GetMonthlywiseAbstractCountExcel(string fromDate,string toDate)
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetMonthlywiseAbstractCountExcel")]
+        public string GetMonthlywiseAbstractCountExcel(string fromDate, string toDate)
         {
             try
             {

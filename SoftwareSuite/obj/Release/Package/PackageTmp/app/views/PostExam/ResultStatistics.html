@@ -1,0 +1,428 @@
+<style>
+    .gr-button {
+        float: none !important;
+    }
+
+    a.ExportToExcel {
+        color: #1f497d;
+        text-decoration: none;
+        font-size: 18px;
+        padding-right: 10px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    .fa-file-excel:before {
+        content: "\f1c3";
+    }
+
+    .fa {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    button.btn.btn-success.pull-right.btn-xs {
+        margin-bottom: 5px;
+    }
+
+    @media print {
+        tr.cb-1 th {
+            color: #000 !important;
+        }
+
+        .table-custom-tables-tb .table-bordered > thead > tr > th {
+            border: 1px solid #ddd !important;
+            color: #000 !important;
+            font-size: 12px !important;
+        }
+
+        .base-row {
+            display: none;
+        }
+
+        .top-header {
+            display: none;
+        }
+
+        .bck_btn {
+            display: none;
+        }
+
+        .noprint {
+            display: none;
+        }
+    }
+
+    .footer_section {
+        display: none;
+    }
+</style>
+<div ng-controller="ResultStatisticsController">
+    <section class="content">
+        <div class="container">
+            <div class="col-md-12">
+                <button class="btn bck_btn"><a href="#!/Dashboard/PostExam" class="backA"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>  Back</a></button>
+            </div>
+            <div class="col-md-12">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#1" data-toggle="tab" ng-click="Tab1()">Semester Wise</a>
+                    </li>
+                    <li>
+                        <a href="#2" data-toggle="tab" ng-click="Tab2()">College Wise</a>
+                    </li>
+                    <li>
+                        <a href="#3" data-toggle="tab" ng-click="Tab3()">Branch Wise</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="1">
+                        <div class="row base-row">
+                            <div class="col-md-3 form-group">
+                                <label for="sel1">
+                                    Academic Year:
+                                </label>
+                                <select class="form-control" ng-model="AcademicYearID" name="AcademicYears" ng-change="AcademicYearChange1()">
+                                    <option value="" selected>Select Academic Year</option>
+                                    <option ng-repeat="ay in AcademicYears" value="{{ay.AcademicID}}">
+                                        {{ay.AcademicYear}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="sel1">
+                                    Exam Month Year:
+                                </label>
+                                <select class="form-control" ng-model="ExamMonthYearID" name="ExamMonthYear">
+                                    <option value="" selected>Select Exam Month Year</option>
+                                    <option ng-repeat="item in GetExamMonthYears1" value="{{item.ExamMonthYearId}}">
+                                        {{item.ExamYearMonth}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="form-group text-center">
+                                    <button class="btn btn-sm btn-primary  text-center  gr-button btn_top" ng-click="GetReport1()">
+                                        Get Report
+                                        <span class="fa fa-arrow-down heading_icon btn_icons"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-12 pull-right noprint" ng-show="SemesterWiseData.length>0">
+                            <a class="ExportToExcel1 pointer"
+                               id="ExportToExcel1" title="Excel Download" ng-click="DownloadtoExcel1('#tblParent')">
+                                <i class="fa fa-file-excel"></i>
+                                Semester Wise Statistics
+                            </a>
+                        </div>
+
+                        <div class="container">
+                            <div class="col-md-12" ng-if="LoadImg">
+                                <div class="sm-spacer"></div>
+                                <div style="width:100%;text-align:center;">
+                                    <img src="../../../contents/img/loading.gif" ng-if="LoadImg" width="100" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div ng-if="Noresult" class="no-results">
+                                    <img src="../../contents/img/Folder-Icon.svg" />
+                                    <h2>No Result Found</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="Details">
+                            <div class="col-md-12 ng-scope" ng-show="SemesterWiseData.length>0">
+                                <div class="cl-details">
+                                    <h2>Semester Wise Data</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-12" ng-show="SemesterWiseData.length>0">
+                                <div class="table-responsive table-custom-tables-tb">
+                                    <table class="table table-bordered table-hover table-rounded">
+                                        <thead>
+                                            <tr class="cb-1">
+                                                <th class="text-center">Exam Month Year</th>
+                                                <th class="text-center">Semester</th>
+                                                <th class="text-center">OnRoll</th>
+                                                <th class="text-center">FeePaid</th>
+                                                <th class="text-center">Pass</th>
+                                                <th class="text-center">Percentage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="Data in SemesterWiseData">
+                                                <td class="text-center">{{Data.ExamMonthYear}}</td>
+                                                <td class="text-center">{{Data.Semester}}</td>
+                                                <td class="text-center">{{Data.OnRoll}}</td>
+                                                <td class="text-center">{{Data.FeePaid}}</td>
+                                                <td class="text-center">{{Data.Pass}}</td>
+                                                <td class="text-center">{{Data.Per}}</td>
+                                            </tr>
+                                            <tr style="font-weight:bold">
+                                                <td colspan="2" class="text-center">Total</td>
+                                                <td class="text-center">{{OnRoll}}</td>
+                                                <td class="text-center">{{FeePaid}}</td>
+                                                <td class="text-center">{{Pass}}</td>
+                                                <td class="text-center">{{Per | number : 2}}</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="2">
+                        <div class="row base-row">
+                            <div class="col-md-2 form-group">
+                                <label for="sel1">
+                                    Academic Year:
+                                </label>
+                                <select class="form-control" ng-model="academicYearID" name="AcademicYears" ng-change="AcademicYearChange2()">
+                                    <option value="" selected>Select Academic Year</option>
+                                    <option ng-repeat="ay in AcademicYears" value="{{ay.AcademicID}}">
+                                        {{ay.AcademicYear}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <label for="sel1">
+                                    Exam Month Year:
+                                </label>
+                                <select class="form-control" ng-model="examMonthYearID" name="ExamMonthYear">
+                                    <option value="" selected>Select Exam Month Year</option>
+                                    <option ng-repeat="item in GetExamMonthYears2" value="{{item.ExamMonthYearId}}">
+                                        {{item.ExamYearMonth}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="sel1">
+                                    College:
+                                </label>
+                                <select class="form-control" ng-model="College" name="College">
+                                    <option value="" selected>Select College</option>
+                                    <option ng-repeat="item in CollegeData" value="{{item.CollegeCode}}">
+                                        {{item.CollegeCode}}-{{item.CollegeName}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 text-center">
+                                <div class="form-group text-center">
+                                    <button class="btn btn-sm btn-primary  text-center  gr-button btn_top" ng-click="GetReport2()">
+                                        Get Report
+                                        <span class="fa fa-arrow-down heading_icon btn_icons"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 pull-right noprint" ng-show="CollegeWiseData.length>0">
+                            <a class="ExportToExcel1 pointer"
+                               id="ExportToExcel1" title="Excel Download" ng-click="DownloadtoExcel2('#tblParent')">
+                                <i class="fa fa-file-excel"></i>
+                                College Wise Statistics
+                            </a>
+                        </div>
+                        <div class="container">
+                            <div class="col-md-12" ng-if="LoadImg">
+                                <div class="sm-spacer"></div>
+                                <div style="width:100%;text-align:center;">
+                                    <img src="../../../contents/img/loading.gif" ng-if="LoadImg" width="100" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div ng-if="Noresult" class="no-results">
+                                    <img src="../../contents/img/Folder-Icon.svg" />
+                                    <h2>No Result Found</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Details">
+                            <div class="col-md-12 ng-scope" ng-show="CollegeWiseData.length>0">
+                                <div class="cl-details">
+                                    <h2>College Wise Data</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-12" ng-show="CollegeWiseData.length>0">
+                                <div class="table-responsive table-custom-tables-tb">
+                                    <table class="table table-bordered table-hover table-rounded">
+                                        <thead>
+                                            <tr class="cb-1">
+                                                <th class="text-center">Exam Month Year</th>
+                                                <th class="text-center">College Code</th>
+                                                <th class="text-center">Scheme</th>
+                                                <th class="text-center">Semester</th>
+                                                <th class="text-center">Branch Code</th>
+                                                <th class="text-center">OnRoll</th>
+                                                <th class="text-center">FeePaid</th>
+                                                <th class="text-center">Pass</th>
+                                                <th class="text-center">Percentage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="Data in CollegeWiseData">
+                                                <td class="text-center">{{Data.ExamMonthYear}}</td>
+                                                <td class="text-center">{{Data.CollegeCode}}</td>
+                                                <td class="text-center">{{Data.Scheme}}</td>
+                                                <td class="text-center">{{Data.Semester}}</td>
+                                                <td class="text-center">{{Data.BranchCode}}</td>
+                                                <td class="text-center">{{Data.OnRoll}}</td>
+                                                <td class="text-center">{{Data.FeePaid}}</td>
+                                                <td class="text-center">{{Data.Pass}}</td>
+                                                <td class="text-center">{{Data.Per}}</td>
+                                            </tr>
+                                            <tr style="font-weight:bold">
+                                                <td colspan="5" class="text-center">Total</td>
+                                                <td class="text-center">{{OnRoll}}</td>
+                                                <td class="text-center">{{FeePaid}}</td>
+                                                <td class="text-center">{{Pass}}</td>
+                                                <td class="text-center">{{Per | number : 2}}</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="3">
+                        <div class="row base-row">
+                            <div class="col-md-2 form-group">
+                                <label for="sel1">
+                                    Academic Year:
+                                </label>
+                                <select class="form-control" ng-model="academicyearID" name="AcademicYears" ng-change="AcademicYearChange3()">
+                                    <option value="" selected>Select Academic Year</option>
+                                    <option ng-repeat="ay in AcademicYears" value="{{ay.AcademicID}}">
+                                        {{ay.AcademicYear}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <label for="sel1">
+                                    Exam Month Year:
+                                </label>
+                                <select class="form-control" ng-model="exammonthYearID" name="ExamMonthYear">
+                                    <option value="" selected>Select Exam Month Year</option>
+                                    <option ng-repeat="item in GetExamMonthYears3" value="{{item.ExamMonthYearId}}">
+                                        {{item.ExamYearMonth}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-5 form-group">
+                                <label for="sel1">
+                                    Branch:
+                                </label>
+                                <select class="form-control" ng-model="Branch" name="Branch">
+                                    <option value="" selected>Select Branch</option>
+                                    <option ng-repeat="item in BranchData" value="{{item.BranchCode}}">
+                                        {{item.BranchCode}}-{{item.BranchName}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 text-center">
+                                <div class="form-group text-center">
+                                    <button class="btn btn-sm btn-primary  text-center  gr-button btn_top" ng-click="GetReport3()">
+                                        Get Report
+                                        <span class="fa fa-arrow-down heading_icon btn_icons"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-12 pull-right noprint" ng-show="BranchWiseData.length>0">
+                            <a class="ExportToExcel1 pointer"
+                               id="ExportToExcel1" title="Excel Download" ng-click="DownloadtoExcel3('#tblParent')">
+                                <i class="fa fa-file-excel"></i>
+                                Branch Wise Statistics
+                            </a>
+                        </div>
+                        <div class="container">
+                            <div class="col-md-12" ng-if="LoadImg">
+                                <div class="sm-spacer"></div>
+                                <div style="width:100%;text-align:center;">
+                                    <img src="../../../contents/img/loading.gif" ng-if="LoadImg" width="100" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div ng-if="Noresult" class="no-results">
+                                    <img src="../../contents/img/Folder-Icon.svg" />
+                                    <h2>No Result Found</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Details">
+                            <div class="col-md-12 ng-scope" ng-show="BranchWiseData.length>0">
+                                <div class="cl-details">
+                                    <h2>Branch Wise Data</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-12" ng-show="BranchWiseData.length>0">
+                                <div class="table-responsive table-custom-tables-tb">
+                                    <table class="table table-bordered table-hover table-rounded">
+                                        <thead>
+                                            <tr class="cb-1">
+                                                <th class="text-center">Exam Month Year</th>
+                                                <th class="text-center">Branch</th>
+                                                <th class="text-center">Scheme</th>
+                                                <th class="text-center">Semester</th>
+                                                <th class="text-center">College Code</th>
+                                                <th class="text-center">OnRoll</th>
+                                                <th class="text-center">FeePaid</th>
+                                                <th class="text-center">Pass</th>
+                                                <th class="text-center">Percentage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="Data in BranchWiseData">
+                                                <td class="text-center">{{Data.ExamMonthYear}}</td>
+                                                <td class="text-center">{{Data.Branch}}</td>
+                                                <td class="text-center">{{Data.Scheme}}</td>
+                                                <td class="text-center">{{Data.Semester}}</td>
+                                                <td class="text-center">{{Data.CollegeCode}}</td>
+                                                <td class="text-center">{{Data.OnRoll}}</td>
+                                                <td class="text-center">{{Data.FeePaid}}</td>
+                                                <td class="text-center">{{Data.Pass}}</td>
+                                                <td class="text-center">{{Data.Per}}</td>
+                                            </tr>
+                                            <tr style="font-weight:bold">
+                                                <td colspan="5" class="text-center">Total</td>
+                                                <td class="text-center">{{OnRoll}}</td>
+                                                <td class="text-center">{{FeePaid}}</td>
+                                                <td class="text-center">{{Pass}}</td>
+                                                <td class="text-center">{{Per | number : 2}}</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--<div style="width: 100%; text-align: center;">
+                    <img src="../../../contents/img/loading.gif" ng-show="LoadImg" width="100" />
+                </div>-->
+                <div class="sm-spacer"></div>
+
+            </div>
+        </div>
+    </section>
+</div>
+
