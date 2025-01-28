@@ -40,10 +40,14 @@ using SoftwareSuite.Controllers.Common;
 using Newtonsoft.Json.Linq;
 using System.Xml;
 using SoftwareSuite.Models.Security;
+using System.Web.Http.Filters;
 using DocumentFormat.OpenXml.Wordprocessing;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 using DocumentFormat.OpenXml.Bibliography;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+
+using System.Web.Http.Controllers;
+
 using System.Drawing;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
@@ -54,6 +58,7 @@ using static SoftwareSuite.Controllers.Admission.AdmissionController;
 using Microsoft.Graph;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+
 
 namespace SoftwareSuite.Controllers.PreExamination
 {
@@ -309,7 +314,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetStudentServicesCounts")]
+       [AuthorizationFilter()][HttpGet, ActionName("GetStudentServicesCounts")]
         public HttpResponseMessage GetStudentServicesCounts()
         {
             try
@@ -2684,7 +2689,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetHomePageSlidesActive")]
+       [AuthorizationFilter()][HttpGet, ActionName("GetHomePageSlidesActive")]
         public HttpResponseMessage GetHomePageSlidesActive()
         {
             try
@@ -5322,8 +5327,10 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
+       [AuthorizationFilter()][HttpGet, ActionName("getFileUploadDetails")]
 
         [AuthorizationFilter()][HttpGet, ActionName("getFileUploadDetails")]
+
         public string getFileUploadDetails(string Pin)
         {
             try
@@ -8465,6 +8472,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GetDecryptedData")]
         public string GetDecryptedData(string DataType)
+
         {
             try
             {
@@ -8629,6 +8637,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GetFileSize")]
         public static long GetFileSize(string fileName)
+
         {
             try
             {
@@ -8652,6 +8661,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GetMimeType")]
         public static string GetMimeType(string fileName)
+
         {
             var provider = new FileExtensionContentTypeProvider();
             string mimeType;
@@ -8701,10 +8711,15 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+
+       [AuthorizationFilter()][HttpGet, ActionName("GetDayWiseNrReportsExcel")]
+        public string GetDayWiseNrReportsExcel(int ExamMonthYearId, int AcademicID, int StudentTypeId)
+
         private readonly long MaxFileSizedoc = 2 * 1024 * 1024; // 2 MB max size
 
         [AuthorizationFilter()][HttpGet, ActionName("CheckFileTypeDocs")]
         public string CheckFileTypeDocs(string fileName)
+
         {
             string ext = Path.GetExtension(fileName).ToLower();
 
@@ -8733,9 +8748,14 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
+       [AuthorizationFilter()][HttpGet, ActionName("CertificateFeePaymentReports")]
+        public string CertificateFeePaymentReports(string Scheme, int datatype)
+
+
 
         [AuthorizationFilter()][HttpGet, ActionName("NameCheck")]
         public string NameCheck(string DataType)
+
         {
             try
             {
@@ -8764,6 +8784,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GenderCheck")]
         public string GenderCheck(string DataType)
+
         {
             try
             {
@@ -10426,6 +10447,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("getUserDataByPinForPromotionalFee")]
         public HttpResponseMessage getUserDataByPinForPromotionalFee(string StudentTypeId, string Pin)
+
         {
             try
             {
@@ -13217,6 +13239,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GetRegularHallticket")]
         public string GetRegularHallticket(string Pin, string DateOfBirth, string StudentTypeId, string EMYR)
+
         {
             try
             {
@@ -13353,6 +13376,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+
+       [AuthorizationFilter()][HttpGet, ActionName("Verify_GenuinenessEmailLog")]
+        public HttpResponseMessage Verify_GenuinenessEmailLog(string Pin, string Email, string OTP)
 
         [AuthorizationFilter()][HttpGet, ActionName("Verify_GenuinenessEmailLog")]
         public string Verify_GenuinenessEmailLog(string Pin, string Email, string OTP)
@@ -13768,6 +13794,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         //    }
         //}
 
+
+       [AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
+
         internal class Output
         {
             public string ResponceCode { get; internal set; }
@@ -14177,6 +14206,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()][HttpGet, ActionName("GetStudentFeePaymentDetailsforAdmin")]
         public string GetStudentFeePaymentDetailsforAdmin(string Pin, string StudentTypeId, string UserTypeId)
+
         {
             try
             {
@@ -14867,7 +14897,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetWebSiteVisiterCount")]
+       [AuthorizationFilter()][HttpGet, ActionName("GetWebSiteVisiterCount")]
         public HttpResponseMessage GetWebSiteVisiterCount()
         {
             try
@@ -16945,7 +16975,13 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+
+
+       [AuthorizationFilter()][HttpPost, ActionName("GetSemorCollegeorBranchWiseStatistics")]
+        public string GetSemorCollegeorBranchWiseStatistics([FromBody] JsonObject request)
+
         internal string getUserDataByPin(string studentTypeID, string pin)
+
         {
             throw new NotImplementedException();
         }
