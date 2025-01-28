@@ -18,6 +18,7 @@ using SoftwareSuite.Models.Database;
 using SoftwareSuite.BLL;
 using System.Net.Http.Headers;
 using System.Web;
+using static SoftwareSuite.Controllers.AdminServices.AdminServiceController;
 
 namespace SoftwareSuite.Controllers.SystemAdministration
 {
@@ -152,13 +153,14 @@ namespace SoftwareSuite.Controllers.SystemAdministration
         [HttpPost]
         public async Task<HttpResponseMessage> GetForgetPassword()
         {
-
             var data = await Request.Content.ReadAsStringAsync();
             var res = data.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
             var crypt = new HbCrypt(res[2]);
             string LoginName = crypt.AesDecrypt(res[0]);
             long CellNo = Convert.ToInt64(crypt.AesDecrypt(res[1]));
             string mobile = crypt.AesDecrypt(res[1]);
+
+
             SystemUserBLL SystemUserBLL = new SystemUserBLL();
             SystemRes ForgetRes = new SystemRes();
             var passcrypt = new HbCrypt();

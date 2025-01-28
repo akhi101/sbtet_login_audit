@@ -70,6 +70,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
+
         [HttpGet, ActionName("GetSixthSemStudents")]
         public string GetSixthSemStudents(string CollegeCode, int BranchId, int AcademicYearId)
         {

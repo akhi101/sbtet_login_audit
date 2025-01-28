@@ -2,7 +2,7 @@
     app.controller("CreateDownloadsController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
 
 
-        
+
         var $ctrl = this;
         $ctrl.$onInit = () => {
             $scope.imgLabel = true;
@@ -18,10 +18,10 @@
 
                 }
             },
-                    function (error) {
+                function (error) {
 
 
-                    });
+                });
         }
 
         $scope.getDownloads = function () {
@@ -44,7 +44,7 @@
                         $scope.Circulars[j].FileNmae = filename;
                     }
 
-             
+
                     for (var j = 1; j < response.Table.length + 1; j++) {
                         $scope['edit' + j] = true;
                         $scope.edit = false
@@ -55,13 +55,13 @@
                     $scope.error = true;
                 }
             },
-                    function (error) {
+                function (error) {
 
-                        console.log(error);
-                        $scope.loading = false;
-                        $scope.data = false;
-                        $scope.error = true;
-                    });
+                    console.log(error);
+                    $scope.loading = false;
+                    $scope.data = false;
+                    $scope.error = true;
+                });
         }
 
 
@@ -105,6 +105,24 @@
         $scope.uploadpdffiles = function () {
             var input = document.getElementById("Circular");
 
+            var file = input.files[0];
+            $scope.CreatDownloadsFileName = file.name;
+
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,.PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
+
+                }
+            }
+
+
+
+
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.readAsDataURL(input.files[0]);
@@ -116,7 +134,7 @@
 
                     base64file = ele.target.result;
                     $scope.addpdffile = base64file.replace(/^data:application\/pdf+;base64,/, "").replace(/^data:application\/zip+;base64,/, "").replace(/^data:image\/[a-z]+;base64,/, "").replace(/^data:application\/octet\-stream+;base64,/, "").replace(/^data:application\/x\-zip\-compressed+;base64,/, "").replace(/^data:application\/msword+;base64,/, "");
-             
+
                     $scope.wesfile1 = canvas.toDataURL("application\/pdf").replace(/^data:application\/pdf+;base64,/, "");
                     ("image/png").replace(/^data:image\/[a-z]+;base64,/, "");
 
@@ -138,6 +156,27 @@
             window.open(data, 'Download');
             //window.open(data);
         }
+
+
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
 
 
         $scope.SaveData = function () {
@@ -165,10 +204,27 @@
             $scope.error = false;
             $scope.data = false;
             var notificationdate = moment($scope.enD).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UploadDownload($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType, notificationdate);
+            var uploadexcl = AdminService.UploadDownload($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType, notificationdate, $scope.CreatDownloadsFileName);
             uploadexcl.then(function (res) {
-                $scope.loading = false;
-                if (res[0].ResponceCode == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+
+                else if (res[0].ResponceCode == '200') {
                     $scope.loading = false;
                     //$scope.error = false;
                     //$scope.data = true;

@@ -52,11 +52,43 @@ using static OTPServiceController;
 using System.Text;
 using static SoftwareSuite.Controllers.Admission.AdmissionController;
 using Microsoft.Graph;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
 namespace SoftwareSuite.Controllers.PreExamination
 {
     //[Authorize(Users = "Admin")]
     //[Authorize]
+
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Authentication Token");
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+
+    }
     public class PreExaminationController : ApiController
     {
 
@@ -98,7 +130,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("testqr")]
+        [AuthorizationFilter()][HttpGet, ActionName("testqr")]
         public void testqr()
         {
             var url = string.Format("http://chart.apis.google.com/chart?cht=qr&chs={1}x{2}&chl={0}", "dsa", "152", "152");
@@ -137,8 +169,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             return host + "/";
         }
 
-
-        [HttpGet, ActionName("GetNrData")]
+        [AuthorizationFilter()]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNrData")]
         public HttpResponseMessage GetNrData(HttpRequestMessage request)    //int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
         {
 
@@ -191,7 +223,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 Directory.CreateDirectory(path);
         }
 
-        [HttpGet, ActionName("GetExpenditure")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExpenditure")]
         public HttpResponseMessage GetExpenditure(int ExamMonthYearId)
         {
             try
@@ -220,8 +252,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-
-        [HttpGet, ActionName("getActiveExamTypesByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("getActiveExamTypesByScheme")]
         public string getActiveExamTypesByScheme(string scheme)
         {
             try
@@ -239,8 +270,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-
-        [HttpGet, ActionName("getBranchsByCollegeCode")]
+        [AuthorizationFilter()][HttpGet, ActionName("getBranchsByCollegeCode")]
         public string getBranchsByCollegeCode(string CollegeCode)
         {
             try
@@ -258,7 +288,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("FindchalanaNo")]
+        [AuthorizationFilter()][HttpGet, ActionName("FindchalanaNo")]
         public HttpResponseMessage FindchalanaNo(string chalanaNo)
         {
             try
@@ -296,7 +326,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getWebsiteFeedbackReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getWebsiteFeedbackReport")]
         public HttpResponseMessage getWebsiteFeedbackReport()
         {
             try
@@ -314,8 +344,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
-        [HttpGet, ActionName("ResetCertificateStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResetCertificateStatus")]
         public string ResetCertificateStatus(int CertificateTypeId, string Pin, string certifictepath)
         {
             try
@@ -348,8 +377,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-
-        [HttpGet, ActionName("ResetNameCorrectionToDs")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResetNameCorrectionToDs")]
         public string ResetNameCorrectionToDs(string Pin)
         {
             try
@@ -369,7 +397,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("ReleaseMarksEntry")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseMarksEntry")]
         public string ReleaseMarksEntry(string CollegeCode, int SemId, int SchemeId, int ExamTypeId, int AcademicYearId, int subid, int ExamMonthYearId, string UserName, int UserTypeId)
 
         {
@@ -397,8 +425,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
-        [HttpGet, ActionName("GetChallanNumbers")]
+        [AuthorizationFilter()]
+        [AuthorizationFilter()][HttpGet, ActionName("GetChallanNumbers")]
         public string GetChallanNumbers(int PaymentTypeID, int PaymentSubTypeID, string PIN, int ExamMonthYearID = 0)
         {
             try
@@ -420,7 +448,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetAsssessmentConsolidatedReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAsssessmentConsolidatedReport")]
         public string GetAsssessmentConsolidatedReport(int AcademicyearId, int ExamMonthYearId, string collegecode, int branchId, int schemeid, int semid, int ExamType)
         {
             List<person> p = new List<person>();
@@ -487,7 +515,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GenerateC18MemosData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateC18MemosData")]
         public string GenerateC18MemosData(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year)
         {
             try
@@ -545,7 +573,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTwoYearsOdcData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTwoYearsOdcData")]
         public string GetTwoYearsOdcData(string FromDate, string todate)
         {
             try
@@ -601,7 +629,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetSemTransfer")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetSemTransfer")]
         public string SetSemTransfer(int AcademicYearId, string SemId)
         {
             try
@@ -620,7 +648,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTotalCollegeWiseCharges")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTotalCollegeWiseCharges")]
         public string GetTotalCollegeWiseCharges(string ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -640,7 +668,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTotalDayWiseCharges")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTotalDayWiseCharges")]
         public string GetTotalDayWiseCharges(string ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -660,7 +688,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTotalEventWiseCharges")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTotalEventWiseCharges")]
         public string GetTotalEventWiseCharges(string ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -680,7 +708,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetDcBillsAbstract")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDcBillsAbstract")]
         public string GetDcBillsAbstract(string ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -701,7 +729,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getActiveExamTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("getActiveExamTypes")]
         public string getActiveExamTypes()
         {
             try
@@ -719,7 +747,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("ReleaseBonafidePin")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseBonafidePin")]
         public string ReleaseBonafidePin(string Pin)
         {
             try
@@ -738,7 +766,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("ReleaseStudyPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseStudyPin")]
         public string ReleaseStudyPin(string Pin)
         {
             try
@@ -760,7 +788,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GenerateOdcDataByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateOdcDataByPin")]
         public string GenerateOdcDataByPin(string pin)
         {
             try
@@ -814,7 +842,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetMigrationDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMigrationDetails")]
         public string GetMigrationDetails(int AcademicYearId)
         {
             try
@@ -834,7 +862,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetDaywisePcodeReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDaywisePcodeReport")]
         public string GetDaywisePcodeReport(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int Schemeid, int ExamTypeId)
         {
             try
@@ -926,7 +954,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("ReleaseTcPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseTcPin")]
         public string ReleaseTcPin(string Pin)
         {
             try
@@ -947,7 +975,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("ResetTwshCertificateStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResetTwshCertificateStatus")]
         public string ResetTwshCertificateStatus(string RegistrationNo, string certifictepath)
         {
             try
@@ -979,7 +1007,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("SetScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetScheme")]
         public string SetScheme(int datatypeid, string scheme, int sequenceid, string username)
         {
             try
@@ -1004,7 +1032,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetEventExpenditure")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetEventExpenditure")]
         public string SetEventExpenditure(int AoNotification, string Superintendent, int SeatingArrangement, int ExamMonthYearId)
         {
             try
@@ -1028,7 +1056,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetSessionalExpenditure")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetSessionalExpenditure")]
         public HttpResponseMessage SetSessionalExpenditure([FromBody] ExamExpenditureCharges Examcharge)
 
         {
@@ -1078,7 +1106,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("ResultsProcessing")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResultsProcessing")]
         public string ResultsProcessing(int ExamMonthYearId, int StudentTypeId, string scheme, string SemIdJson, int ExamTypeId, int academicyearid, string username)
         {
             try
@@ -1138,7 +1166,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("RVRCResultsProcessing")]
+        [AuthorizationFilter()][HttpGet, ActionName("RVRCResultsProcessing")]
         public string RVRCResultsProcessing(int ExamMonthYearId, int StudentTypeId, string scheme, string username, int ExamTypeId = 0)
         {
             try
@@ -1214,7 +1242,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("ResultsLogicReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResultsLogicReports")]
         public string ResultsLogicReports(int ExamMonthYearId, int StudentTypeId, string scheme, int ExamTypeId, int academicyearid, string username)
         {
             try
@@ -1274,7 +1302,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("ResultsDeployTables")]
+        [AuthorizationFilter()][HttpGet, ActionName("ResultsDeployTables")]
         public string ResultsDeployTables(int ExamMonthYearId, int StudentTypeId, string scheme, int ExamTypeId, string username)
         {
             try
@@ -1299,7 +1327,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("RVRCResultsDeployTables")]
+        [AuthorizationFilter()][HttpGet, ActionName("RVRCResultsDeployTables")]
         public string RVRCResultsDeployTables(int ExamMonthYearId, int StudentTypeId, string Scheme, string UserName, int ExamTypeId = 0)
         {
             try
@@ -1322,7 +1350,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-        [HttpGet, ActionName("GenerateOdcData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateOdcData")]
         public string GenerateOdcData(int ExamMonthYearId, string day, string month, string year)
         {
             try
@@ -1367,7 +1395,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getTransferReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTransferReportExcel")]
         public string getTransferReportExcel(int AcademicYearId)
         {
             List<person> p = new List<person>();
@@ -1427,7 +1455,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("GetFacultyMappingExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetFacultyMappingExcel")]
         public string GetFacultyMappingExcel([FromBody] JsonObject data)
         {
             try
@@ -1496,7 +1524,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetFeedbackReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetFeedbackReportExcel")]
         public string GetFeedbackReportExcel(string p_FeedbackId)
         {
 
@@ -1563,7 +1591,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GenerateNrData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateNrData")]
         public string GenerateNrData(int ExamMonthYearId, int StudentTypeId, string Scheme, int ExamTypeId, string UserName)
         {
             try
@@ -1627,7 +1655,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetNBAReports1Excel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNBAReports1Excel")]
         public string GetNBAReports1Excel()
         {
             try
@@ -1682,7 +1710,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetNICData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNICData")]
         public string GetNICData()
         {
             try
@@ -1736,7 +1764,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNBAReports2Excel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNBAReports2Excel")]
         public string GetNBAReports2Excel()
         {
             try
@@ -1789,7 +1817,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNBAReports31Excel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNBAReports31Excel")]
         public string GetNBAReports31Excel()
         {
             try
@@ -1842,7 +1870,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNBAReports32Excel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNBAReports32Excel")]
         public string GetNBAReports32Excel()
         {
             try
@@ -1895,7 +1923,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNBAReports4Excel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNBAReports4Excel")]
         public string GetNBAReports4Excel()
         {
             try
@@ -1949,7 +1977,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetAmbedkarResultsReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAmbedkarResultsReport")]
         public string GetAmbedkarResultsReport(string scheme)
         {
             List<person> p = new List<person>();
@@ -2009,7 +2037,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetAttendanceReportData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAttendanceReportData")]
         public string GetAttendanceReportData(int AcademicYearID, int Semid)
         {
             List<person> p = new List<person>();
@@ -2070,7 +2098,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetTicketsReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTicketsReportExcel")]
         public string GetTicketsReportExcel(string FromDate, string ToDate, string UserName)
         {
             try
@@ -2103,7 +2131,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetPolycetExamCentersExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetPolycetExamCentersExcel")]
         public string GetPolycetExamCentersExcel(string AcademicYear)
         {
             List<person> p = new List<person>();
@@ -2162,7 +2190,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("GetResultsReports")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetResultsReports")]
         public string GetResultsReports([FromBody] JsonObject data)
         {
             List<person> p = new List<person>();
@@ -2223,7 +2251,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetBackolgSubjects")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBackolgSubjects")]
         public string GetBackolgSubjects(string scheme)
         {
             List<person> p = new List<person>();
@@ -2283,7 +2311,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GatStatisticsReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GatStatisticsReports")]
         public string GatStatisticsReports(int AcademicYearId, int Exammonthyearid, int DataType, int CollegeCode = 0)
         {
             List<person> p = new List<person>();
@@ -2345,7 +2373,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetIndustrialFailedReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetIndustrialFailedReport")]
         public string GetIndustrialFailedReport(string scheme)
         {
             try
@@ -2402,7 +2430,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetFeeEligibelList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetFeeEligibelList")]
         public string GetFeeEligibelList(int ExamMonthYearId, int StudentTypeId)
         {
             try
@@ -2468,7 +2496,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string ResponceDescription { get; set; }
         }
 
-        [HttpGet, ActionName("GenerateWantings")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateWantings")]
         public string GenerateWantings(int ExamMonthYearId, int StudentTypeId, string Scheme, int ExamTypeId)
         {
             try
@@ -2527,7 +2555,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("PostMarks")]
+        [AuthorizationFilter()][HttpGet, ActionName("PostMarks")]
         public string PostMarks(int ExamMonthYearId, int StudentTypeId, string Scheme, int ExamTypeId, string UserName)
         {
             try
@@ -2575,7 +2603,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetOdcData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetOdcData")]
         public string GetOdcData(string Scheme, int ExamMonthYearId, string Date)
         {
             try
@@ -2620,7 +2648,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetBonafideTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBonafideTypes")]
         public HttpResponseMessage GetBonafideTypes()
         {
             try
@@ -2638,7 +2666,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetHomePageSlides")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetHomePageSlides")]
         public HttpResponseMessage GetHomePageSlides()
         {
             try
@@ -2673,7 +2701,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamTypeByMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamTypeByMonthYear")]
         public string GetExamTypeByMonthYear(int ExamMonthYearId)
         {
             try
@@ -2695,7 +2723,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("SetHomePageSlidesStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetHomePageSlidesStatus")]
         public string SetHomePageSlidesStatus(int Id, int status)
         {
             try
@@ -2717,7 +2745,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetSchemeByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSchemeByPin")]
         public string GetSchemeByPin(string pin)
         {
             try
@@ -2737,7 +2765,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetSemester")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetSemester")]
         public string SetSemester(int DataTypeId, string Semester, string UserName, string scheme, int schemeid, bool IsSession1, bool IsSession2, int SequenceId, int semid, bool IsActive)
         {
             try
@@ -2766,7 +2794,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetAcademicYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetAcademicYear")]
         public string SetAcademicYear(int DataTypeId, string AcademicYear, int AcademicStartYear, DateTime StartDate, DateTime EndDate, string UserName, bool IsCurrentAcademicYear, int AcademicID, int ActiveFlag)
         {
             try
@@ -2795,7 +2823,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UploadSign")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadSign")]
         public string UploadSign([FromBody] UploadData UploadData)
         {
             try
@@ -2830,7 +2858,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("UploadHomePageSlides")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadHomePageSlides")]
         public string UploadHomePageSlides([FromBody] JsonObject data)
         {
             try
@@ -2869,7 +2897,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("AdmissionFilterReport")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionFilterReport")]
         public string AdmissionFilterReport([FromBody] JsonObject data)
         {
             try
@@ -2899,7 +2927,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SubmitFeedback")]
+        [AuthorizationFilter()][HttpPost, ActionName("SubmitFeedback")]
         public string SubmitFeedback([FromBody] JsonObject data)
         {
             try
@@ -2924,7 +2952,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("uploadJsonData")]
+        [AuthorizationFilter()][HttpPost, ActionName("uploadJsonData")]
         public string uploadJsonData([FromBody] JsonObject data)
         {
             try
@@ -2943,7 +2971,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("AdmissionSubReportPinList")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionSubReportPinList")]
         public string AdmissionSubReportPinList([FromBody] JsonObject data)
         {
             try
@@ -2973,7 +3001,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("AdmissionFilterReportExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionFilterReportExcel")]
         public string AdmissionFilterReportExcel([FromBody] JsonObject data)
         {
             try
@@ -3038,7 +3066,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("AdmissionBranchReportsFilterExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionBranchReportsFilterExcel")]
         public string AdmissionBranchReportsFilterExcel([FromBody] JsonObject data)
         {
             try
@@ -3103,7 +3131,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SendAttendance")]
+        [AuthorizationFilter()][HttpPost, ActionName("SendAttendance")]
         public HttpResponseMessage SendAttendance(HttpRequestMessage request)
         {
             //try
@@ -3262,7 +3290,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("UpdateWorkingDays")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateWorkingDays")]
         public void UpdateWorkingDays()
         {
 
@@ -3341,7 +3369,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("ProcessAttendanceDisplay")]
+        [AuthorizationFilter()][HttpGet, ActionName("ProcessAttendanceDisplay")]
         public void ProcessAttendanceDisplay()
         {
             try
@@ -3359,7 +3387,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("AdmissionSubReportsFilter")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionSubReportsFilter")]
         public string AdmissionSubReportsFilter([FromBody] JsonObject request)
         {
             try
@@ -3389,7 +3417,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("AdmissionSubReportsFilterExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdmissionSubReportsFilterExcel")]
         public string AdmissionSubReportsFilterExcel([FromBody] JsonObject request)
         {
             try
@@ -3453,7 +3481,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getAdminTransferReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAdminTransferReportExcel")]
         public string getAdminTransferReportExcel(int AcademicYearId)
         {
             try
@@ -3500,7 +3528,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string Stream { get; set; }
         }
 
-        [HttpPost, ActionName("GetSSCDetails")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetSSCDetails")]
         public async Task<HttpResponseMessage> GetSSCDetails([FromBody] SscDetails ReqData)
         {
 
@@ -3530,7 +3558,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("UpdateMobileNumber")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateMobileNumber")]
         public string UpdateMobileNumber(string Pin, string PhoneNumber)
         {
             try
@@ -3551,7 +3579,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("EnableFeePayment")]
+        [AuthorizationFilter()][HttpGet, ActionName("EnableFeePayment")]
         public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, float ExamFee, float LateFee, float TatkalFee, float PremiumTatkalFee, int Semid = 0)
         {
             try
@@ -3578,7 +3606,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getDetailsByPins")]
+        [AuthorizationFilter()][HttpGet, ActionName("getDetailsByPins")]
         public string getDetailsByPins(string pin)
         {
             try
@@ -3598,7 +3626,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetScheme")]
         public HttpResponseMessage GetScheme()
         {
             try
@@ -3615,7 +3643,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetOdcReasons")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetOdcReasons")]
         public HttpResponseMessage GetOdcReasons()
         {
             try
@@ -3632,7 +3660,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("get6thSemStudiedReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("get6thSemStudiedReport")]
         public HttpResponseMessage get6thSemStudiedReport()
         {
             try
@@ -3649,7 +3677,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getAdminSyllabusCoverageReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAdminSyllabusCoverageReport")]
         public string getAdminSyllabusCoverageReport(int DataTypeId, string CollegeCode = null, string BranchCode = null)
         {
             try
@@ -3675,7 +3703,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getSubjectList")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSubjectList")]
         public string getSubjectList()
         {
             try
@@ -3707,7 +3735,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("get6thSemStudiedReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("get6thSemStudiedReportExcel")]
         public string get6thSemStudiedReportExcel()
         {
             try
@@ -3740,7 +3768,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetPromotionalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetPromotionalList")]
         public string GetPromotionalList()
         {
 
@@ -3786,7 +3814,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getSyllabusReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSyllabusReportExcel")]
         public string getSyllabusReportExcel(int DataTypeId, string CollegeCode = null, string BranchCode = null)
         {
             try
@@ -3819,7 +3847,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getTantalizationReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTantalizationReport")]
         public string getTantalizationReport()
         {
             try
@@ -3850,7 +3878,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getSubjectList1")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSubjectList1")]
         public HttpResponseMessage getSubjectList1()
         {
             try
@@ -3867,7 +3895,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getAttendanceSMSList")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAttendanceSMSList")]
         public HttpResponseMessage getAttendanceSMSList()
         {
             try
@@ -3884,7 +3912,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetSubjectMasterDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSubjectMasterDetails")]
         public HttpResponseMessage GetSubjectMasterDetails(string scheme, string SubjectCode)
         {
             try
@@ -3904,7 +3932,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("UpdateSubjectMasterDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateSubjectMasterDetails")]
         public HttpResponseMessage UpdateSubjectMasterDetails(int SubId, string Subject_Code, string SubjectName, bool iselective, bool BoardQuestionPaper, bool AnswerBookLet, string Mid1Max_Marks = null, string Mid2Max_Marks = null, string Mid3Max_Marks = null, string InternalMax_Marks = null, string end_exam_max_marks = null, string Credits = null, string PCode = null)
         {
             try
@@ -3935,7 +3963,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getElectiveMappedReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getElectiveMappedReport")]
         public string getElectiveMappedReport(int UserTypeId, String CollegeCode = null, String BranchCode = null)
         {
             try
@@ -3957,7 +3985,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getElectiveMappedReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getElectiveMappedReportExcel")]
         public string getElectiveMappedReportExcel(int UserTypeId, String CollegeCode = null, String BranchCode = null)
         {
             try
@@ -3998,7 +4026,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getSubjectWiseElectiveMappedReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSubjectWiseElectiveMappedReportExcel")]
         public string getSubjectWiseElectiveMappedReportExcel(int UserTypeId, String CollegeCode = null, String BranchCode = null)
         {
             try
@@ -4040,7 +4068,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getElectiveMappingSubjectReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getElectiveMappingSubjectReport")]
         public string getElectiveMappingSubjectReport(int UserTypeId, String CollegeCode = null, String BranchCode = null)
         {
             try
@@ -4062,7 +4090,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getElectiveMappingSubjectReportExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("getElectiveMappingSubjectReportExcel")]
         public string getElectiveMappingSubjectReportExcel(int UserTypeId, String CollegeCode = null, String BranchCode = null)
         {
             try
@@ -4103,7 +4131,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetAllBranches")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAllBranches")]
         public HttpResponseMessage GetAllBranches()
         {
             try
@@ -4123,7 +4151,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetSemesters")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSemesters")]
         public HttpResponseMessage GetSemesters()
         {
             try
@@ -4140,7 +4168,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetSchemes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSchemes")]
         public HttpResponseMessage GetSchemes()
         {
             try
@@ -4158,7 +4186,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetOrganizationTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetOrganizationTypes")]
         public HttpResponseMessage GetOrganizationTypes()
         {
             try
@@ -4175,7 +4203,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMonthYear")]
         public HttpResponseMessage GetMonthYear()
         {
             try
@@ -4192,7 +4220,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetMonthYears")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMonthYears")]
         public HttpResponseMessage GetMonthYears()
         {
             try
@@ -4209,7 +4237,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetStudentTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudentTypes")]
         public HttpResponseMessage GetStudentTypes()
         {
             try
@@ -4227,7 +4255,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getTranscriptDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTranscriptDetailsByPin")]
         public string getTranscriptDetailsByPin(string pin)
         {
             try
@@ -4247,7 +4275,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getMigrationDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMigrationDetailsByPin")]
         public string getMigrationDetailsByPin(string pin)
         {
             try
@@ -4268,7 +4296,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getTcDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTcDetailsByPin")]
         public string getTcDetailsByPin(string pin)
         {
             try
@@ -4288,7 +4316,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getBonafiedDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getBonafiedDetailsByPin")]
         public string getBonafiedDetailsByPin(string pin)
         {
             try
@@ -4306,7 +4334,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getStudyDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getStudyDetailsByPin")]
         public string getStudyDetailsByPin(string pin)
         {
             try
@@ -4324,7 +4352,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getBonafiedRequestedDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getBonafiedRequestedDetailsByPin")]
         public string getBonafiedRequestedDetailsByPin(string pin, int Id)
         {
             try
@@ -4344,7 +4372,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getTcRequestedDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTcRequestedDetailsByPin")]
         public string getTcRequestedDetailsByPin(string pin)
         {
             try
@@ -4365,7 +4393,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getStudyRequestedDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getStudyRequestedDetailsByPin")]
         public string getStudyRequestedDetailsByPin(string pin, int Id)
         {
             try
@@ -4387,7 +4415,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getMarksMemoDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMarksMemoDetailsByPin")]
         public string getMarksMemoDetailsByPin(string pin)
         {
             try
@@ -4407,7 +4435,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetDayWiseNrReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDayWiseNrReports")]
         public string GetDayWiseNrReports(int ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -4427,7 +4455,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetBranchSemFeeReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBranchSemFeeReports")]
         public string GetBranchSemFeeReports(int dataType, int StudentTypeId, int emy)
         {
             try
@@ -4448,7 +4476,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetBranchSemSubFeeReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBranchSemSubFeeReports")]
         public string GetBranchSemSubFeeReports(int dataType, int StudentTypeId, int emy, int Id)
         {
             try
@@ -4471,7 +4499,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getGenuinenessCheckDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getGenuinenessCheckDetailsByPin")]
         public string getGenuinenessCheckDetailsByPin(string pin)
         {
             try
@@ -4493,7 +4521,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getTcData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTcData")]
         public string getTcData(string pin)
         {
             try
@@ -4513,7 +4541,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getBonafideData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getBonafideData")]
         public string getBonafideData(string pin, int Id)
         {
             try
@@ -4533,7 +4561,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getStudyData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getStudyData")]
         public string getStudyData(string pin, int Id)
         {
             try
@@ -4553,7 +4581,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetAdminFeedbackReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAdminFeedbackReport")]
         public string GetAdminFeedbackReport(string CollegeCode, int semid, int FeedbackId)
         {
             try
@@ -4575,7 +4603,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getNcDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getNcDetailsByPin")]
         public string getNcDetailsByPin(string pin)
         {
             try
@@ -4596,7 +4624,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getODCDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getODCDetailsByPin")]
         public string getODCDetailsByPin(string pin)
         {
             try
@@ -4618,7 +4646,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getTranscriptODCDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTranscriptODCDetailsByPin")]
         public string getTranscriptODCDetailsByPin(string pin)
         {
             try
@@ -4637,7 +4665,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getMarksMemoDataByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMarksMemoDataByPin")]
         public string getMarksMemoDataByPin(string pin, string Semester)
         {
             try
@@ -4657,7 +4685,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getMarksMemoDataSemwiseByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMarksMemoDataSemwiseByPin")]
         public string getMarksMemoDataSemwiseByPin(string pin, string Semester)
         {
             try
@@ -4677,7 +4705,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetSmsStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetSmsStatus")]
         public string SetSmsStatus(string pin, string semester)
         {
             try
@@ -4698,7 +4726,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("sendcertSMS")]
+        [AuthorizationFilter()][HttpGet, ActionName("sendcertSMS")]
         public string sendcertSMS(string pin, string mobile, string CertificatePath, string CertificateName)
         {
             try
@@ -4737,7 +4765,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("sendTwshcertSMS")]
+        [AuthorizationFilter()][HttpGet, ActionName("sendTwshcertSMS")]
         public string sendTwshcertSMS(string RegNo, string mobile, string CertificatePath, string CertificateName)
         {
             try
@@ -4766,7 +4794,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("sendGenuinenessSMS")]
+        [AuthorizationFilter()][HttpGet, ActionName("sendGenuinenessSMS")]
         public string sendGenuinenessSMS(string pin, string mobile, string CertificateName, string ReferenceNo)
         {
             try
@@ -4798,7 +4826,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("sendMemoSMS")]
+        [AuthorizationFilter()][HttpGet, ActionName("sendMemoSMS")]
         public string sendMemoSMS(string pin, string mobile, string CertificateName, string Semester, string Scheme)
         {
             try
@@ -4858,7 +4886,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getDuplicateODCDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getDuplicateODCDetails")]
         public string getDuplicateODCDetails(string pin)
         {
             try
@@ -4898,7 +4926,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("PostOsdesNRdata")]
+        [AuthorizationFilter()][HttpPost, ActionName("PostOsdesNRdata")]
         public async Task<string> PostOsdesNRdata(int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate)
         {
             try
@@ -4951,7 +4979,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("OsdesNRdataExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("OsdesNRdataExcel")]
         public async Task<string> OsdesNRdataExcel(int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate)
         {
             try
@@ -4994,7 +5022,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getInterimDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getInterimDetails")]
         public string getInterimDetails(string pin)
         {
             try
@@ -5014,7 +5042,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getInterimPendingDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getInterimPendingDetails")]
         public string getInterimPendingDetails(string pin)
         {
             try
@@ -5035,7 +5063,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getMigrationPendingDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMigrationPendingDetails")]
         public string getMigrationPendingDetails(string pin)
         {
             try
@@ -5055,7 +5083,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetChallanData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetChallanData")]
         public string GetChallanData(string pin, int CertificateTypeId, string ApplicationNumber = null)
         {
             try
@@ -5088,7 +5116,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetChallanNumberData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetChallanNumberData")]
         public string GetChallanNumberData(string pin, int CertificateTypeId, string ApplicationNumber)
         {
             try
@@ -5110,7 +5138,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        //[HttpGet, ActionName("GetChallanData")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GetChallanData")]
         //public string GetChallanData(string pin, int CertificateTypeId)
         //{
         //    try
@@ -5131,7 +5159,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         //}
 
-        [HttpGet, ActionName("UpdateUserdata")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateUserdata")]
         public string UpdateUserdata(string Pin, string StudentPhoneNumber, string OTP)
         {
             try
@@ -5295,7 +5323,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getFileUploadDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getFileUploadDetails")]
         public string getFileUploadDetails(string Pin)
         {
             try
@@ -5315,7 +5343,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getFeePaymentStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("getFeePaymentStatus")]
         public string getFeePaymentStatus(string Pin)
         {
             try
@@ -5336,7 +5364,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getMersyFeeStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMersyFeeStatus")]
         public string getMersyFeeStatus(string Pin)
         {
             try
@@ -5355,7 +5383,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getTwoYearsFeePaymentStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTwoYearsFeePaymentStatus")]
         public string getTwoYearsFeePaymentStatus(string Pin)
         {
             try
@@ -5374,7 +5402,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNoDataCertificateApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNoDataCertificateApprovalListByScheme")]
         public string GetNoDataCertificateApprovalListByScheme(string Scheme, int datatype)
         {
             try
@@ -5395,7 +5423,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetCertificateApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCertificateApprovalListByScheme")]
         public string GetCertificateApprovalListByScheme(string Scheme, int datatype)
         {
             try
@@ -5416,7 +5444,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetSignedDate")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetSignedDate")]
         public string SetSignedDate(string Pin)
         {
             try
@@ -5438,7 +5466,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("SetMemoSignedDate")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetMemoSignedDate")]
         public string SetMemoSignedDate(string Pin, string Semester, string ExamMonthYear)
         {
             try
@@ -5461,7 +5489,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetTcApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTcApprovalListByScheme")]
         public string GetTcApprovalListByScheme(string Scheme, int datatype, int userType, string CollegeCode, string BranchCode = null)
         {
             try
@@ -5483,7 +5511,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetBonafiedApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBonafiedApprovalListByScheme")]
         public string GetBonafiedApprovalListByScheme(string Scheme, int datatype, int userType, string CollegeCode, string BranchCode = null)
         {
             try
@@ -5506,7 +5534,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetStudyApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudyApprovalListByScheme")]
         public string GetStudyApprovalListByScheme(string Scheme, int datatype, int userType, string CollegeCode, string BranchCode = null)
         {
             try
@@ -5529,7 +5557,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNameCorrectionListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNameCorrectionListByScheme")]
         public string GetNameCorrectionListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5551,7 +5579,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTranscriptListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTranscriptListByScheme")]
         public string GetTranscriptListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5573,7 +5601,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetMigrationApprovalListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMigrationApprovalListByScheme")]
         public string GetMigrationApprovalListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5594,7 +5622,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetAttendanceApprovalDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAttendanceApprovalDetails")]
         public string GetAttendanceApprovalDetails(int UserId, string CollegeCode, int DataType)
         {
             try
@@ -5615,7 +5643,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getAttendanceDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAttendanceDetails")]
         public string getAttendanceDetails(int UserId, string AttendeeId, string Pin)
         {
             try
@@ -5636,7 +5664,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetOdcListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetOdcListByScheme")]
         public string GetOdcListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5657,7 +5685,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetGenuinenessListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetGenuinenessListByScheme")]
         public string GetGenuinenessListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5680,7 +5708,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetDuplicateMarksMemoListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDuplicateMarksMemoListByScheme")]
         public string GetDuplicateMarksMemoListByScheme(string Scheme, int datatype, int userType)
         {
             try
@@ -5701,7 +5729,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("SetCertificateApproval")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetCertificateApproval")]
         public string SetCertificateApproval([FromBody] JsonObject request)
         {
             try
@@ -5728,7 +5756,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("Odc_SetVerifyStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("Odc_SetVerifyStatus")]
         public string Odc_SetVerifyStatus(string Pin, int userType)
         {
             try
@@ -5748,7 +5776,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("Odc_Set_UpdateAffidavit")]
+        [AuthorizationFilter()][HttpPost, ActionName("Odc_Set_UpdateAffidavit")]
         public string Odc_Set_UpdateAffidavit([FromBody] JsonObject request)
         {
 
@@ -5800,7 +5828,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("Odc_SetPrinted")]
+        [AuthorizationFilter()][HttpGet, ActionName("Odc_SetPrinted")]
         public string Odc_SetPrinted(string Pin, int userType)
         {
             try
@@ -5822,7 +5850,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("DMM_SetVerifyStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("DMM_SetVerifyStatus")]
         public string DMM_SetVerifyStatus(string Pin, int userType, string Semester, string ExamMonthYear)
         {
             try
@@ -5845,7 +5873,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("Genuineness_SetVerifyStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("Genuineness_SetVerifyStatus")]
         public string Genuineness_SetVerifyStatus(int Id, string Pin, int userType, int Status)
         {
             try
@@ -5867,7 +5895,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("Genuineness_SetVerifyStatusRemarks")]
+        [AuthorizationFilter()][HttpGet, ActionName("Genuineness_SetVerifyStatusRemarks")]
         public string Genuineness_SetVerifyStatusRemarks(int Id, string Pin, int userType, int Status, string Remarks)
         {
             try
@@ -5891,7 +5919,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetApproveStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetApproveStatus")]
         public string SetApproveStatus(string PIN, int ApproveStatus)
         {
             try
@@ -5911,7 +5939,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetTranscriptVerificationStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetTranscriptVerificationStatus")]
         public string SetTranscriptVerificationStatus(string ApplicationNo, int userType)
         {
 
@@ -5932,7 +5960,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetAttendanceVerificationStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetAttendanceVerificationStatus")]
         public string SetAttendanceVerificationStatus(int UserId, string AttendeeId, string Pin)
         {
 
@@ -5955,7 +5983,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetTwoYearsCertificateVerifyStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetTwoYearsCertificateVerifyStatus")]
         public string SetTwoYearsCertificateVerifyStatus(string PIN, int userType)
         {
 
@@ -5976,7 +6004,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetTranscriptEmailStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetTranscriptEmailStatus")]
         public string SetTranscriptEmailStatus(string ApplicationNo)
         {
 
@@ -5996,7 +6024,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetGenuinenessEmailStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetGenuinenessEmailStatus")]
         public string SetGenuinenessEmailStatus(string Id)
         {
 
@@ -6016,7 +6044,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("GetAttendance")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetAttendance")]
         public IDictionary<String, string> GetAttendance([FromBody] JsonObject request)
         {
 
@@ -6053,7 +6081,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("TcSetApprove")]
+        [AuthorizationFilter()][HttpPost, ActionName("TcSetApprove")]
         public string TcSetApprove([FromBody] JsonObject request)
         {
             try
@@ -6104,7 +6132,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("getAdminSyllabusReports")]
+        [AuthorizationFilter()][HttpPost, ActionName("getAdminSyllabusReports")]
         public string getAdminSyllabusReports([FromBody] JsonObject request)
         {
             try
@@ -6125,7 +6153,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("TCMultipleSelectApprove")]
+        [AuthorizationFilter()][HttpPost, ActionName("TCMultipleSelectApprove")]
         public string TCMultipleSelectApprove([FromBody] JsonObject request)
         {
             try
@@ -6170,7 +6198,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("BonafideMultipleSelectApprove")]
+        [AuthorizationFilter()][HttpPost, ActionName("BonafideMultipleSelectApprove")]
         public string BonafideMultipleSelectApprove([FromBody] JsonObject request)
         {
             try
@@ -6217,7 +6245,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("StudyMultipleSelectApprove")]
+        [AuthorizationFilter()][HttpPost, ActionName("StudyMultipleSelectApprove")]
         public string StudyMultipleSelectApprove([FromBody] JsonObject request)
         {
             try
@@ -6263,7 +6291,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("BonafiedSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("BonafiedSetApproveStatusReject")]
         public string BonafiedSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -6310,7 +6338,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("StudySetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("StudySetApproveStatusReject")]
         public string StudySetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -6357,7 +6385,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UpdateOdcDataByPin")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateOdcDataByPin")]
         public string UpdateOdcDataByPin([FromBody] JsonObject request)
         {
             try
@@ -6414,7 +6442,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("BonafideSetVerifyStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("BonafideSetVerifyStatus")]
         public string BonafideSetVerifyStatus([FromBody] JsonObject request)
         {
             try
@@ -6444,7 +6472,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("StudySetVerifyStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("StudySetVerifyStatus")]
         public string StudySetVerifyStatus([FromBody] JsonObject request)
         {
             try
@@ -6477,7 +6505,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("AdminBonafideSetVerifyStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("AdminBonafideSetVerifyStatus")]
         public string AdminBonafideSetVerifyStatus([FromBody] JsonObject request)
         {
             try
@@ -6502,7 +6530,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("TcSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("TcSetApproveStatus")]
         public string TcSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -6564,7 +6592,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("TcSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("TcSetApproveStatusReject")]
         public string TcSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -6610,7 +6638,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GenerateC18MemosDataByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateC18MemosDataByPin")]
         public string GenerateC18MemosDataByPin(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year, string PIN)
         {
             try
@@ -6671,7 +6699,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("InterimSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("InterimSetApproveStatus")]
         public string InterimSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -6717,7 +6745,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("InterimSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("InterimSetApproveStatusReject")]
         public string InterimSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -6766,7 +6794,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("GenuinenessSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("GenuinenessSetApproveStatus")]
         public string GenuinenessSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -6815,7 +6843,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("GenuinenessSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("GenuinenessSetApproveStatusReject")]
         public string GenuinenessSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -6864,7 +6892,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("DMMSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("DMMSetApproveStatus")]
         public string DMMSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -6913,7 +6941,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("TwoYearsCertificateSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("TwoYearsCertificateSetApproveStatus")]
         public string TwoYearsCertificateSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -6962,7 +6990,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("DMMSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("DMMSetApproveStatusReject")]
         public string DMMSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7009,7 +7037,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("TwoYearsCertificateSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("TwoYearsCertificateSetApproveStatusReject")]
         public string TwoYearsCertificateSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7058,7 +7086,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("OdcSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("OdcSetApproveStatus")]
         public string OdcSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -7107,7 +7135,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("OdcSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("OdcSetApproveStatusReject")]
         public string OdcSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7154,7 +7182,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("TranscriptSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("TranscriptSetApproveStatus")]
         public string TranscriptSetApproveStatus([FromBody] JsonObject request)
         {
 
@@ -7202,7 +7230,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("TranscriptSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("TranscriptSetApproveStatusReject")]
         public string TranscriptSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7249,7 +7277,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("NameCorrectionSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("NameCorrectionSetApproveStatus")]
         public string NameCorrectionSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -7299,7 +7327,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("NameCorrectionSetApproveStatusforDsJs")]
+        [AuthorizationFilter()][HttpPost, ActionName("NameCorrectionSetApproveStatusforDsJs")]
         public string NameCorrectionSetApproveStatusforDsJs([FromBody] JsonObject request)
         {
             try
@@ -7352,7 +7380,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("NameCorrectionSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("NameCorrectionSetApproveStatusReject")]
         public string NameCorrectionSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7398,7 +7426,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("MigrationSetApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("MigrationSetApproveStatus")]
         public string MigrationSetApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -7444,7 +7472,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("MigrationSetApproveStatusReject")]
+        [AuthorizationFilter()][HttpPost, ActionName("MigrationSetApproveStatusReject")]
         public string MigrationSetApproveStatusReject([FromBody] JsonObject request)
         {
             try
@@ -7491,7 +7519,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("AttendanceApproveStatus")]
+        [AuthorizationFilter()][HttpPost, ActionName("AttendanceApproveStatus")]
         public string AttendanceApproveStatus([FromBody] JsonObject request)
         {
             try
@@ -7538,7 +7566,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getApprovePinList")]
+        [AuthorizationFilter()][HttpGet, ActionName("getApprovePinList")]
         public string getApprovePinList(string Scheme, int datatype, int userType)
         {
             try
@@ -7559,7 +7587,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getTcDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTcDetails")]
         public string getTcDetails(string Pin)
         {
             try
@@ -7579,7 +7607,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getOdcdetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getOdcdetails")]
         public string getOdcDetails(string Pin)
         {
             try
@@ -7599,7 +7627,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getGenuinenessCheckdetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getGenuinenessCheckdetails")]
         public string getGenuinenessCheckdetails(string Pin, int Id)
         {
             try
@@ -7617,7 +7645,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-        [HttpGet, ActionName("getDMMdetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getDMMdetails")]
         public string getDMMdetails(string Pin, string Semester, string ExamMonthYear, string Scheme)
         {
             try
@@ -7638,7 +7666,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getTranscriptsdetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTranscriptsdetails")]
         public string getTranscriptsdetails(string Pin, string ApplicationNumber)
         {
             try
@@ -7658,7 +7686,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getTwoYearsCertificateDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTwoYearsCertificateDetails")]
         public string getTwoYearsCertificateDetails(string pin)
         {
             try
@@ -7677,7 +7705,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getNCdetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("getNCdetails")]
         public string getNCdetails(string Pin)
         {
             try
@@ -7695,7 +7723,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-        [HttpGet, ActionName("GetCertificateTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCertificateTypes")]
         public HttpResponseMessage GetCertificateTypes()
         {
             try
@@ -7712,7 +7740,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetCaste")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCaste")]
         public HttpResponseMessage GetCaste()
         {
             try
@@ -7730,7 +7758,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetCastes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCastes")]
         public HttpResponseMessage GetCastes()
         {
             try
@@ -7747,7 +7775,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetReligion")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetReligion")]
         public HttpResponseMessage GetReligion()
         {
             try
@@ -7766,7 +7794,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetNoDataCertificateApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNoDataCertificateApprovalList")]
         public HttpResponseMessage GetNoDataCertificateApprovalList()
         {
             try
@@ -7786,7 +7814,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetInternApproveList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetInternApproveList")]
         public string GetInternApproveList(int userType)
         {
             try
@@ -7806,7 +7834,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetMigrationApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMigrationApprovalList")]
         public string GetMigrationApprovalList(int userType)
         {
             try
@@ -7826,7 +7854,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetAttendanceApproveList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAttendanceApproveList")]
         public string GetAttendanceApproveList(int UserId)
         {
             try
@@ -7844,7 +7872,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetOdcApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetOdcApprovalList")]
         public string GetOdcApprovalList(int userType)
         {
             try
@@ -7864,7 +7892,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetGenuinenessApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetGenuinenessApprovalList")]
         public string GetGenuinenessApprovalList(int userType)
         {
             try
@@ -7885,7 +7913,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetDuplicateMarksMemoApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDuplicateMarksMemoApprovalList")]
         public string GetDuplicateMarksMemoApprovalList(int userType)
         {
             try
@@ -7907,7 +7935,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetTranscriptApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTranscriptApprovalList")]
         public string GetTranscriptApprovalList(int userType)
         {
             try
@@ -7927,7 +7955,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetNameCorrectionApproveList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetNameCorrectionApproveList")]
         public string GetNameCorrectionApproveList(int userType)
         {
             try
@@ -7948,7 +7976,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("UpdateNameCorrectionData")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateNameCorrectionData")]
         public string UpdateNameCorrectionData(string Pin, string Name, string FatherName)
         {
             try
@@ -7969,7 +7997,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetCertificateApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCertificateApprovalList")]
         public HttpResponseMessage GetCertificateApprovalList()
         {
             try
@@ -7987,7 +8015,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetTcApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTcApprovalList")]
         public string GetTcApprovalList(string CollegeCode, int userType)
         {
             try
@@ -8008,7 +8036,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTcApprovalLists")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTcApprovalLists")]
         public string GetTcApprovalLists(string CollegeCode, int userType, string BranchCode)
         {
             try
@@ -8031,7 +8059,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetBonafideApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBonafideApprovalList")]
         public string GetBonafideApprovalList(string CollegeCode, int userType, string BranchCode = null)
         {
             try
@@ -8052,7 +8080,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetStudyCertApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudyCertApprovalList")]
         public string GetStudyCertApprovalList(string CollegeCode, int userType, string BranchCode = null)
         {
             try
@@ -8074,7 +8102,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        //[HttpGet, ActionName("GetMigrationApprovalList")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GetMigrationApprovalList")]
         //public HttpResponseMessage GetMigrationApprovalList()
         //{
         //    try
@@ -8092,7 +8120,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //}
 
 
-        [HttpGet, ActionName("getAttendanceReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAttendanceReport")]
         public string getAttendanceReport(string Pin)
         {
             try
@@ -8113,7 +8141,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getCertificateDetailsForApproval")]
+        [AuthorizationFilter()][HttpGet, ActionName("getCertificateDetailsForApproval")]
         public string getCertificateDetailsForApproval(string Pin)
         {
             try
@@ -8132,7 +8160,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("ApproveCertificate")]
+        [AuthorizationFilter()][HttpGet, ActionName("ApproveCertificate")]
         public string ApproveCertificate(string PIN, int Approvestatus)
         {
             try
@@ -8155,7 +8183,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getStudentFeePaymentDates")]
+        [AuthorizationFilter()][HttpGet, ActionName("getStudentFeePaymentDates")]
         public HttpResponseMessage getStudentFeePaymentDates()
         {
             try
@@ -8172,7 +8200,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetStudentApprovalList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudentApprovalList")]
         public HttpResponseMessage GetStudentApprovalList()
         {
             try
@@ -8189,7 +8217,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetUserDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetUserDetails")]
         public string GetUserDetails(string pin)
         {
             try
@@ -8211,7 +8239,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTwoYearsPinDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTwoYearsPinDetails")]
         public HttpResponseMessage GetTwoYearsPinDetails(string pin)
         {
             try
@@ -8233,7 +8261,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("CertificateFeePaymentChallanNumber")]
+        [AuthorizationFilter()][HttpGet, ActionName("CertificateFeePaymentChallanNumber")]
         public HttpResponseMessage CertificateFeePaymentChallanNumber(string pin, int CertificateType = 0)
         {
             try
@@ -8254,7 +8282,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("MersidyFeePaymentChallanNumber")]
+        [AuthorizationFilter()][HttpGet, ActionName("MersidyFeePaymentChallanNumber")]
         public HttpResponseMessage MersidyFeePaymentChallanNumber(string pin, int CertificateType)
         {
             try
@@ -8275,7 +8303,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("BackLogDetailsForNc")]
+        [AuthorizationFilter()][HttpGet, ActionName("BackLogDetailsForNc")]
         public HttpResponseMessage BackLogDetailsForNc(string pin)
         {
             try
@@ -8295,7 +8323,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetCertificateFee")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCertificateFee")]
         public HttpResponseMessage GetCertificateFee()
         {
             try
@@ -8314,7 +8342,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetBranchs")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBranchs")]
         public HttpResponseMessage GetBranchs()
         {
             try
@@ -8332,7 +8360,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
         public HttpResponseMessage GetExamMonthYearByAcademicYear(int Academicyearid, int SessionId)
         {
             try
@@ -8354,7 +8382,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYear")]
         public string GetExamMonthYear()
         {
             try
@@ -8373,7 +8401,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getMercyData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getMercyData")]
         public HttpResponseMessage getMercyData(int Id, int DataType)
         {
             try
@@ -8395,7 +8423,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYearAcademicYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearAcademicYear")]
         public HttpResponseMessage GetExamMonthYearAcademicYear(int Academicyearid)
         {
             try
@@ -8416,7 +8444,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetEncryptedData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetEncryptedData")]
         public string GetEncryptedData(string DataType)
         {
             try
@@ -8435,7 +8463,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetDecryptedData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDecryptedData")]
         public string GetDecryptedData(string DataType)
         {
             try
@@ -8455,7 +8483,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetorEditFeeSettingsData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetorEditFeeSettingsData")]
         public HttpResponseMessage GetorEditFeeSettingsData(string DataTypeID, string ID)
         {
             try
@@ -8477,7 +8505,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetExamMonthYears")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYears")]
         public HttpResponseMessage GetExamMonthYears()
         {
             try
@@ -8495,7 +8523,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetColleges")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetColleges")]
         public HttpResponseMessage GetColleges()
         {
             try
@@ -8513,7 +8541,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("AddorUpdateFeeSettings")]
+        [AuthorizationFilter()][HttpPost, ActionName("AddorUpdateFeeSettings")]
         public string AddorUpdateFeeSettings([FromBody] JsonObject request)
         {
             try
@@ -8539,7 +8567,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("AddOldStudentData")]
+        [AuthorizationFilter()][HttpPost, ActionName("AddOldStudentData")]
         public HttpResponseMessage AddOldStudentData([FromBody] CertificateReqAtt CertificateReqAtt)
         {
             try
@@ -8599,7 +8627,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetFileSize")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetFileSize")]
         public static long GetFileSize(string fileName)
         {
             try
@@ -8622,7 +8650,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetMimeType")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMimeType")]
         public static string GetMimeType(string fileName)
         {
             var provider = new FileExtensionContentTypeProvider();
@@ -8639,12 +8667,12 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        private static readonly string[] AllowedMimeTypes = { "image/jpeg", "image/png", "image/jpg" };
-        private static readonly string[] AllowedExtensions = { ".jpeg", ".png", ".jpg" };
+        private static readonly string[] AllowedMimeTypes = { "image/jpeg", "image/png", "image/jpg","application/pdf" };
+        private static readonly string[] AllowedExtensions = { ".jpeg", ".png", ".jpg",".pdf" };
         private readonly long MaxFileSize = 1 * 1024 * 1024; // 1 MB max size
 
 
-        [HttpGet, ActionName("CheckFileType")]
+        [AuthorizationFilter()][HttpGet, ActionName("CheckFileType")]
         public string CheckFileType(string fileName)
         {
             string ext = Path.GetExtension(fileName).ToLower();
@@ -8675,7 +8703,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         private readonly long MaxFileSizedoc = 2 * 1024 * 1024; // 2 MB max size
 
-        [HttpGet, ActionName("CheckFileTypeDocs")]
+        [AuthorizationFilter()][HttpGet, ActionName("CheckFileTypeDocs")]
         public string CheckFileTypeDocs(string fileName)
         {
             string ext = Path.GetExtension(fileName).ToLower();
@@ -8706,7 +8734,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("NameCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("NameCheck")]
         public string NameCheck(string DataType)
         {
             try
@@ -8734,7 +8762,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GenderCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenderCheck")]
         public string GenderCheck(string DataType)
         {
             try
@@ -8762,7 +8790,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("MobileNumberCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("MobileNumberCheck")]
         public string MobileNumberCheck(string DataType)
         {
             try
@@ -8790,7 +8818,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("EmailCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("EmailCheck")]
         public string EmailCheck(string DataType)
         {
             try
@@ -8819,7 +8847,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("OnlyThreeDigitCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("OnlyThreeDigitCheck")]
         public string OnlyThreeDigitCheck(string DataType)
         {
             try
@@ -8848,7 +8876,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("DataCheck1")]
+        [AuthorizationFilter()][HttpGet, ActionName("DataCheck1")]
         public string DataCheck1(string DataType)
         {
             try
@@ -8877,7 +8905,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("OnlyTwelveDigitCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("OnlyTwelveDigitCheck")]
         public string OnlyTwelveDigitCheck(string DataType)
         {
             try
@@ -8905,7 +8933,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("CollegeNameCheck")]
+        [AuthorizationFilter()][HttpGet, ActionName("CollegeNameCheck")]
         public string CollegeNameCheck(string DataType)
         {
             try
@@ -8933,7 +8961,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("AddMersyData")]
+        [AuthorizationFilter()][HttpPost, ActionName("AddMersyData")]
         public HttpResponseMessage AddMersyData([FromBody] CertificateReqAtt CertificateReqAtt)
         {
 
@@ -9609,7 +9637,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UpdateOldStudentFileData")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateOldStudentFileData")]
         public HttpResponseMessage UpdateOldStudentFileData([FromBody] CertificateReqAtt CertificateReqAtt)
         {
             try
@@ -9646,7 +9674,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetDayWiseNrReportsExcel")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDayWiseNrReportsExcel")]
         public string GetDayWiseNrReportsExcel(int ExamMonthYearId, int AcademicID, int StudentTypeId)
         {
             try
@@ -9677,7 +9705,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("CertificateFeePaymentReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("CertificateFeePaymentReports")]
         public string CertificateFeePaymentReports(string Scheme, int datatype)
         {
             try
@@ -9707,7 +9735,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("TwoYearsFeePaymentReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("TwoYearsFeePaymentReports")]
         public string TwoYearsFeePaymentReports(string Scheme, int datatype, int userType)
         {
             try
@@ -9738,7 +9766,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getWantingReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getWantingReport")]
         public string getWantingReport(int gentype, int ExamMonthYearId, string scheme)
         {
             try
@@ -9782,7 +9810,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getWantingsReport")]
+        [AuthorizationFilter()][HttpGet, ActionName("getWantingsReport")]
         public string getWantingsReport(string Exam_MonthYear, int studentType, string Scheme)
         {
             try
@@ -9822,7 +9850,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("ThreeBacklogOdcData")]
+        [AuthorizationFilter()][HttpGet, ActionName("ThreeBacklogOdcData")]
         public HttpResponseMessage ThreeBacklogOdcData(int ExamMonthYearId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -9872,7 +9900,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("Memos")]
+        [AuthorizationFilter()][HttpGet, ActionName("Memos")]
         public string Memos(string Scheme, int ExamMonthYearId, string Date)
         {
             try
@@ -10078,7 +10106,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getStudentType")]
+        [AuthorizationFilter()][HttpGet, ActionName("getStudentType")]
         public HttpResponseMessage getStudentType()
         {
             try
@@ -10098,7 +10126,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("get_StudentTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("get_StudentTypes")]
         public HttpResponseMessage get_StudentTypes()
         {
             try
@@ -10117,7 +10145,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getSchemes")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSchemes")]
         public string getSchemes()
         {
             try
@@ -10137,7 +10165,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getExamYearMonth")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExamYearMonth")]
         public HttpResponseMessage getExamYearMonth()
         {
             try
@@ -10157,7 +10185,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getExamYearMonths")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExamYearMonths")]
         public HttpResponseMessage getExamYearMonths()
         {
             try
@@ -10177,7 +10205,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getAdminCollegePreExamReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAdminCollegePreExamReports")]
         public HttpResponseMessage getAdminCollegePreExamReports(int UserId, string CollegeCode, int ExamMonthYearId, string Semester, int StudentTypeId)
         {
             try
@@ -10204,7 +10232,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getOmrBranchCount")]
+        [AuthorizationFilter()][HttpGet, ActionName("getOmrBranchCount")]
         public HttpResponseMessage getOmrBranchCount(int Schemeid, int SemId)
         {
             try
@@ -10228,7 +10256,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("UpdateStudentContact")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateStudentContact")]
         public HttpResponseMessage UpdateStudentContact(string Pin, string StudentContact)
         {
             try
@@ -10251,7 +10279,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GETMemoDataByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GETMemoDataByPin")]
         public HttpResponseMessage GETMemoDataByPin(string Scheme, int ExamMonthYearId, int semid, string pin)
         {
             try
@@ -10275,7 +10303,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GETMemoDataByPinForPrinting")]
+        [AuthorizationFilter()][HttpGet, ActionName("GETMemoDataByPinForPrinting")]
         public HttpResponseMessage GETMemoDataByPinForPrinting(string Scheme, int ExamMonthYearId, int semid, string pin)
         {
             try
@@ -10299,7 +10327,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UpdateTcData")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateTcData")]
         public HttpResponseMessage UpdateTcData([FromBody] JsonObject request)
         {
             try
@@ -10324,7 +10352,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetBonafiedData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetBonafiedData")]
         public HttpResponseMessage SetBonafiedData([FromBody] JsonObject request)
         {
             try
@@ -10349,7 +10377,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetStudyCertData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetStudyCertData")]
         public HttpResponseMessage SetStudyCertData([FromBody] JsonObject request)
         {
             try
@@ -10374,7 +10402,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("SemOmrCount")]
+        [AuthorizationFilter()][HttpGet, ActionName("SemOmrCount")]
         public HttpResponseMessage SemOmrCount(string SchemeId)
         {
             try
@@ -10396,7 +10424,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getUserDataByPinForPromotionalFee")]
+        [AuthorizationFilter()][HttpGet, ActionName("getUserDataByPinForPromotionalFee")]
         public HttpResponseMessage getUserDataByPinForPromotionalFee(string StudentTypeId, string Pin)
         {
             try
@@ -10421,7 +10449,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("getPayExamFee")]
+        [AuthorizationFilter()][HttpPost, ActionName("getPayExamFee")]
         public HttpResponseMessage getPayExamFee([FromBody] JsonObject request)
         {
             try
@@ -10445,7 +10473,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("UpdateMigrationData")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateMigrationData")]
         public HttpResponseMessage UpdateMigrationData([FromBody] JsonObject request)
         {
             try
@@ -10468,7 +10496,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetInterimData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetInterimData")]
         public HttpResponseMessage SetInterimData([FromBody] JsonObject request)
         {
             try
@@ -10491,7 +10519,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetMigrationData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetMigrationData")]
         public HttpResponseMessage SetMigrationData([FromBody] JsonObject request)
         {
             try
@@ -10514,7 +10542,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetOdcData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetOdcData")]
         public HttpResponseMessage SetOdcData([FromBody] OdCRequest OdCRequest)
         {
             try
@@ -10612,7 +10640,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetTender")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTender")]
         public HttpResponseMessage SetTender([FromBody] TenderData TenderData)
         {
             try
@@ -10716,6 +10744,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
+        [AuthorizationFilter()]
         [HttpPost, ActionName("uploadFile")]
         public HttpResponseMessage uploadFile([FromBody] CircularData CircularData)
         {
@@ -10736,6 +10765,72 @@ namespace SoftwareSuite.Controllers.PreExamination
                 relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
                 CircularUrl = relativePath;
 
+
+                string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
+                if (FileType1 == "Invalid Mime Type")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Mime Type";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                if (FileType1 == "Invalid Extension")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Extension";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Title", CircularData.Title);
@@ -10755,6 +10850,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        [AuthorizationFilter()]
         [HttpPost, ActionName("UploadDownload")]
         public HttpResponseMessage UploadDownload([FromBody] CircularData CircularData)
         {
@@ -10774,6 +10870,72 @@ namespace SoftwareSuite.Controllers.PreExamination
                 File.WriteAllBytes(CircularPath, PrincipalimageBytes);
                 relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
                 CircularUrl = relativePath;
+
+                string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
+                if (FileType1 == "Invalid Mime Type")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Mime Type";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                if (FileType1 == "Invalid Extension")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Extension";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Url", CircularUrl);
@@ -10793,7 +10955,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("UploadStaffInfo")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadStaffInfo")]
         public HttpResponseMessage UploadStaffInfo([FromBody] StaffData StaffData)
         {
             try
@@ -10837,7 +10999,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UpdateStaffInfo")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateStaffInfo")]
         public HttpResponseMessage UpdateStaffInfo([FromBody] StaffData StaffData)
         {
             var PhotoUrl = string.Empty;
@@ -10886,7 +11048,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UpdateTender")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateTender")]
         public HttpResponseMessage UpdateTender([FromBody] TenderData TenderData)
 
         {
@@ -10934,7 +11096,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("UpdateCircular")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateCircular")]
         public HttpResponseMessage UpdateCircular([FromBody] CircularData CircularData)
         {
             var CircularUrl = string.Empty;
@@ -10983,7 +11145,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("UpdateDownloads")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateDownloads")]
         public HttpResponseMessage UpdateDownloads([FromBody] DownloadData DownloadData)
         {
             var CircularUrl = string.Empty;
@@ -11032,7 +11194,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetOdcDataPayment")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetOdcDataPayment")]
         public HttpResponseMessage SetOdcDataPayment([FromBody] OdCRequest OdCRequest)
         {
             try
@@ -11147,7 +11309,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetOldStudentsOdcDataPayment")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetOldStudentsOdcDataPayment")]
         public HttpResponseMessage SetOldStudentsOdcDataPayment([FromBody] OdCRequest OdCRequest)
         {
             try
@@ -11269,7 +11431,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetOldStudentsDamagedDdcDataPayment")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetOldStudentsDamagedDdcDataPayment")]
         public HttpResponseMessage SetOldStudentsDamagedDdcDataPayment([FromBody] OdCRequest OdCRequest)
         {
             try
@@ -11359,7 +11521,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetOdcDamagedDataPayment")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetOdcDamagedDataPayment")]
         public HttpResponseMessage SetOdcDamagedDataPayment([FromBody] OdCRequest OdCRequest)
         {
             try
@@ -11445,7 +11607,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetTcData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTcData")]
         public HttpResponseMessage SetTcData([FromBody] JsonObject request)
         {
             try
@@ -11470,7 +11632,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetGenuinenessCheck")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetGenuinenessCheck")]
         public HttpResponseMessage SetGenuinenessCheck([FromBody] GenuineRequest GenuineRequest)
         {
             try
@@ -11674,7 +11836,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetGenuinenessCheckPayment")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetGenuinenessCheckPayment")]
         public HttpResponseMessage SetGenuinenessCheckPayment([FromBody] GenuineRequest GenuineRequest)
         {
             try
@@ -11988,7 +12150,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetNameCorrectionData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetNameCorrectionData")]
         public HttpResponseMessage SetNameCorrectionData([FromBody] JsonObject request)
         {
             try
@@ -12027,7 +12189,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("StampTranscript")]
+        [AuthorizationFilter()][HttpPost, ActionName("StampTranscript")]
         public HttpResponseMessage StampTranscript([FromBody] StampPdf req)
         {
             try
@@ -12090,7 +12252,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("SetTranscriptData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTranscriptData")]
         public HttpResponseMessage SetTranscriptData([FromBody] transcriptreqData request)
         {
             try
@@ -12317,7 +12479,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("SetNoDataTranscriptData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetNoDataTranscriptData")]
         public HttpResponseMessage SetNoDataTranscriptData([FromBody] transcriptreqData request)
         {
             try
@@ -12555,7 +12717,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("GetTranscriptCertificate")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetTranscriptCertificate")]
         public async Task<object> GetTranscriptCertificate([FromBody] JsonObject request)
         {
             try
@@ -12581,7 +12743,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTranscriptDataforEmail")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTranscriptDataforEmail")]
         public HttpResponseMessage GetTranscriptDataforEmail(String ApplicationNo)
         {
             try
@@ -12602,7 +12764,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("ReleaseStudentServicesPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseStudentServicesPin")]
         public HttpResponseMessage ReleaseStudentServicesPin(String Pin, int CertificateTypeId, int Id = 0)
         {
             try
@@ -12625,7 +12787,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("RequestLog")]
+        [AuthorizationFilter()][HttpPost, ActionName("RequestLog")]
         public HttpResponseMessage RequestLog([FromBody] JsonObject request)
         {
             try
@@ -12659,7 +12821,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("SetCertificateData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetCertificateData")]
         public HttpResponseMessage SetCertificateData([FromBody] JsonObject request)
         {
             try
@@ -12686,7 +12848,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        //[HttpPost, ActionName("SetNameCorrectionData")]
+        //[AuthorizationFilter()][HttpPost, ActionName("SetNameCorrectionData")]
         //public HttpResponseMessage SetNameCorrectionData([FromBody]JsonObject request)
         //{
         //    try
@@ -12720,7 +12882,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //    }
         //}
 
-        [HttpPost, ActionName("Set_TC_CertificateData")]
+        [AuthorizationFilter()][HttpPost, ActionName("Set_TC_CertificateData")]
         public HttpResponseMessage Set_TC_CertificateData([FromBody] JsonObject request)
         {
             try
@@ -12748,7 +12910,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getApproveExamFees")]
+        [AuthorizationFilter()][HttpGet, ActionName("getApproveExamFees")]
         public HttpResponseMessage getApproveExamFees(int UserId, int StudentTypeId, int ExamMonthYearId, string Semester)
         {
             try
@@ -12773,7 +12935,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("SetExamMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetExamMonthYear")]
         public HttpResponseMessage SetExamMonthYear(string ExamMonthYear)
         {
             try
@@ -12795,7 +12957,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetAdminPreExamReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAdminPreExamReports")]
         public HttpResponseMessage GetAdminPreExamReports(int ExamMonthYearId, string Semester, int StudentTypeId)
         {
             try
@@ -12818,7 +12980,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetAdminFeedBackReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAdminFeedBackReports")]
         public HttpResponseMessage GetAdminFeedBackReports(int ExamMonthYearId, string Semester, int StudentTypeId)
         {
             try
@@ -12841,7 +13003,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetAdminHallTicketReports")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAdminHallTicketReports")]
         public HttpResponseMessage GetAdminHallTicketReports(int ExamMonthYearId, string Semester, int StudentTypeId)
         {
             try
@@ -12865,7 +13027,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("getApproveExamFeeCondonation")]
+        [AuthorizationFilter()][HttpPost, ActionName("getApproveExamFeeCondonation")]
         public HttpResponseMessage getApproveExamFeeCondonation([FromBody] JsonObject request)
         {
             try
@@ -12892,7 +13054,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("GetApprovalList")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetApprovalList")]
         public HttpResponseMessage GetApprovalList([FromBody] JsonObject request)
         {
             try
@@ -12920,7 +13082,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("getApprovalSingleList")]
+        [AuthorizationFilter()][HttpPost, ActionName("getApprovalSingleList")]
         public HttpResponseMessage getApprovalSingleList([FromBody] JsonObject request)
         {
             try
@@ -12947,7 +13109,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("setApprovalSingleList")]
+        [AuthorizationFilter()][HttpPost, ActionName("setApprovalSingleList")]
         public HttpResponseMessage setApprovalSingleList([FromBody] JsonObject request)
         {
             try
@@ -12969,7 +13131,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetFeedbackData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetFeedbackData")]
         public HttpResponseMessage SetFeedbackData([FromBody] JsonObject request)
         {
             try
@@ -12997,7 +13159,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("GetCondonationApprovalList")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetCondonationApprovalList")]
         public HttpResponseMessage GetCondonationApprovalList([FromBody] JsonObject request)
         {
             try
@@ -13026,7 +13188,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetExamsMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamsMonthYear")]
         public string GetExamsMonthYear(int StudentTypeId, int SemId, int SchemeId)
         {
             try
@@ -13053,7 +13215,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetRegularHallticket")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetRegularHallticket")]
         public string GetRegularHallticket(string Pin, string DateOfBirth, string StudentTypeId, string EMYR)
         {
             try
@@ -13080,7 +13242,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetRegularHallticket1")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetRegularHallticket1")]
         public string GetRegularHallticket1(string Pin, string DateOfBirth, string StudentTypeId, int EMYR)
         {
             try
@@ -13103,7 +13265,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetBacklogHallticket")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBacklogHallticket")]
         public string GetBacklogHallticket(string Pin, string DateOfBirth, string StudentTypeId, string Exammonthyearid)
         {
             try
@@ -13130,7 +13292,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetBacklogHallticket1")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBacklogHallticket1")]
         public string GetBacklogHallticket1(string Pin, string DateOfBirth, int StudentTypeId, string Exammonthyearid)
         {
             try
@@ -13152,7 +13314,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("getBackLogData")]
+        [AuthorizationFilter()][HttpPost, ActionName("getBackLogData")]
         public string getBackLogData([FromBody] JsonObject request)
         {
             try
@@ -13171,7 +13333,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("setBackLogData")]
+        [AuthorizationFilter()][HttpPost, ActionName("setBackLogData")]
         public string setBackLogData([FromBody] JsonObject request)
         {
             try
@@ -13192,7 +13354,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("Verify_GenuinenessEmailLog")]
+        [AuthorizationFilter()][HttpGet, ActionName("Verify_GenuinenessEmailLog")]
         public string Verify_GenuinenessEmailLog(string Pin, string Email, string OTP)
         {
             try
@@ -13352,7 +13514,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getAdminExamCentersList")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAdminExamCentersList")]
         public HttpResponseMessage getAdminExamCentersList(int ExamMonthYearId, int StudentTypeId, int ExamTypeID = 0)
         {
             try
@@ -13373,7 +13535,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getExaminationMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExaminationMonthYear")]
         public HttpResponseMessage getExaminationMonthYear()
         {
             try
@@ -13394,7 +13556,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getExamCentersList")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExamCentersList")]
         public HttpResponseMessage getExamCentersList(int Examyearid, int studentTypeId, int ExamTypeID = 0)
         {
             try
@@ -13422,7 +13584,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getExamTypesForExamCenters")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExamTypesForExamCenters")]
         public string getExamTypesForExamCenters()
         {
             try
@@ -13440,7 +13602,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        //[HttpGet, ActionName("getAdminExamCentersList")]
+        //[AuthorizationFilter()][HttpGet, ActionName("getAdminExamCentersList")]
         //public string getAdminExamCentersList(int StudentTypeId, int SchemeId, int AcademicYearId, int ExamYearMonth)
         //{
         //    try
@@ -13463,7 +13625,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //    }
         //}
 
-        //[HttpGet, ActionName("getExamCentersList")]
+        //[AuthorizationFilter()][HttpGet, ActionName("getExamCentersList")]
         //public string getExamCentersList(int StudentTypeId, int SchemeId, int AcademicYearId, int ExamYearMonth)
         //{
         //    try
@@ -13498,7 +13660,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("SetMonthYear")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetMonthYear")]
         public string SetMonthYear([FromBody] monthYearDetails request)
         {
             try
@@ -13533,7 +13695,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         //}
 
-        //[HttpPost, ActionName("SetMonthYear")]
+        //[AuthorizationFilter()][HttpPost, ActionName("SetMonthYear")]
         //public string SetMonthYear([FromBody]monthYearDetails request)
         //{
         //    try
@@ -13556,7 +13718,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //    }
 
         //}
-        //[HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
         //public string GenerateOtpForMobileNoUpdate(string Pin, string Phone)
         //{
         //    string otpMsg = "PIN:{0}, Your application request for {0} Certificate is Approved, click here{0} .Secretary, SBTET TS.";
@@ -13613,7 +13775,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string Data { get; internal set; }
         }
 
-        [HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
         public string GenerateOtpForMobileNoUpdate(string Pin, string Phone)
         {
             string otpMsg = "OTP for updating mobile no {0}, valid for 10 min. Secretary, SBTET TS.";
@@ -13689,7 +13851,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GenerateOtpForFacultyMobileNoUpdate")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForFacultyMobileNoUpdate")]
         public string GenerateOtpForFacultyMobileNoUpdate(string Pin, string Phone, int StudentType, string ExamDetails)
         {
             string otpMsg = "{0} OTP sent to the mapped faculty mobile number for submitting Marks for the {1}," +
@@ -13742,7 +13904,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetCaptchaString")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCaptchaString")]
         public string GetCaptchaString(string SessionId)
         {
             var dbHandler = new dbHandler();
@@ -13813,7 +13975,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SetSessionId")]
+        [AuthorizationFilter()][HttpGet, ActionName("SetSessionId")]
         public string SetSessionId(string SessionId, string Captcha)
         {
             var dbHandler = new dbHandler();
@@ -13832,7 +13994,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-        //[HttpGet, ActionName("GenerateOtpForFacultyMobileNoUpdate")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForFacultyMobileNoUpdate")]
 
         //public string GenerateOtpForFacultyMobileNoUpdate([FromBody] JsonObject request)
         //{
@@ -13886,7 +14048,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //        return ex.Message;
         //    }
         //}
-        [HttpGet, ActionName("GetStudentFeePaymentDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudentFeePaymentDetails")]
         public string GetStudentFeePaymentDetails(string Pin, string StudentTypeId, int EMYR = 0)
         {
             try
@@ -13918,7 +14080,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getFacultyData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getFacultyData")]
         public string getFacultyData(string Pin, int FeedbackId, string Otp)
         {
             try
@@ -13939,7 +14101,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("getFeeTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("getFeeTypes")]
         public string getFeeTypes(int ExamMonthYearId, int StudentTypeId)
         {
             try
@@ -13958,7 +14120,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GenerateOtpForFeedback")]
+        [AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForFeedback")]
         public string GenerateOtpForFeedback(string Pin, int FeedbackId)
         {
             string otpMsg = "OTP for submitting student feedback {0}. Secretary, SBTET TS.";
@@ -14013,7 +14175,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetStudentFeePaymentDetailsforAdmin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudentFeePaymentDetailsforAdmin")]
         public string GetStudentFeePaymentDetailsforAdmin(string Pin, string StudentTypeId, string UserTypeId)
         {
             try
@@ -14046,7 +14208,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("FeeRequestLog")]
+        [AuthorizationFilter()][HttpGet, ActionName("FeeRequestLog")]
         public string FeeRequestLog(string marchantid, string subMarchantid, string addInfo1, string addInfo3, string addInfo4, string addInfo5, string addInfo6, string addInfo7, string challan, string amount, int schemeId = 0, string json = null)
         {
             try
@@ -14078,7 +14240,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("ReleaseSixthSem")]
+        [AuthorizationFilter()][HttpGet, ActionName("ReleaseSixthSem")]
         public string ReleaseSixthSem(int AcademicYearId, string CollegeCode, int BranchId)
         {
             try
@@ -14103,7 +14265,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("getChanllanForExamFee")]
+        [AuthorizationFilter()][HttpPost, ActionName("getChanllanForExamFee")]
         public string getChanllanForExamFee(JsonObject JsonObj)
         {
             try
@@ -14148,7 +14310,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetCurrentMonthYear")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetCurrentMonthYear")]
         public HttpResponseMessage SetCurrentMonthYear([FromBody] CurrentMonthYear request)
         {
             try
@@ -14175,7 +14337,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("setStudentFeepayments")]
+        [AuthorizationFilter()][HttpPost, ActionName("setStudentFeepayments")]
         public HttpResponseMessage setStudentFeepayments([FromBody] paymentDetails request)
         {
             try
@@ -14232,7 +14394,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("SetPinsData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetPinsData")]
         public HttpResponseMessage SetPinsData([FromBody] JsonObject request)
         {
             try
@@ -14275,7 +14437,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetExaminationCenters")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetExaminationCenters")]
         public HttpResponseMessage SetExaminationCenters([FromBody] List<collegeData> collegeDetails)
         {
             try
@@ -14301,7 +14463,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("setSyllabusCoverage")]
+        [AuthorizationFilter()][HttpPost, ActionName("setSyllabusCoverage")]
         public HttpResponseMessage setSyllabusCoverage([FromBody] List<SyllabusData> SyllabusDetails)
         {
             try
@@ -14328,7 +14490,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetAcdamicyear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAcdamicyear")]
         public HttpResponseMessage GetAcdamicyear()
         {
             try
@@ -14346,7 +14508,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("SendSms")]
+        [AuthorizationFilter()][HttpGet, ActionName("SendSms")]
         public string SendSms(string ChallanNumber)
         {
 
@@ -14406,7 +14568,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return JsonConvert.SerializeObject(ex.Message);
             }
         }
-        [HttpGet, ActionName("getActiveSemester")]
+        [AuthorizationFilter()][HttpGet, ActionName("getActiveSemester")]
         public HttpResponseMessage getActiveSemester()
         {
             try
@@ -14424,7 +14586,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getAllSemester")]
+        [AuthorizationFilter()][HttpGet, ActionName("getAllSemester")]
         public HttpResponseMessage getAllSemester()
         {
             try
@@ -14442,7 +14604,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getSemestersByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("getSemestersByScheme")]
         public HttpResponseMessage getSemestersByScheme(int StudentTypeId, int SchemeId)
         {
             try
@@ -14463,7 +14625,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTwoYearsListByScheme")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTwoYearsListByScheme")]
         public HttpResponseMessage GetTwoYearsListByScheme(string userType)
         {
             try
@@ -14484,7 +14646,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetTwoYearsApproveList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTwoYearsApproveList")]
         public HttpResponseMessage GetTwoYearsApproveList(string Scheme, int datatype, int userType)
         {
             try
@@ -14508,7 +14670,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetSemsBySchemePin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSemsBySchemePin")]
         public HttpResponseMessage GetSemsBySchemePin(string pin, string Scheme)
         {
             try
@@ -14530,7 +14692,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetMonthYearBySemSchemePin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMonthYearBySemSchemePin")]
         public HttpResponseMessage GetMonthYearBySemSchemePin(string pin, string Scheme, string Semester)
         {
             try
@@ -14552,7 +14714,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetHolidaysForTimeTable")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetHolidaysForTimeTable")]
         public HttpResponseMessage GetHolidaysForTimeTable(string startdate, int days)
         {
             try
@@ -14573,7 +14735,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("TimeTableExistingHolidays")]
+        [AuthorizationFilter()][HttpGet, ActionName("TimeTableExistingHolidays")]
         public HttpResponseMessage TimeTableExistingHolidays(int AcademicYearId, int SessionId, int ExamMonthYearId, int StudentTypeId, int ExamTypeId)
         {
             try
@@ -14599,7 +14761,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("SetHolidaysForTimeTable")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetHolidaysForTimeTable")]
         public HttpResponseMessage SetHolidaysForTimeTable([FromBody] JsonObject request)
         {
             try
@@ -14625,7 +14787,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("getTimeTableData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getTimeTableData")]
         public HttpResponseMessage getTimeTableData(int StudentTypeId, int SemId, int SchemeId, int ExamTypeId, string StartDate, string Fntime, string Antime)
         {
             try
@@ -14652,7 +14814,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetBranches")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBranches")]
         public HttpResponseMessage GetBranches()
         {
             try
@@ -14669,7 +14831,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-        [HttpGet, ActionName("getNoDataSchemes")]
+        [AuthorizationFilter()][HttpGet, ActionName("getNoDataSchemes")]
         public HttpResponseMessage getNoDataSchemes()
         {
             try
@@ -14687,7 +14849,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetModuleColours")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetModuleColours")]
         public HttpResponseMessage GetModuleColours()
         {
             try
@@ -14738,7 +14900,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetCurrentExamDatesForNr")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCurrentExamDatesForNr")]
         public string GetCurrentExamDatesForNr(int ExamMonthYearId, int StudentTypeId, int ExamTypeId)
         {
             try
@@ -14759,7 +14921,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetPrincipalTimetable")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetPrincipalTimetable")]
         public HttpResponseMessage GetPrincipalTimetable(int ExamMonthYearId)
         {
             try
@@ -14779,7 +14941,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        //[HttpGet, ActionName("GetPrincipalTimetable")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GetPrincipalTimetable")]
         //public HttpResponseMessage GetPrincipalTimetable(int ExamMonthYearId)
         //{
         //    try
@@ -14797,7 +14959,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //        return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
         //    }
         //}
-        //[HttpPost, ActionName("TimeTablePdf")]
+        //[AuthorizationFilter()][HttpPost, ActionName("TimeTablePdf")]
         //public string TimeTablePdf([FromBody] JsonObject request)
         //{
         //    try
@@ -14827,7 +14989,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         //    }
         //}
 
-        [HttpPost, ActionName("GetPrincipalTimetableExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetPrincipalTimetableExcel")]
         public string GetPrincipalTimetableExcel([FromBody] JsonObject request)
         {
             try
@@ -14868,7 +15030,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        //[HttpGet, ActionName("GetPrincipalTimetableExcel")]
+        //[AuthorizationFilter()][HttpGet, ActionName("GetPrincipalTimetableExcel")]
         //public HttpResponseMessage GetPrincipalTimetableExcel(int ExamMonthYearId)
         //{
         //    try
@@ -14914,7 +15076,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetBacklogStudentDetails")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetBacklogStudentDetails")]
         public HttpResponseMessage GetBacklogStudentDetails(string pin, int userTypeId)
         {
             try
@@ -14936,7 +15098,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetSyllabusCoverage")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetSyllabusCoverage")]
         public HttpResponseMessage GetSyllabusCoverage(int SubjectId, string CollegeCode, int ShiftId)
         {
             try
@@ -14962,7 +15124,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getChallanData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getChallanData")]
         public HttpResponseMessage getChallanData(int StudentTypeId, string pin)
         {
             try
@@ -14985,7 +15147,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getExamData")]
+        [AuthorizationFilter()][HttpGet, ActionName("getExamData")]
         public HttpResponseMessage getExamData(int AcademicYearId, int SemId, int SchemeId, int BrnachId)
         {
             try
@@ -15010,7 +15172,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("setDate")]
+        [AuthorizationFilter()][HttpPost, ActionName("setDate")]
         public HttpResponseMessage setDate([FromBody] JsonObject request)
         {
             try
@@ -15036,7 +15198,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UpdateMarksMemo")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateMarksMemo")]
         public HttpResponseMessage UpdateMarksMemo([FromBody] JsonObject request)
         {
             try
@@ -15061,7 +15223,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("UpdatePaymentMarksMemo")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdatePaymentMarksMemo")]
         public HttpResponseMessage UpdatePaymentMarksMemo([FromBody] JsonObject request)
         {
             try
@@ -15083,7 +15245,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("UpdateNoDataMarksMemo")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateNoDataMarksMemo")]
         public HttpResponseMessage UpdateNoDataMarksMemo([FromBody] JsonObject request)
         {
             try
@@ -15110,7 +15272,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("PostFinaldata")]
+        [AuthorizationFilter()][HttpPost, ActionName("PostFinaldata")]
         public string PostFinaldata([FromBody] JsonObject json)
         {
             try
@@ -15131,7 +15293,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("uploadJson")]
+        [AuthorizationFilter()][HttpPost, ActionName("uploadJson")]
         public string uploadJson([FromBody] JsonObject json)
         {
             try
@@ -15159,7 +15321,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UploadResultFileJson")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadResultFileJson")]
         public string UploadResultFileJson([FromBody] JsonObject json)
         {
             try
@@ -15183,7 +15345,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UploadRVRCFileJson")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadRVRCFileJson")]
         public string UploadRVRCFileJson([FromBody] JsonObject json)
         {
             try
@@ -15208,7 +15370,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UploadWantingsJson")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadWantingsJson")]
         public string UploadWantingsJson([FromBody] JsonObject json)
         {
             try
@@ -15233,7 +15395,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UploadResultJson")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadResultJson")]
         public string UploadResultJson([FromBody] JsonObject json)
         {
             try
@@ -15311,7 +15473,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("DeployNicData")]
+        [AuthorizationFilter()][HttpPost, ActionName("DeployNicData")]
         public string DeployNicData([FromBody] JsonObject json)
         {
             List<person> p = new List<person>();
@@ -15376,7 +15538,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("uploadJsonExcel")]
+        [AuthorizationFilter()][HttpPost, ActionName("uploadJsonExcel")]
         public string uploadJsonExcel([FromBody] JsonObject json)
         {
             List<person> p = new List<person>();
@@ -15442,7 +15604,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("UploadPolycetData")]
+        [AuthorizationFilter()][HttpPost, ActionName("UploadPolycetData")]
         public string UploadPolycetData([FromBody] JsonObject Data)
         {
             List<person> p = new List<person>();
@@ -15541,7 +15703,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("getDetailsByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("getDetailsByPin")]
         public HttpResponseMessage getDetailsByPin(int Pin)
         {
             try
@@ -15564,7 +15726,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetTransaction")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTransaction")]
         public HttpResponseMessage GetTransaction(int StudentType, string fromDate, string toDate)
         {
             try
@@ -15589,7 +15751,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-        [HttpGet, ActionName("SendOtpForCertificates")]
+        [AuthorizationFilter()][HttpGet, ActionName("SendOtpForCertificates")]
         public string SendOtpForCertificates(string Pin)
         {
             string otpMsg = "OTP for Cerificates is {0}. Secretary, SBTET TS.";
@@ -15638,7 +15800,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetAvailableFeedbacks")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetAvailableFeedbacks")]
         public string GetAvailableFeedbacks()
         {
             try
@@ -15657,7 +15819,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetCollegeWiseExpenditure")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetCollegeWiseExpenditure")]
         public string GetCollegeWiseExpenditure()
         {
             try
@@ -15675,7 +15837,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetDescriptionData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetDescriptionData")]
         public string GetDescriptionData(int FeedbackId)
         {
             try
@@ -15694,7 +15856,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetExpenditureById")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExpenditureById")]
         public string GetExpenditureById(int Id)
         {
             try
@@ -15713,7 +15875,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("DleteExpenditure")]
+        [AuthorizationFilter()][HttpGet, ActionName("DleteExpenditure")]
         public string DleteExpenditure(int Id)
         {
             try
@@ -15731,7 +15893,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetTimeTableMonthYearExamTypesSessions")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableMonthYearExamTypesSessions")]
         public string GetTimeTableMonthYearExamTypesSessions(int SessionId, int AcademicYearId)
         {
             try
@@ -15751,7 +15913,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-        [HttpPost, ActionName("SetTimeTableMonthYearExamTypesSessions")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTimeTableMonthYearExamTypesSessions")]
         public string SetTimeTableMonthYearExamTypesSessions([FromBody] JsonObject data)
         {
             try
@@ -15772,7 +15934,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetExamMonthYearsByAcademicYearId")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearsByAcademicYearId")]
         public string GetExamMonthYearsByAcademicYearId(int AcademicYearId)
         {
             try
@@ -15792,7 +15954,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTimeTableMonthYearExamTypes")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableMonthYearExamTypes")]
         public string GetTimeTableMonthYearExamTypes(int SessionId, int AcademicYearId)
         {
             try
@@ -15812,7 +15974,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-        [HttpPost, ActionName("SetTimeTableMonthYearExamTypes")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTimeTableMonthYearExamTypes")]
         public string SetTimeTableMonthYearExamTypes([FromBody] JsonObject data)
         {
             try
@@ -15833,7 +15995,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTimeTableSessionSchemeSemesters")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableSessionSchemeSemesters")]
         public string GetTimeTableSessionSchemeSemesters(int SessionId, int AcademicYearId)
         {
             try
@@ -15854,7 +16016,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("UpdateSmsStatus")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdateSmsStatus")]
         public string UpdateSmsStatus(int CertificateTypeId, string Pin, int Id = 0)
         {
             try
@@ -15875,7 +16037,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetTimeTableSessionSchemeSemesters")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTimeTableSessionSchemeSemesters")]
         public string SetTimeTableSessionSchemeSemesters([FromBody] JsonObject data)
         {
             try
@@ -15896,7 +16058,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("SetTimeTableUpdateData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetTimeTableUpdateData")]
         public string SetTimeTableUpdateData([FromBody] JsonObject data)
         {
             try
@@ -15918,7 +16080,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpPost, ActionName("UpdateExpenditureData")]
+        [AuthorizationFilter()][HttpPost, ActionName("UpdateExpenditureData")]
         public string UpdateExpenditureData([FromBody] JsonObject data)
         {
             try
@@ -15941,7 +16103,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("AddExpenditureData")]
+        [AuthorizationFilter()][HttpPost, ActionName("AddExpenditureData")]
         public string AddExpenditureData([FromBody] JsonObject data)
         {
             try
@@ -15968,7 +16130,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetTimeTableUpdateData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateData")]
         public string GetTimeTableUpdateData(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int ExamTypeId, int Schemeid, int branchid, int semid)
         {
             try
@@ -15994,7 +16156,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetTimeTableUpdateDataByDate")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateDataByDate")]
         public string GetTimeTableUpdateDataByDate(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int ExamTypeId, DateTime ExamDate, string ExamSession, int schemeid)
         {
             try
@@ -16024,7 +16186,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetTimeTableUpdateDataByPcode")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateDataByPcode")]
         public string GetTimeTableUpdateDataByPcode(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId, int pcode)
         {
             try
@@ -16050,7 +16212,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetExamSessionByExamDate")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamSessionByExamDate")]
         public HttpResponseMessage GetExamSessionByExamDate(string ExamDate, int StudentTypeId)
         {
             try
@@ -16073,7 +16235,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetExamMonthYearBySem")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearBySem")]
         public HttpResponseMessage GetExamMonthYearBySem(string Semester, int StudentTypeId)
         {
             try
@@ -16095,7 +16257,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYearBySemId")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearBySemId")]
         public HttpResponseMessage GetExamMonthYearBySem(int Semid, int StudentTypeId)
         {
             try
@@ -16119,7 +16281,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetTimetableDatesByExamMonthYear")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetTimetableDatesByExamMonthYear")]
         public HttpResponseMessage GetTimetableDatesByExamMonthYear(int StudentTypeId, int ExamMonthYearId)
         {
             try
@@ -16141,7 +16303,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYearForHallticketandFeepayment")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearForHallticketandFeepayment")]
         public HttpResponseMessage GetExamMonthYearForHallticketandFeepayment(string DataTypeId, string StudentTypeId)
         {
             try
@@ -16165,7 +16327,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("GetExamSessionDates")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExamSessionDates")]
         public string GetExamSessionDates(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId, int schemeid)
         {
             try
@@ -16193,7 +16355,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpGet, ActionName("GetExaminationHallData")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetExaminationHallData")]
         public string GetExaminationHallData(string CollegeCode)
         {
             try
@@ -16213,7 +16375,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpPost, ActionName("SetExaminationHallData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetExaminationHallData")]
         public string SetExaminationHallData([FromBody] JsonObject data)
         {
             try
@@ -16234,7 +16396,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("SetSeatingExaminationHallData")]
+        [AuthorizationFilter()][HttpPost, ActionName("SetSeatingExaminationHallData")]
         public string SetSeatingExaminationHallData([FromBody] JsonObject data)
         {
             try
@@ -16258,7 +16420,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpPost, ActionName("GetSeatingPlan")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetSeatingPlan")]
         public string GetSeatingPlan([FromBody] JsonObject data)
         {
             try
@@ -16282,7 +16444,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("SeatingPlanPdf")]
+        [AuthorizationFilter()][HttpGet, ActionName("SeatingPlanPdf")]
         public string SeatingPlanPdf(int StudentTypeId, string CollegeCode, string ExamDate, string timeSlot, int ExamMonthYearId, int ExamTypeId)
         {
             var res = string.Empty;
@@ -16367,7 +16529,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("SeatingPlanAbtract")]
+        [AuthorizationFilter()][HttpGet, ActionName("SeatingPlanAbtract")]
         public string SeatingPlanAbtract(int StudentTypeId, string CollegeCode, string ExamDate, string timeSlot, int ExamMonthYearId, int ExamTypeId)
         {
             try
@@ -16484,7 +16646,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [HttpPost, ActionName("GetSeatingData")]
+        [AuthorizationFilter()][HttpPost, ActionName("GetSeatingData")]
         public string GetSeatingData([FromBody] ReqSeating req)
         {
             try
@@ -16621,7 +16783,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [HttpGet, ActionName("GetMercyList")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetMercyList")]
         public HttpResponseMessage GetMercyList()
         {
             try
@@ -16638,7 +16800,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("UpdatePhotoSignPath")]
+        [AuthorizationFilter()][HttpGet, ActionName("UpdatePhotoSignPath")]
         public string UpdatePhotoSignPath(string StudentID,string PhotoPath,string SignPath)
         {
             try
@@ -16667,7 +16829,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         //}
 
-        [HttpGet, ActionName("GetStudentByPin")]
+        [AuthorizationFilter()][HttpGet, ActionName("GetStudentByPin")]
         public string GetStudentByPin(string Pin)
         {
             try
@@ -16754,7 +16916,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     // Schedule file deletion in a background task
                     Task.Run(async () =>
                     {
-                        int delayInSeconds = 2;
+                        int delayInSeconds = 20;
                         await Task.Delay(delayInSeconds * 150); // Wait for the specified delay
                         if (File.Exists(savePhotoPath))
                         {
