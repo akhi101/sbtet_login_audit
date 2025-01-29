@@ -1,5 +1,5 @@
 ﻿define(['app'], function (app) {
-    app.controller("WebsiteLoginController", function ($scope,$http, $localStorage, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
+    app.controller("WebsiteLoginController", function ($scope, $http, $localStorage, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
 
 
         const $ctrl = this;
@@ -39,7 +39,7 @@
 
         $scope.validatecaptcha = function () {
 
-  
+
             if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
                 $scope.UserNamemessage = "* Enter user name";
                 alert("Enter UserName");
@@ -127,7 +127,7 @@
             var DataType = 2;
             var Encripteddatatype = $crypto.encrypt($crypto.encrypt(DataType.toString(), 'HBSBP9214EDU00TS'), $scope.LoginSessionEKey) + '$$@@$$' + $scope.LoginSessionEKey;
             var EncriptedUserName = $crypto.encrypt($crypto.encrypt($scope.UserName.toString(), 'HBSBP9214EDU00TS'), $scope.LoginSessionEKey) + '$$@@$$' + $scope.LoginSessionEKey;
-            var addaccount = AdminService.GetAccountStatus(Encripteddatatype , EncriptedUserName);
+            var addaccount = AdminService.GetAccountStatus(Encripteddatatype, EncriptedUserName);
             addaccount.then(function (resp) {
                 try {
                     var res = JSON.parse(resp);
@@ -262,7 +262,7 @@
                                             $scope.gotoLogin();
                                             $scope.Loginbutton = false;
                                         }
-                                        
+
                                         catch (err) {
 
                                         }

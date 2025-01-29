@@ -3860,7 +3860,7 @@
             'ForgetPassword': {
                 url: "/ForgetPassword",
                 templateUrl: 'app/views/ForgetPassword.html',
-                dependencies: ['controllers/ForgetPasswordController', 'services/ForgetPasswordService', 'services/SystemAdministration/SystemUserService']
+                dependencies: ['controllers/ForgetPasswordController', 'services/ForgetPasswordService', 'services/SystemAdministration/SystemUserService', 'services/PreExamination/PreExaminationService', 'services/AdminServices/AdminService']
             },
 
 

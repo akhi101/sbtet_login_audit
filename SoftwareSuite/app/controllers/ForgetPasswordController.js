@@ -1,5 +1,5 @@
 ﻿define(['app'], function (app) {
-    app.controller("ForgetPasswordController", function ($scope, $state, $filter, $stateParams, AppSettings, $crypto, ForgetPasswordService, SystemUserService) {
+    app.controller("ForgetPasswordController", function ($scope, $state, $filter, $stateParams, AppSettings, $crypto, ForgetPasswordService, SystemUserService, PreExaminationService, AdminService) {
         $scope.ForgetPassword = {};
         $scope.ShowLoading = false;
 
@@ -68,33 +68,42 @@
 
 
             var captcha = AdminService.ValidateForgetPasswordCaptcha($scope.EncriptedSession, EncriptedCaptchaText, Encriptedloginname, Encriptedcellno);
-            captcha.then(function (res) {
-                var response = JSON.parse(res)
-                if (response[0].ResponceCode == '200') {
-                    //alert(response[0].ResponceDescription)
-                    $scope.CaptchaText = "";
-                    $scope.GetCatcha = response[0].Captcha
-                    var captcha = JSON.parse(response[0].Captcha)
-                    $scope.CaptchaImage = captcha[0].Image;
-                    $scope.CaptchaText = "";
-                    $scope.SavePreDetails()
+            captcha.then(function (response) {
+                try {
+                    var res = JSON.parse(response);
 
+                } catch (ex) {
+                }
+                if (res.Status == "200") {
+                    $scope.Smsbtndisable = false;
+                    $scope.ShowLoading = false;
 
+                    //var Message = "Dear Sir//Madam, Your Login Credentials: UserName=" + $scope.ForgetPassword.LoginName + ", Password= " + res[0].LoginPassword + " SBTETTS";
+                    //var Urlstring = "?User=sbtetts&Passwd=sbtet@1972&Sid=SBTETS&Mobilenumber=91" + data[0].CellNo + "&Message=" + Message + "&Mtype=N&DR`=Y";
+                    //  var FinalURL= AppSettings.SMSApiUrl + Urlstring;
+
+                    alert("Login Credentials sent to the registered mobile number. Please check.");
+                    RedirectToListPage();
                 } else {
-                    alert(response[0].ResponceDescription)
+                    alert(res.Description);
                     $scope.CaptchaText = "";
-                    $scope.GetCatcha = response[0].Captcha
-                    var captcha = JSON.parse(response[0].Captcha)
-
-                    $scope.CaptchaImage = captcha[0].Image;
-                    $scope.CaptchaText = "";
-                    $scope.Loginbutton = false;
-
+                    $scope.GetCaptchaData();
+                    $scope.Smsbtndisable = false;
+                    $scope.ShowLoading = false;
+                    $scope.RollEditDisable = false;
                 }
 
             }, function (error) {
-                $scope.GetCatcha = ''
-                alert('Unable to load Captcha')
+                $scope.Smsbtndisable = false;
+                $scope.ShowLoading = false;
+                $scope.RollEditDisable = false;
+                try {
+                    var res = JSON.parse(error);
+
+                } catch (ex) {
+                }
+                alert(res.statusdesc);
+
             });
         }
 
@@ -159,7 +168,7 @@
             RedirectToListPage();
         }
         function RedirectToListPage() {
-            $state.go('login');
+            $state.go('index.WebsiteLogin');
         }
     });
 });
