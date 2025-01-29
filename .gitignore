@@ -6,3 +6,6 @@
 /SoftwareSuite/bin/publish
 /SoftwareSuite/bin/publish.7z
 /SoftwareSuite/Properties/PublishProfiles
+/SoftwareSuite/bin/app.publish
+/SoftwareSuite/Connectionlogfilepath 29Jan2025.txt
+/SoftwareSuite/SoftwareSuite.csproj.user

@@ -27,6 +27,10 @@ using System.Web.Http.Controllers;
 using Microsoft.AspNetCore.StaticFiles;
 using static SoftwareSuite.Controllers.Admission.AdmissionController;
 using SoftwareSuite.Controllers.SystemAdministration;
+using SoftwareSuite.BLL;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Web.UI.WebControls;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -279,14 +283,84 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                 if (dt.Rows[0]["ResponseCode"].ToString() == "200")
                 {
-                    SystemUserController sysuser = new SystemUserController();
-                    //p1.Data = sysuser.GetForgetPassword(request);
-                    captcha = GetCaptchaString(data);
-                    p1.ResponceCode = dt.Rows[0]["ResponseCode"].ToString();
-                    p1.ResponceDescription = dt.Rows[0]["ResponseDescription"].ToString();
-                    p1.Captcha = captcha;
-                    p.Add(p1);
-                    return JsonConvert.SerializeObject(p);
+                    //SystemUserBLL sysbll = new SystemUserBLL();
+                    //p1.Data = sysbll.GetForgetPassword(decryptLoginname, decryptCell);
+
+                    SystemUserBLL SystemUserBLL = new SystemUserBLL();
+                    SystemRes ForgetRes = new SystemRes();
+                    var passcrypt = new HbCrypt();
+                    ForgetRes = SystemUserBLL.GetForgetPassword(decryptLoginname.Replace("'", "''"), Int64.Parse(decryptCell));
+                    string retMsg = string.Empty;
+                    if (ForgetRes.ResponceCode == "200" && ForgetRes.userType == "sbtet")
+                    {
+                        try
+                        {
+                            string decryptpassword = passcrypt.Decrypt(ForgetRes.Password);
+
+
+                            SMSServiceController smsService = new SMSServiceController();
+                            string SMSCount = smsService.SendSMS(decryptCell.ToString());
+                            if (SMSCount != "{\"Status\" : \"200\", \"Description\" : \"SMS sent successfully.\"}")
+                            {
+                                return SMSCount;
+                            }
+                            else
+                            {
+                                string url = ConfigurationManager.AppSettings["SMS_API"].ToString();
+                                string Msg = "SBTET Portal Login Credentials, UserName = {0}, Password = {1}, Secretary,SBTET TS.";
+                                var Message = string.Format(Msg, decryptLoginname.Replace("'", "''"), decryptpassword);
+                                string urlParameters = "?mobile=" + decryptCell + "&message=" + HttpUtility.UrlEncode(Message) + "&templateid=1007161786891783450";
+                                HttpClient client = new HttpClient();
+                                client.BaseAddress = new Uri(url);
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+                                retMsg = "{\"Status\":\"" + ForgetRes.ResponceCode + "\",\"Description\": \"" + ForgetRes.ResponceDescription + "\"}";
+                                return retMsg;
+                            }
+
+
+
+
+                            //retMsg = "{\"status\":\"" + ForgetRes.ResponceCode + "\",\"statusdesc\": \"" + ForgetRes.ResponceDescription + "\"}";
+
+                        }
+                        catch (Exception ex)
+                        {
+                            retMsg = "{\"Status\":\"400\",\"Description\": \"" + ex.Message + "\"}";
+                            return retMsg;
+                        }
+                    }
+                    else if (ForgetRes.ResponceCode == "200" && ForgetRes.userType == "twsh")
+                    {
+                        try
+                        {
+                            // string decryptpassword = passcrypt.Decrypt(ForgetRes.Password);
+                            string url = ConfigurationManager.AppSettings["SMS_API"].ToString();
+                            //string smsusername = ConfigurationManager.AppSettings["SMS_Service_Username"].ToString();
+                            //string smspassword = ConfigurationManager.AppSettings["SMS_Service_Password"].ToString();
+                            string Msg = "SBTET Portal Login Credentials, UserName = {0}, Password = {1}, Secretary,SBTET TS.";
+                            var Message = string.Format(Msg, decryptLoginname.Replace("'", "''"), ForgetRes.Password);
+                            string urlParameters = "?mobile=" + decryptCell + "&message=" + HttpUtility.UrlEncode(Message) + "&templateid=1007161786891783450";
+                            HttpClient client = new HttpClient();
+                            client.BaseAddress = new Uri(url);
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            HttpResponseMessage response = client.GetAsync(urlParameters).Result;
+                            retMsg = "{\"Status\":\"" + ForgetRes.ResponceCode + "\",\"statusdesc\": \"" + ForgetRes.ResponceDescription + "\"}";
+                            return retMsg;
+                        }
+                        catch (Exception ex)
+                        {
+                            retMsg = "{\"Status\":\"400\",\"Description\": \"" + ex.Message + "\"}";
+                            return retMsg;
+
+                        }
+                    }
+                    else
+                    {
+                        retMsg = "{\"Status\":\"" + ForgetRes.ResponceCode + "\",\"Description\": \"" + ForgetRes.ResponceDescription + "\"}";
+                        return retMsg;
+
+                    }
 
                 }
                 else
@@ -321,7 +395,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter()]
+        //[AuthorizationFilter()]
         [HttpPost, ActionName("AddorGetAccountStatus")]
         public string AddorGetAccountStatus([FromBody] AccountStatus data)
         {
@@ -331,15 +405,15 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                 string decrptedDataType = GetDecryptedData(data.DataType.ToString());
                 string decrptedUserName = GetDecryptedData(data.UserName.ToString());
-                var tokenStr = ActionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
-                var tkn = tokenStr.Value.FirstOrDefault();
-                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
-                var parsedToken = t[0];
-                var token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
+                //var tokenStr = ActionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                //var tkn = tokenStr.Value.FirstOrDefault();
+                //var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                //var parsedToken = t[0];
+                //var token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@DataType", decrptedDataType);
-                param[1] = new SqlParameter("@UserName", token.UserName);
+                param[1] = new SqlParameter("@UserName", decrptedUserName);
                 var dt = dbHandler.ReturnDataWithStoredProcedure("SP_Get_AccountStatus", param);
                 return JsonConvert.SerializeObject(dt);
             }
@@ -2124,7 +2198,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                         PreExaminationController PreExamination = new PreExaminationController();
                         string pin = data["Pin"].ToString();
                         string StudentTypeID = data["StudentTypeId"].ToString();
-                        p1.Data = PreExamination.getUserDataByPin(StudentTypeID, pin);
+                        //p1.Data = PreExamination.getUserDataByPin(StudentTypeID, pin);
                         captcha = GetCaptchaString(data);
                         p1.ResponceCode = dt.Rows[0]["ResponseCode"].ToString();
                         p1.ResponceDescription = dt.Rows[0]["ResponseDescription"].ToString();

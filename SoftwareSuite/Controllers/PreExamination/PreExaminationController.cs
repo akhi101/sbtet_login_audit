@@ -314,7 +314,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-       [AuthorizationFilter()][HttpGet, ActionName("GetStudentServicesCounts")]
+       [HttpGet, ActionName("GetStudentServicesCounts")]
         public HttpResponseMessage GetStudentServicesCounts()
         {
             try
@@ -2689,7 +2689,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("GetHomePageSlidesActive")]
+       [HttpGet, ActionName("GetHomePageSlidesActive")]
         public HttpResponseMessage GetHomePageSlidesActive()
         {
             try
@@ -5327,7 +5327,6 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("getFileUploadDetails")]
 
         [AuthorizationFilter()][HttpGet, ActionName("getFileUploadDetails")]
 
@@ -8712,8 +8711,6 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("GetDayWiseNrReportsExcel")]
-        public string GetDayWiseNrReportsExcel(int ExamMonthYearId, int AcademicID, int StudentTypeId)
 
         private readonly long MaxFileSizedoc = 2 * 1024 * 1024; // 2 MB max size
 
@@ -8748,8 +8745,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("CertificateFeePaymentReports")]
-        public string CertificateFeePaymentReports(string Scheme, int datatype)
+
 
 
 
@@ -13377,8 +13373,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("Verify_GenuinenessEmailLog")]
-        public HttpResponseMessage Verify_GenuinenessEmailLog(string Pin, string Email, string OTP)
+
 
         [AuthorizationFilter()][HttpGet, ActionName("Verify_GenuinenessEmailLog")]
         public string Verify_GenuinenessEmailLog(string Pin, string Email, string OTP)
@@ -13795,7 +13790,6 @@ namespace SoftwareSuite.Controllers.PreExamination
         //}
 
 
-       [AuthorizationFilter()][HttpGet, ActionName("GenerateOtpForMobileNoUpdate")]
 
         internal class Output
         {
@@ -14897,7 +14891,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-       [AuthorizationFilter()][HttpGet, ActionName("GetWebSiteVisiterCount")]
+       [HttpGet, ActionName("GetWebSiteVisiterCount")]
         public HttpResponseMessage GetWebSiteVisiterCount()
         {
             try
@@ -16977,14 +16971,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-       [AuthorizationFilter()][HttpPost, ActionName("GetSemorCollegeorBranchWiseStatistics")]
-        public string GetSemorCollegeorBranchWiseStatistics([FromBody] JsonObject request)
 
-        internal string getUserDataByPin(string studentTypeID, string pin)
-
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }
