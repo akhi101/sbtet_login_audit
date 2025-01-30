@@ -78,6 +78,15 @@
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 2 || $scope.userType != 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.getadmincategory = function () {
 
             var data = {};

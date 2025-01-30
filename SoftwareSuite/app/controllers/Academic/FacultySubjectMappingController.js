@@ -173,6 +173,15 @@
                 }
             )
         };
+
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.getStudentsData = function () {
             var getReport = AcademicService.getStudentsList($scope.scheme, $scope.College_Code, $scope.BranchId, $scope.semester);
             getReport.then(function (response) {

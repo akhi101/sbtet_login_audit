@@ -56,6 +56,8 @@
         });
 
 
+
+
         var AcademicYears = PreExaminationService.GetAcademicYears();
         AcademicYears.then(function (response) {
             if (response.Table.length > 0) {
@@ -117,6 +119,14 @@
                 BranchExpand = false;
             }
         }
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
 
         $scope.closeBranchCheckbox = function () {
             var checkboxes = document.getElementById("checkboxesBranch");

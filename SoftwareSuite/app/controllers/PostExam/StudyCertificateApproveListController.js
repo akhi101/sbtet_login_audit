@@ -85,7 +85,16 @@
             $scope.Data = false;
             $scope.Nodata = true;
             alert("error while loading data");
-        });
+            });
+
+
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
         $scope.ApprovePending = function (Scheme) {
             $scope.ApproveType = 0;

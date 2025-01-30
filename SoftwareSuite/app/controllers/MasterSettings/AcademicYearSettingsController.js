@@ -23,7 +23,13 @@
           
           
         }
-        
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
      
         $scope.UpdateAcaYear = function (StartYear) {
             var tempyr = (parseInt(StartYear) + 1).toString();

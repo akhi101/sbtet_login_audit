@@ -67,7 +67,12 @@
         }
        
        
-       
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
         $scope.AddDetainedStudent = function (AcademicYear, Deatainedscheme, DetainedSem, Pin) {
             var collegecode = $scope.College_Code;

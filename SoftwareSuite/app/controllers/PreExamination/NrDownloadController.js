@@ -70,6 +70,16 @@ define(['app'], function (app) {
             }
         }
 
+
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.changedExamDates = function () {
             $scope.DetailsFound = false;
         };
