@@ -597,6 +597,22 @@
             return DataAccessService.postData('api/AdminService/ValidateForgetPasswordCaptcha', paramObject);
         };
 
+        this.ValidateUserLoginCaptcha = function (SessionId, Captcha, LoginName, Password, DataType) {
+            var paramObject = {
+                "SessionId": SessionId,
+                "Captcha": Captcha,
+                "LoginName": LoginName,
+                "Password": Password,
+                "DataType": DataType
+            };
+            return DataAccessService.postData('api/AdminService/ValidateUserLoginCaptcha', paramObject);
+        };
+
+        //this.ValidateUserLoginCaptcha = function (object) {
+
+        //    return DataAccessService.postData('api/AdminService/ValidateUserLoginCaptcha', object);
+        //};
+
 
     })
 })

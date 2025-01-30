@@ -9,6 +9,7 @@ namespace SoftwareSuite.Models.Security
     {
         //internal object collegeType;
 
+        public bool AccountLocked { get; set; }
         public string UserName { get; set; }
         public int UserId { get; set; }
         public int UserTypeId { get; set; }
