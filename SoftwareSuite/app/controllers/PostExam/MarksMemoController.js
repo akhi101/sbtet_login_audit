@@ -36,6 +36,15 @@
             alert("error while loading data");
         });
 
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.DownloadtoExcel = function () {
         
             var CertificateFeePaymentReports = PreExaminationService.Memos($scope.Scheme, $scope.ExamMonth, $scope.date);

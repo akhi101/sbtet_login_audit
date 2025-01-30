@@ -15,6 +15,13 @@ define(['app'], function (app) {
         };
     });
 
+    var authData = JSON.parse(sessionStorage.getItem('user'));
+    $scope.userType = authData.SystemUserTypeId;
+    if ($scope.userType != 1) {
+        alert("UnAuthorized Access")
+        $state.go('Dashboard')
+    }
+
     app.controller("PinGeneratedReportController", function ($scope, $state, $stateParams, $localStorage, AppSettings, ReportService, $uibModal, Excel, $timeout, $rootScope) {
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));

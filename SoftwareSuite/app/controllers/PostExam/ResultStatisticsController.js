@@ -91,6 +91,16 @@
 
         }
 
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
+
         $scope.AcademicYearChange2 = function () {
             var emmothyr = PreExaminationService.GetExamMonthYearsByAcademicYearId($scope.academicYearID);
             emmothyr.then(function (response) {

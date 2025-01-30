@@ -345,6 +345,15 @@
            
         }
 
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.optionToggledBranch = function () {
             $scope.isAllSelectedBranch = $scope.GetBranchs.every(function (itm) { return itm.selected; })
             $scope.BranchArray = [];
@@ -355,6 +364,7 @@
             });
            
         }
+
 
         //----------------------Branch Multi Select End--------------------------------//
 

@@ -97,6 +97,13 @@
             }
         }
 
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1 || $scope.userType != 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.toggleAllsemester = function () {
             var toggleStatus = $scope.isAllSelectedsemesters;
             angular.forEach($scope.semestersData, function (itm) { itm.selected = toggleStatus; });

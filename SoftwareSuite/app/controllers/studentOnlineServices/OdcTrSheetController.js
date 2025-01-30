@@ -67,6 +67,15 @@
             }
         }
 
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.toggleAllCollegeTypes = function () {
             var toggleStatus = $scope.isAllSelectedCollegeTypes
             angular.forEach($scope.GetCollegeTypes, function (itm) { itm.selected = toggleStatus; });

@@ -15,6 +15,23 @@
         };
     });
 
+
+
+
+    var authData = JSON.parse(sessionStorage.getItem('user'));
+    $scope.userType = authData.SystemUserTypeId;
+    if ($scope.userType != 1) {
+        alert("UnAuthorized Access")
+        $state.go('Dashboard')
+    }
+
+
+
+
+
+
+
+
     app.controller("StudentSearchReportController", function ($scope, $state, $stateParams, $localStorage, AppSettings, ReportService, $uibModal, Excel, $timeout, AttendanceService, $rootScope) {
         var authdata = $localStorage.authorizationData;
         var markslist = [];

@@ -15,6 +15,14 @@
             alert("unable to load Schemes");
         });
 
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.Submit = function (scheme) {
             $scope.loading = true;
             $scope.Noresult = false

@@ -42,6 +42,14 @@ define(['app'], function (app) {
             $scope.DetailsFound = false;
         }
 
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
+
         $scope.getNrExcel = function (StudentType, ExamTypeId) {
             $scope.LoadImg = true;
             var getNrReports = PreExaminationService.NrExcelReports(StudentType, authData.College_Code.toString(), ExamTypeId, $scope.selectedEmy);

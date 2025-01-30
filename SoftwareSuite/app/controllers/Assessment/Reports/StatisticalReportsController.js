@@ -32,6 +32,15 @@
             $scope.homeDashBoard = true;
             $state.go("Dashboard");
         }
+
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.getReport = function () {
             $scope.loading = true;
             console.log($scope.selectedSem)

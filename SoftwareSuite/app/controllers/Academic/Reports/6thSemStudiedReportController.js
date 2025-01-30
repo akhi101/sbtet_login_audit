@@ -30,6 +30,13 @@
                 console.log(err.Message);
             });
 
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType != 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.DownloadtoExcel = function (tableid) {
             var loadData1 = AcademicService.get6thSemStudiedReportExcel()
             loadData1.then(function (data) {
