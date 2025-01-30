@@ -258,12 +258,30 @@
 
             var value = val + 1
             var input = document.getElementById("studentFile" + value);
+
+
+            $scope.FileName = input.files[0].name
+
+
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
+
+                }
+            }
+
+
             var img = document.createElement("img");
             if (input.files && input.files[0]) {
 
                 var reader = new FileReader();
                 reader.readAsDataURL(input.files[0]);
-                $scope.FileName = input.files[0].name
+                //$scope.FileName = input.files[0].name
                 var base64file = '';
                 var canvas = document.createElement("canvas");
                 reader.onload = function (ele) {
