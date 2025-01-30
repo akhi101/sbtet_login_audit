@@ -7,6 +7,7 @@ namespace SoftwareSuite.Models.Security
 {
     public class SystemUser
     {
+        public bool AccountLocked { get; set; }
         public string UserName { get; set; }
         public string BranchCode { get; set; }
         public string CollegeCode { get; set; }
