@@ -8,13 +8,12 @@ namespace SoftwareSuite.Models.Security
     public class AuthToken
     {
         //internal object collegeType;
-
-        public bool AccountLocked { get; set; }
         public string UserName { get; set; }
         public int UserId { get; set; }
         public int UserTypeId { get; set; }
         public string CollegeCode { get; set; }
         public string collegeType { get; set; }
+        public bool AccountLocked { get; set; }
         public DateTime ExpiryDate { get; set; }
     }
 }

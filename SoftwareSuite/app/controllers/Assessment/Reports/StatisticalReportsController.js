@@ -2,7 +2,11 @@
     app.controller("StatisticalReportsController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, AssessmentService, Excel, $timeout) {
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.userName = authData.UserName;
         $scope.College_Code = authData.College_Code;
         AppSettings.College_Name = authData.College_Name;
@@ -34,12 +38,7 @@
         }
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.getReport = function () {
             $scope.loading = true;

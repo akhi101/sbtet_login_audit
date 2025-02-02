@@ -1,6 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("CircularsController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
 
 
@@ -70,12 +75,7 @@
         }
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.Updatesemesterdat = function (data, ind, Title) {
 
@@ -101,7 +101,24 @@
             var NotificationDate = moment(data.NotificationDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var uploadexcl = AdminService.UpdateCircular($scope.updatepdffile, file.value.split("\\").pop(), data.Title, data.CircularTypeId, NotificationDate, data.ID);
             uploadexcl.then(function (res) {
-                if (res[0].Code == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+                else if (res[0].Code == '200') {
                     $scope.updatepdffile = '';
                     $scope.loading = false;
                     //$scope.error = false;
@@ -224,30 +241,43 @@
 
             var value = val + 1
             var input = document.getElementById("studentFile" + value);
-            var img = document.createElement("img");
-            if (input.files && input.files[0]) {
 
-                var reader = new FileReader();
-                reader.readAsDataURL(input.files[0]);
-                $scope.FileName = input.files[0].name
-                var base64file = '';
-                var canvas = document.createElement("canvas");
-                reader.onload = function (ele) {
-                    $('#studentFile' + value).attr('src', ele.target.result);
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            var file = input.files[0];
 
-                    base64file = ele.target.result;
-                    $scope.updatepdffile = base64file.replace(/^data:application\/pdf+;base64,/, "").replace(/^data:application\/zip+;base64,/, "").replace(/^data:image\/[a-z]+;base64,/, "").replace(/^data:application\/octet\-stream+;base64,/, "").replace(/^data:application\/x\-zip\-compressed+;base64,/, "").replace(/^data:application\/msword+;base64,/, "");
-
-                    $scope.wesfile1 = canvas.toDataURL("application\/pdf\/zip").replace(/^data:application\/pdf\/zip+;base64,/, "");
-                    ("image/png").replace(/^data:image\/[a-z]+;base64,/, "");
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
 
                 }
-                reader.onerror = function (e) {
-                    console.error("File could not be read! Code " + e.target.error.code);
-                };
 
+                var img = document.createElement("img");
+                if (input.files && input.files[0]) {
+
+                    var reader = new FileReader();
+                    reader.readAsDataURL(input.files[0]);
+                    $scope.FileName = input.files[0].name
+                    var base64file = '';
+                    var canvas = document.createElement("canvas");
+                    reader.onload = function (ele) {
+                        $('#studentFile' + value).attr('src', ele.target.result);
+
+                        base64file = ele.target.result;
+                        $scope.updatepdffile = base64file.replace(/^data:application\/pdf+;base64,/, "").replace(/^data:application\/zip+;base64,/, "").replace(/^data:image\/[a-z]+;base64,/, "").replace(/^data:application\/octet\-stream+;base64,/, "").replace(/^data:application\/x\-zip\-compressed+;base64,/, "").replace(/^data:application\/msword+;base64,/, "");
+
+                        $scope.wesfile1 = canvas.toDataURL("application\/pdf\/zip").replace(/^data:application\/pdf\/zip+;base64,/, "");
+                        ("image/png").replace(/^data:image\/[a-z]+;base64,/, "");
+
+                    }
+                    reader.onerror = function (e) {
+                        console.error("File could not be read! Code " + e.target.error.code);
+                    };
+
+                }
             }
-
             //console.log($scope.updatepdffile)
         }
 

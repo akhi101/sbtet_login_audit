@@ -18,8 +18,12 @@
            
             $scope.getSchemes();
 
-            var authData = $localStorage.authorizationData;
-
+            var authData = JSON.parse(sessionStorage.getItem('user'));
+            $scope.userType = authData.SystemUserTypeId;
+            if ($scope.userType == 1 || $scope.userType == 2) {
+                alert("UnAuthorized Access")
+                $state.go('Dashboard')
+            }
             $scope.loadTempSessionData();
             $scope.loadBranchName();
             $scope.College_Code = authData.College_Code;
@@ -226,12 +230,7 @@
                 });
         }
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 3) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
 
         $scope.OpenChapters = function (Istheory, SubjectId, SubjectName, SubjectCode) {

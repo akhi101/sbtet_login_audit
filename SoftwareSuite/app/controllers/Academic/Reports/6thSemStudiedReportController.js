@@ -1,6 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("6thSemStudiedReportController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, AcademicService , Excel, $timeout) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         var data = {};
         $scope.$emit('showLoading', data);
 
@@ -30,12 +35,7 @@
                 console.log(err.Message);
             });
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.DownloadtoExcel = function (tableid) {
             var loadData1 = AcademicService.get6thSemStudiedReportExcel()

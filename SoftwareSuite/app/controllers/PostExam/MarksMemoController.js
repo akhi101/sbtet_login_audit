@@ -1,7 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("MarksMemoController", function ($scope, $http, $window, $localStorage, $state, $stateParams, AppSettings, $uibModal, $timeout, PreExaminationService) {
 
-        
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
         
         var ApproveList = PreExaminationService.GetScheme();

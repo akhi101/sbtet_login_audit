@@ -1,5 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("AdmissionReportsController", function ($scope, $state, $stateParams, $localStorage, AppSettings, AdmissionService, Excel, $timeout, PreExaminationService, AssessmentService, StudentWiseService, StudentResultService) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         $scope.loading = false;
         $scope.hidedata = function () {
 
@@ -346,12 +353,7 @@
         }
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
 
         $scope.optionToggledBranch = function () {

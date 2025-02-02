@@ -2,7 +2,11 @@
     app.controller("FacultyMappingReportController", function ($scope, $http, $localStorage, StudentWiseService, $state, $stateParams, AppSettings, Excel, $timeout, $uibModal, AcademicService, PreExaminationService) {
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         //console.log(authData)
         var ccode = "";
         $scope.UserTypeId = authData.SystemUserTypeId
@@ -77,12 +81,7 @@
             }
         }
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1 || $scope.userType != 2) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
 
 

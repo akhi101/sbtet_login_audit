@@ -6,7 +6,11 @@
         //var AcademicId = authData.AcademicId;
         //var authData = $localStorage.authorizationData;  
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.userType = authData.SystemUserTypeId;
         if ($scope.userType == 1 || $scope.userType == 1000 || $scope.userType  == 1014){
             var AdminAttendanceReports = AttendanceService.getAdminAttendanceReports()
@@ -59,12 +63,6 @@
             $state.go('Dashboard.AdmissionDashboard.GetAttendanceReport');
         }
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1 || $scope.userType != 3 ) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
 
         $scope.openCollegeAttendance = function (CollegeCode) {
             $localStorage.CollegeAttendanceReports = {}
