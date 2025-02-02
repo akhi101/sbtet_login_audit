@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.factory('Excel', function ($window) {
         //alert("hello");
         var uri = 'data:application/vnd.ms-excel;base64,',
