@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("CircularsController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
         var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authData.SystemUserTypeId;
