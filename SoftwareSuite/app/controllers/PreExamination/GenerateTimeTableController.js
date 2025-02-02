@@ -15,6 +15,14 @@
         };
     });
     app.controller("GenerateTimeTableController", function ($scope, $http, $localStorage, $state, AppSettings, StudentResultService, PreExaminationService, Excel, $timeout) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
+
         $scope.ExamMonthYears = [];
         $scope.StudentType = [];
         $scope.ExamDates = [];      

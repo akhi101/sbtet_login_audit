@@ -4,10 +4,11 @@
         $scope.btnDisable = false;
         $scope.MyCheck = false;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.UserTypeId = authData.SystemUserTypeId;
+        $scope.userType = authData.SystemUserTypeId;
         if ($scope.userType == 2 || $scope.userType == 3) {
             alert("UnAuthorized Access")
-            $state.go('Dashboard')
+            $state.go('Dashboard');
+            return;
         }
         //$scope.UserTypeId = $localStorage.authorizationData.SystemUserTypeId;
 

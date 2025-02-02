@@ -7,6 +7,13 @@
         //        { "Id": "3", "Scheme": "C16S", "ApprovalPending": "20", "Approved": "10", "SendtoCollege": "10" }
 
         //]
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard');
+            return;
+        }
         var data = {};
         $scope.$emit('showLoading', data);
         $scope.Data = false;
