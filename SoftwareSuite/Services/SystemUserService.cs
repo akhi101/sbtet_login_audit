@@ -67,6 +67,7 @@ namespace SoftwareSuite.Services
                         cmd.Parameters.Add(new SqlParameter("@UserName", UserName));
                         cmd.Parameters.Add(new SqlParameter("@Password", Password));
                         cmd.Parameters.Add(new SqlParameter("@ipaddress", Ipaddress));
+                        //cmd.Parameters.Add(new SqlParameter("@SessionID", SessionID));
                         conn.Open();
                         var da = new SqlDataAdapter(cmd);
                         da.Fill(ds);

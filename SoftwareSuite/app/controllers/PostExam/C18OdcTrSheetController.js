@@ -1,5 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("C18OdcTrSheetController", function ($scope, $q, $http, PreExaminationService, $localStorage, $state, $stateParams, AppSettings) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.NrGenerating = false;
         //var ApproveList = PreExaminationService.GetSchemes();
         //ApproveList.then(function (response) {

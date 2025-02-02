@@ -1,8 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("ElectiveMappedReportController", function ($scope, $http, $localStorage, $state, $location, $window, $stateParams, AppSettings, PreExaminationService, Excel, $timeout) {
         //var authdata = $localStorage.authorizationData;
-        var authdata = JSON.parse(sessionStorage.getItem('user'));
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.userType = authdata.SystemUserTypeId
         if ($scope.userType == 1) {
             var ClgCode = '';
@@ -48,12 +52,7 @@
             });
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
 
         $scope.OpenDetails = function (collegeCode) {

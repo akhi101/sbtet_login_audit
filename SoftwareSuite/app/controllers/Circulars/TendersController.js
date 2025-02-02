@@ -1,7 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("TendersController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
 
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
 
         const $ctrl = this;
@@ -45,12 +50,7 @@
         }
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.Cancelsemesterdat = function (data, ind) {
             $scope['edit' + ind] = true;
@@ -127,7 +127,24 @@
             var EndDate = moment(data.EndDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var uploadexcl = AdminService.UpdateTender($scope.updatepdffile, file.value.split("\\").pop(), data.Title, TenderDate,EndDate, data.Id);
             uploadexcl.then(function (res) {
-                if (res[0].Code == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+                else if (res[0].Code == '200') {
                     $scope.updatepdffile = '';
                     $scope.loading = false;
                     //$scope.error = false;
@@ -255,6 +272,20 @@
         $scope.uploadfiles = function (ele, val) {
             var value = val + 1
             var input = document.getElementById("studentFile" + value);
+            var file = input.files[0];
+            $scope.TenderFileName = file.name;
+
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,.PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
+
+                }
+            }
             var img = document.createElement("img");
             if (input.files && input.files[0]) {
                 var reader = new FileReader();

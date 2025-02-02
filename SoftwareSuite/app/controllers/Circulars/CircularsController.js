@@ -1,6 +1,11 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("CircularsController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
 
 
@@ -57,40 +62,6 @@
 
         }
 
-        $scope.logOut = function () {
-            sessionStorage.loggedIn = "no";
-            var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
-            GetUserLogout.then(function (response) {
-                if (response.Table[0].ResponceCode == '200') {
-                    alert(response.Table[0].ResponceDescription);
-                } else {
-                    alert('Unsuccess')
-                }
-            },
-                function (error) {
-                    //   alert("error while loading Notification");
-                    var err = JSON.parse(error);
-                });
-            sessionStorage.removeItem('user')
-            sessionStorage.removeItem('authToken')
-            sessionStorage.removeItem('SessionID')
-            sessionStorage.clear();
-
-            $localStorage.authorizationData = ""
-            $localStorage.authToken = ""
-            delete $localStorage.authorizationData;
-            delete $localStorage.authToken;
-            delete $scope.SessionID;
-            $scope.authentication = {
-                isAuth: false,
-                UserId: 0,
-                userName: ""
-            };
-            $state.go('index.WebsiteLogin')
-
-        }
-
-
 
         $scope.Cancelsemesterdat = function (data, ind) {
             $scope['edit' + ind] = true;
@@ -104,12 +75,7 @@
         }
 
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.Updatesemesterdat = function (data, ind, Title) {
 
@@ -135,7 +101,24 @@
             var NotificationDate = moment(data.NotificationDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var uploadexcl = AdminService.UpdateCircular($scope.updatepdffile, file.value.split("\\").pop(), data.Title, data.CircularTypeId, NotificationDate, data.ID);
             uploadexcl.then(function (res) {
-                if (res[0].Code == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+                else if (res[0].Code == '200') {
                     $scope.updatepdffile = '';
                     $scope.loading = false;
                     //$scope.error = false;
@@ -259,11 +242,8 @@
             var value = val + 1
             var input = document.getElementById("studentFile" + value);
 
-
-            $scope.FileName = input.files[0].name
-
-
             var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            var file = input.files[0];
 
             if (file) {
                 if (allowedTypes.indexOf(file.type) === -1) {
@@ -273,33 +253,31 @@
                 } else {
 
                 }
-            }
 
+                var img = document.createElement("img");
+                if (input.files && input.files[0]) {
 
-            var img = document.createElement("img");
-            if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(input.files[0]);
+                    $scope.FileName = input.files[0].name
+                    var base64file = '';
+                    var canvas = document.createElement("canvas");
+                    reader.onload = function (ele) {
+                        $('#studentFile' + value).attr('src', ele.target.result);
 
-                var reader = new FileReader();
-                reader.readAsDataURL(input.files[0]);
-                //$scope.FileName = input.files[0].name
-                var base64file = '';
-                var canvas = document.createElement("canvas");
-                reader.onload = function (ele) {
-                    $('#studentFile' + value).attr('src', ele.target.result);
+                        base64file = ele.target.result;
+                        $scope.updatepdffile = base64file.replace(/^data:application\/pdf+;base64,/, "").replace(/^data:application\/zip+;base64,/, "").replace(/^data:image\/[a-z]+;base64,/, "").replace(/^data:application\/octet\-stream+;base64,/, "").replace(/^data:application\/x\-zip\-compressed+;base64,/, "").replace(/^data:application\/msword+;base64,/, "");
 
-                    base64file = ele.target.result;
-                    $scope.updatepdffile = base64file.replace(/^data:application\/pdf+;base64,/, "").replace(/^data:application\/zip+;base64,/, "").replace(/^data:image\/[a-z]+;base64,/, "").replace(/^data:application\/octet\-stream+;base64,/, "").replace(/^data:application\/x\-zip\-compressed+;base64,/, "").replace(/^data:application\/msword+;base64,/, "");
+                        $scope.wesfile1 = canvas.toDataURL("application\/pdf\/zip").replace(/^data:application\/pdf\/zip+;base64,/, "");
+                        ("image/png").replace(/^data:image\/[a-z]+;base64,/, "");
 
-                    $scope.wesfile1 = canvas.toDataURL("application\/pdf\/zip").replace(/^data:application\/pdf\/zip+;base64,/, "");
-                    ("image/png").replace(/^data:image\/[a-z]+;base64,/, "");
+                    }
+                    reader.onerror = function (e) {
+                        console.error("File could not be read! Code " + e.target.error.code);
+                    };
 
                 }
-                reader.onerror = function (e) {
-                    console.error("File could not be read! Code " + e.target.error.code);
-                };
-
             }
-
             //console.log($scope.updatepdffile)
         }
 

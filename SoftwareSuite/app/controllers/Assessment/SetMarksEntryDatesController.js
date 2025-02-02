@@ -1,6 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("SetMarksEntryDatesController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, MarksEntryService, MenuService, AssessmentService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         const $ctrl = this;
 
         $scope.finalList = [];

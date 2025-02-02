@@ -1,6 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("NotificationController", function ($scope, $http, $localStorage, $state, $stateParams, $interval, AppSettings, AdminService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         var markslist = [];
         var GetNotifications = AdminService.getNotifications();
         GetNotifications.then(function (response) {
@@ -36,13 +41,7 @@
                 alert("error while loading Data");
                 console.log(error);
             });
-        
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
         $scope.getuserNotifications = function () {
             var GetNotifications = AdminService.getNotifications();

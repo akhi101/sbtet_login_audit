@@ -3,7 +3,13 @@
 
         $scope.btnDisable = false;
         $scope.MyCheck = false;
-        $scope.UserTypeId = $localStorage.authorizationData.SystemUserTypeId;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.UserTypeId = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+        //$scope.UserTypeId = $localStorage.authorizationData.SystemUserTypeId;
 
         $scope.ApproveType = $localStorage.CertificateData.ApproveType;
         $scope.Scheme = $localStorage.CertificateData.Scheme;

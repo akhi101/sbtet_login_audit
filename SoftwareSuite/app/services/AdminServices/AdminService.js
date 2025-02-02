@@ -597,13 +597,14 @@
             return DataAccessService.postData('api/AdminService/ValidateForgetPasswordCaptcha', paramObject);
         };
 
-        this.ValidateUserLoginCaptcha = function (SessionId, Captcha, LoginName, Password, DataType) {
+        this.ValidateUserLoginCaptcha = function (Session, Captcha, LoginName, Password, DataType) {
             var paramObject = {
-                "SessionId": SessionId,
+                "Session": Session,
                 "Captcha": Captcha,
                 "LoginName": LoginName,
                 "Password": Password,
                 "DataType": DataType
+            //    "SessionID": SessionID,
             };
             return DataAccessService.postData('api/AdminService/ValidateUserLoginCaptcha', paramObject);
         };
