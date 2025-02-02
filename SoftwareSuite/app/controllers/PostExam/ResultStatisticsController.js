@@ -1,11 +1,12 @@
 ﻿define(['app'], function (app) {
-    app.controller("ResultStatisticsController", function ($scope, PreExaminationService, $localStorage) {
+    app.controller("ResultStatisticsController", function ($scope, $state, PreExaminationService, $localStorage) {
 
         var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authData.SystemUserTypeId;
         if ($scope.userType == 2 || $scope.userType == 3) {
             alert("UnAuthorized Access")
-            $state.go('Dashboard')
+            $state.go('Dashboard');
+            return;
         }
         var getAcademicYears = PreExaminationService.GetMonthYear();
         getAcademicYears.then(function (response) {

@@ -1,5 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("TransactionReportController", function ($scope, $http, $localStorage, $state, AppSettings, PreExaminationService, MarksEntryService) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         $scope.StudentType = [];
         $scope.ExcelView = false;
         $scope.isShowResults = false;

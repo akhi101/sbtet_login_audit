@@ -1,11 +1,12 @@
 ﻿define(['app'], function (app) {
-    app.controller("FeeSettingsController", function ($scope, $localStorage, PreExaminationService) {
+    app.controller("FeeSettingsController", function ($scope, $state, $localStorage, PreExaminationService) {
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
         $scope.userType = authData.SystemUserTypeId;
         if ($scope.userType == 2 || $scope.userType == 3) {
             alert("UnAuthorized Access")
-            $state.go('Dashboard')
+            $state.go('Dashboard');
+            return;
         }
         $scope.UserName = authData.UserName;
 
