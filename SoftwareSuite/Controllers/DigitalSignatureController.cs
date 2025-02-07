@@ -49,7 +49,7 @@ namespace SoftwareSuite.Controllers
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("DigitalSignatureController", token.UserId, ex.Message);
+                //dbHandler.SaveErorr("DigitalSignatureController", token.UserId, ex.Message);
                 return "Certificate Link Failed";
             }
         }

@@ -1,5 +1,5 @@
 ﻿define(['app'], function (app) {
-    app.controller("WebsiteLoginController", function ($scope, $http, $localStorage, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
+    app.controller("WebsiteLoginController", function ($scope, $http, $localStorage, $timeout, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
 
 
         const $ctrl = this;
@@ -44,12 +44,151 @@
         }
 
 
+        $scope.decryptParameter1 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.USERNAME; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText1 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedUserName = $scope.decryptedText1;
+        };
+
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.USERID; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedUserID = $scope.decryptedText2;
+        };
+
+        $scope.decryptParameter3 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.USERTYPEID; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText3 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedUserTypeID = $scope.decryptedText3;
+        };
+
+        $scope.decryptParameter4 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.RESPONSECODE; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText4 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedResCode = $scope.decryptedText4;
+        };
+
+        $scope.decryptParameter5 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.RESDESCRIPTION; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText5 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedResDesc = $scope.decryptedText5;
+        };
+
+        $scope.decryptParameter6 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.message; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText6 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedmessage = $scope.decryptedText6;
+        };
+
+        $scope.decryptParameter7 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.isLocked; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText7 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedislocked = $scope.decryptedText7;
+        };
+
 
         $scope.loginFailed = false;
         $scope.loginAttempts = 0;
         $scope.validatelogincaptcha = function () {
 
-            delete $localStorage.authorizationData;
 
             if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
                 $scope.UserNamemessage = "* Enter user name";
@@ -86,7 +225,7 @@
                 $scope.Loginbutton = false;
                 return;
             }
-            $scope.DataType = 2;
+            $scope.DataType = 1;
             var EncriptedDataType = $crypto.encrypt($crypto.encrypt($scope.DataType.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var EncriptedLoginName = $crypto.encrypt($crypto.encrypt($scope.UserName, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var EncriptedPassword = $crypto.encrypt($crypto.encrypt($scope.Password, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
@@ -94,84 +233,87 @@
             var EncriptedSessionId = $crypto.encrypt($crypto.encrypt($scope.LoginSessionEKey.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
 
 
-            var captcha = AdminService.ValidateUserLoginCaptcha($scope.EncriptedSession, EncriptedCaptchaText, EncriptedLoginName, EncriptedPassword, EncriptedDataType, EncriptedSessionId);
+            var captcha = AdminService.ValidateUserLoginCaptcha($scope.EncriptedSession, EncriptedCaptchaText, EncriptedLoginName, EncriptedPassword, EncriptedDataType);
             captcha.then(function (response) {
-                if (response.token.length > 0) {
+                $scope.token = response.token;
+                $scope.loginLocked = response.isLocked;
 
-                    var UserRights = [];
+                if ($scope.token == undefined && $scope.loginLocked==undefined) {
+                    $scope.message = response.MESSAGE;
+                    $scope.decryptParameter6();
+                    alert($scope.decryptedmessage);
+                    return;
+                }
+                else if ($scope.loginLocked != undefined) {
+                    $scope.message = response.MESSAGE;
+                    $scope.decryptParameter6();
+                    alert($scope.decryptedmessage);
+                    return;
+                }
+
+                else if ($scope.token == undefined && response.loginLocked == false) {
+                    $scope.message = response.MESSAGE;
+                    $scope.decryptParameter6();
+                    alert($scope.decryptedmessage);
+                    return;
+                }
+                else if ($scope.token.length > 0) {
+
+                    console.log("Login Success. Navigating to Dashboard...");
+                    $scope.USERNAME = response.USERNAME;
+                    $scope.USERID = response.USERID;
+                    $scope.USERTYPEID = response.USERTYPEID;
+                    $scope.RESPONSECODE = response.RESPONSECODE;
+                    $scope.RESDESCRIPTION = response.RESDESCRIPTION;
+                    $scope.token = response.token;
+                    $scope.decryptParameter1();
+                    $scope.decryptParameter2();
+                    $scope.decryptParameter3();
+                    $scope.decryptParameter4();
+                    $scope.decryptParameter5();
+
+                    delete $localStorage.authToken;
+                    $localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
+
                     sessionStorage.loggedIn = "yes";
-                    $localStorage.authToken = response.token + "$$@@$$" + $scope.LoginEKey;
-
-
                     $scope.SessionID = $scope.LoginSessionEKey;
 
-                    var status = response.data.UserAuth[0].ResponceCode;
-                    if (status != "200" && $scope.loginAttempts <= 2) {
-                        alert(response.data.UserAuth[0].RespoceDescription);
-                        $scope.loginFailed = true;
-                        $scope.Loginbutton = false;
-                        $scope.loginAttempts++;
-                    }
-                    else if ((status != "200" || status == "200") && $scope.loginAttempts >= 2) {
-                        alert('Account Locked');
-                        $scope.addAccountStatus();
-                        $timeout(function () {
-                            $scope.loginAttempts = 0;
-                            $scope.Loginbutton = false;
-                        }, 1 * 60 * 1000);
-                        return;
-                    }
-                    else {
-                        $scope.loading = false;
-                        if (response.data.SystemUser[0].AccountLocked == false || $scope.AccountStatusData[0].AccountLocked == null) {
-                            //$scope.Loginbutton = true;
+                    //response.data = response.data.SystemUser[0];
+                          let authorizationData = {
+                                token: $localStorage.authToken,
+                                //SessionID: $localStorage.SessionID,
+                                SysUserID: $scope.decryptedUserID,
+                                //College_Code: response.data.CollegeCode,
+                                //College_Name: response.data.CollegeName,
+                                SystemUserTypeId: $scope.decryptedUserTypeID,
+                                UserName: $scope.decryptedUserName.toUpperCase(),
+                                //CollegeID: response.data.CollegeId,
+                                //BranchCode: response.data.BranchCode,
+                                //BranchId: response.data.BranchId,
+                                //TypeFlag: response.data.TypeFlag,
+                                //MngtTypID: response.data.MngtTypID,
+                                //SysUsrGrpID: response.data.SysUsrGrpID,
+                                //SeqNo: response.data.SeqNo
+                            };
 
-                            //sessionStorage.setItem('SessionID', $scope.LoginEKey);
-                            //response.data = response.data.SystemUser[0];
-                            try {
-                                authorizationData = {
-                                    token: $localStorage.authToken,
-                                    SessionID: $localStorage.SessionID,
-                                    SysUserID: response.data.UserId,
-                                    College_Code: response.data.CollegeCode,
-                                    College_Name: response.data.CollegeName,
-                                    SystemUserTypeId: response.data.UserTypeId,
-                                    UserName: $scope.UserName.toUpperCase(),
-                                    CollegeID: response.data.CollegeId,
-                                    BranchCode: response.data.BranchCode,
-                                    BranchId: response.data.BranchId,
+                            sessionStorage.setItem('user', JSON.stringify(authorizationData));
 
-                                    CollegeCatName: "",
-                                    Clg_Type: "",
-                                    SectionId: "",
-                                    SchemeId: "",
-                                    SemesterId: "",
-                                    AcademicId: "",
-                                    percentage: "",
-                                    TypeFlag: response.data.TypeFlag,
-                                    MngtTypID: response.data.MngtTypID,
-                                    SysUsrGrpID: response.data.SysUsrGrpID,
-                                    SeqNo: response.data.SeqNo
-                                };
-
-                                sessionStorage.setItem('user', JSON.stringify(authorizationData));
-                                $state.go('Dashboard');
-                                $scope.Loginbutton = false;
-                            }
-
-                            catch (err) {
-
-                            }
+                    $timeout(function () {
+                        try {
+                            $state.go('Dashboard'); // Preferred AngularJS way
+                            $scope.$apply(); // Ensure digest cycle updates
+                        } catch (e) {
+                            console.error("State transition failed, using window.location.href instead.");
+                            window.location.href = '#/Dashboard'; // Fallback
+                            window.location.reload(); // Ensure refresh
                         }
-                        else {
-                            alert('Account is Locked');
-                            $scope.loading = false;
-                            $scope.Loginbutton = false;
-                            return;
-                        }
+                    }, 0);
+
+
                     }
 
-                }
+                
+
 
             });
 
@@ -333,7 +475,6 @@
 
                     var data = $crypto.encrypt($scope.Password, $scope.LoginEKey) + "$$@@$$" + $crypto.encrypt($scope.UserName, $scope.LoginEKey) + "$$@@$$" + $scope.LoginEKey;
                     $http.post(AppSettings.WebApiUrl + 'api/SystemUser/GetUserLogin', data, {}).then(function (response) {
-                        //console.log(response)
                         var UserRights = [];
                         sessionStorage.loggedIn = "yes";
                         var token = response.data.token + "$$@@$$" + $scope.LoginEKey;
