@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.factory('Excel', function ($window) {
         //alert("hello");
         var uri = 'data:application/vnd.ms-excel;base64,',
@@ -15,8 +15,26 @@
         };
     });
 
+
+
+
+
+
+
+
+
+
+
     app.controller("StudentSearchReportController", function ($scope, $state, $stateParams, $localStorage, AppSettings, ReportService, $uibModal, Excel, $timeout, AttendanceService, $rootScope) {
         var authdata = $localStorage.authorizationData;
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         var markslist = [];
         $scope.StudentSearchReportStats = [];
         $scope.searchResult = false;

@@ -1,7 +1,13 @@
 ﻿define(['app'], function (app) {
-    app.controller("ResultStatisticsController", function ($scope, PreExaminationService) {
+    app.controller("ResultStatisticsController", function ($scope, $state, PreExaminationService, $localStorage) {
 
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard');
+            return;
+        }
         var getAcademicYears = PreExaminationService.GetMonthYear();
         getAcademicYears.then(function (response) {
             $scope.AcademicYears = response.Table;
@@ -78,6 +84,40 @@
 
         }
 
+
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
+            GetUserLogout.then(function (response) {
+                if (response.Table[0].ResponceCode == '200') {
+                    alert(response.Table[0].ResponceDescription);
+                } else {
+                    alert('Unsuccess')
+                }
+            },
+                function (error) {
+                    //   alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('authToken')
+            sessionStorage.removeItem('SessionID')
+            sessionStorage.clear();
+
+            $localStorage.authorizationData = ""
+            $localStorage.authToken = ""
+            delete $localStorage.authorizationData;
+            delete $localStorage.authToken;
+            delete $scope.SessionID;
+            $scope.authentication = {
+                isAuth: false,
+                UserId: 0,
+                userName: ""
+            };
+            $state.go('index.WebsiteLogin')
+
+        }
+
         $scope.AcademicYearChange1 = function () {
             var emmothyr = PreExaminationService.GetExamMonthYearsByAcademicYearId($scope.AcademicYearID);
             emmothyr.then(function (response) {
@@ -90,6 +130,7 @@
             });
 
         }
+
 
         $scope.AcademicYearChange2 = function () {
             var emmothyr = PreExaminationService.GetExamMonthYearsByAcademicYearId($scope.academicYearID);

@@ -1,9 +1,13 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("AcademicYearSettingsController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, MasterPageService, PreExaminationService) {
      
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.UserName = authData.UserName
      
         $scope.finalList = [];
@@ -23,7 +27,8 @@
           
           
         }
-        
+
+
      
         $scope.UpdateAcaYear = function (StartYear) {
             var tempyr = (parseInt(StartYear) + 1).toString();

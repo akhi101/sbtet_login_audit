@@ -4,6 +4,13 @@
         $ctrl.$onInit = () => {
             $scope.getFeeSetdate();
         }
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         $scope.endDisable = true;
         $scope.fineDisable = true;
         $scope.tatkalDisable = true;

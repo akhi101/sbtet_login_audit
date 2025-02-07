@@ -61,6 +61,13 @@ define(['app'], function (app) {
             $state.go("Dadshboard.AdmissionDashboard.ReAdmission");
         }
 
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 1) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
 
         $scope.OpenStudentWise = function () {
             $state.go("StudentResult");

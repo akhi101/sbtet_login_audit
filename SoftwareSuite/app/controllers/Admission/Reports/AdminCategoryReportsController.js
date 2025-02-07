@@ -7,7 +7,12 @@
 
             $scope.getadmincategory()
         }
-        
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         var AcademicYears = AcademicService.getAcademicYears()
         AcademicYears.then(function (response) {
             $scope.loading = false;
@@ -20,6 +25,40 @@
                 var err = JSON.parse(error);
                 console.log(err.Message);
             });
+
+
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
+            GetUserLogout.then(function (response) {
+                if (response.Table[0].ResponceCode == '200') {
+                    alert(response.Table[0].ResponceDescription);
+                } else {
+                    alert('Unsuccess')
+                }
+            },
+                function (error) {
+                    //   alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('authToken')
+            sessionStorage.removeItem('SessionID')
+            sessionStorage.clear();
+
+            $localStorage.authorizationData = ""
+            $localStorage.authToken = ""
+            delete $localStorage.authorizationData;
+            delete $localStorage.authToken;
+            delete $scope.SessionID;
+            $scope.authentication = {
+                isAuth: false,
+                UserId: 0,
+                userName: ""
+            };
+            $state.go('index.WebsiteLogin')
+
+        }
 
 
         $scope.getadmincategory = function () {
@@ -145,6 +184,9 @@
             localStorage.setItem('collegeCode', collegeCode)
             $state.go('Dashboard.AdmissionDashboard.CategoryReports')
         }
+
+
+
 
         $scope.DownloadtoExcel = function (tableid) {
          

@@ -387,6 +387,92 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        public class LoginCaptchaDetails{
+
+            public string Session { get; set; }
+            public string SessionID { get; set; }
+            public string Captcha { get; set; }
+            public string LoginName { get; set; }
+            public string Password { get; set; }
+        }
+
+
+        [HttpPost, ActionName("ValidateUserLoginCaptcha")]
+        public HttpResponseMessage ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
+        {
+            var dbHandler = new dbHandler();
+            List<Output> p = new List<Output>();
+            Output p1 = new Output();
+            var captcha = string.Empty;
+            try
+            {
+                string token = "";
+                string decryptsession = GetDecryptedData(ReqData.Session);
+                string decryptCaptcha = GetDecryptedData(ReqData.Captcha);
+                string decryptLoginname = GetDecryptedData(ReqData.LoginName);
+                string decryptpassword = GetDecryptedData(ReqData.Password);
+
+                //string decryptsessionid = GetDecryptedData(ReqData.SessionID);
+
+                var crypt = new HbCrypt();
+                string encrypassword = crypt.Encrypt(decryptpassword);
+
+
+                var param = new SqlParameter[2];
+                param[0] = new SqlParameter("@SessionId", decryptsession);
+                param[1] = new SqlParameter("@Captcha", decryptCaptcha);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
+
+                if (dt.Rows[0]["ResponseCode"].ToString() == "200")
+                {
+                    var hbcrypt = new HbCrypt();
+                    string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
+                    SystemUserBLL SystemUserBLL = new SystemUserBLL();
+                    SystemUserAuth User;
+                    User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), encrypassword, clientIpAddress);
+
+                    if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
+                    {
+                        var u = User.SystemUser[0];
+                        AuthToken t = new AuthToken { UserName = u.UserName, UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, AccountLocked = u.AccountLocked, ExpiryDate = DateTime.Now.AddHours(1) };
+
+                        token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
+                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User, clientIpAddress });
+                        return response;
+                    }
+                    else
+                    {
+                        var u = User.SystemUser[0];
+                        AuthToken t = new AuthToken { UserName = u.UserName, UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, AccountLocked = u.AccountLocked, ExpiryDate = DateTime.Now.AddHours(1) };
+
+                        token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
+                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User, clientIpAddress });
+                        return response;
+                    }
+
+                }
+                else
+                {
+                    //captcha = GetCaptchaString(data);
+                    p1.ResponceCode = "400";
+                    p1.ResponceDescription = dt.Rows[0]["ResponseDescription"].ToString();
+                    p1.Captcha = captcha;
+                    p.Add(p1);
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("USP_GET_ExamsCaptchaSessionLog", 0, ex.Message);
+                //captcha = GetCaptchaString(data);
+                p1.ResponceCode = "400";
+                p1.ResponceDescription = ex.Message;
+                p1.Captcha = captcha;
+                p.Add(p1);
+                return null;
+            }
+        }
 
         public class AccountStatus
         {

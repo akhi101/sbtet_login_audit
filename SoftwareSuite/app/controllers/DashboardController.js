@@ -50,17 +50,17 @@
             $scope.userName = authData.UserName;
             AppSettings.userName = authData.UserName;
             AppSettings.LoggedUserId = authData.SysUserID;
-           
+
             $scope.userType = authData.SystemUserTypeId;
             var getNotifications = AdminService.GetNotificationByUser($scope.userType);
             getNotifications.then(function (response) {
-              
+
                 $scope.Notification = response;
             },
-                    function (error) {
-                        alert("error while loading Notification");
-                        var err = JSON.parse(error);
-                    });
+                function (error) {
+                    alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
 
             //alert("College Id" + authData.CollegeID);
             AppSettings.CollegeID = authData.CollegeID;
@@ -75,7 +75,7 @@
                 AppSettings.DistrictIDs = authData.DistrictIDs;
             AppSettings.College_Code = authData.College_Code;
             AppSettings.College_Name = authData.College_Name;
-           /* alert("dashboard " + authData.SystemUserTypeId);*/
+            /* alert("dashboard " + authData.SystemUserTypeId);*/
             $scope.College_Code = authData.College_Code == "" || authData.College_Code == null ? "" : authData.College_Code;
             $scope.College_Name = authData.College_Name == "" || authData.College_Name == null ? "" : authData.College_Name;
             var UserTypeId = parseInt($scope.userType);
@@ -134,15 +134,15 @@
 
             var getNotifications = AdminService.GetNotificationByUser($scope.userType);
             getNotifications.then(function (response) {
-               $scope.Notification = response;
+                $scope.Notification = response;
                 if (response.Table !== undefined) {
                     $scope.getNotification = response.Table[0].Notification;
                 }
             },
-                    function (error) {
-                     //   alert("error while loading Notification");
-                        var err = JSON.parse(error);
-                    });
+                function (error) {
+                    //   alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
 
 
 
@@ -165,9 +165,9 @@
 
             }
 
-          
 
-          
+
+
 
             $scope.ChangePassword = function () {
                 $state.go('Dashboard.ChangePassword');
@@ -238,7 +238,7 @@
 
             $scope.OpenModule = function (Module) {
                 $localStorage.selectedModule = {
-                    Id :Module.SysModID,
+                    Id: Module.SysModID,
                     ModuleRouteName: Module.ModuleRouteName
                 }
                 $state.go("Dashboard." + Module.ModuleRouteName);
@@ -247,39 +247,18 @@
 
             $scope.logOut = function () {
                 sessionStorage.loggedIn = "no";
-                var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
-                GetUserLogout.then(function (response) {
-                    if (response.Table[0].ResponceCode == '200') {
-                        alert(response.Table[0].ResponceDescription);
-                    } else {
-                        alert('Unsuccess')
-                    }
-                },
-                    function (error) {
-                        //   alert("error while loading Notification");
-                        var err = JSON.parse(error);
-                    });
-                sessionStorage.removeItem('user')
-                sessionStorage.removeItem('authToken')
-                sessionStorage.removeItem('SessionID')
-                sessionStorage.clear();
-
-                $localStorage.authorizationData = ""
-                $localStorage.authToken = ""
                 delete $localStorage.authorizationData;
-                delete $localStorage.authToken;
-                delete $scope.SessionID;
+
                 $scope.authentication = {
                     isAuth: false,
                     UserId: 0,
-                    userName: ""
+                    UserName: ""
                 };
                 $state.go('index.WebsiteLogin')
-
             }
 
         }
 
-      
+
     });
 });

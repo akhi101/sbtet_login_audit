@@ -1,7 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("CreateDownloadsController", function ($scope, $http, $localStorage, $state, AppSettings, AdminService) {
 
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
 
         var $ctrl = this;
         $ctrl.$onInit = () => {
@@ -22,6 +27,42 @@
 
 
                 });
+        }
+
+
+
+
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
+            GetUserLogout.then(function (response) {
+                if (response.Table[0].ResponceCode == '200') {
+                    alert(response.Table[0].ResponceDescription);
+                } else {
+                    alert('Unsuccess')
+                }
+            },
+                function (error) {
+                    //   alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('authToken')
+            sessionStorage.removeItem('SessionID')
+            sessionStorage.clear();
+
+            $localStorage.authorizationData = ""
+            $localStorage.authToken = ""
+            delete $localStorage.authorizationData;
+            delete $localStorage.authToken;
+            delete $scope.SessionID;
+            $scope.authentication = {
+                isAuth: false,
+                UserId: 0,
+                userName: ""
+            };
+            $state.go('index.WebsiteLogin')
+
         }
 
         $scope.getDownloads = function () {
@@ -75,6 +116,21 @@
 
             var value = val + 1
             var input = document.getElementById("studentFile" + value);
+
+            var file = input.files[0];
+
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+            if (file) {
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert('Invalid file type. Only JPEG, PNG,.PDF files are allowed.');
+                    input.value = '';// Clear the input
+                    return false;
+                } else {
+
+                }
+            }
+
             var img = document.createElement("img");
             if (input.files && input.files[0]) {
 
@@ -262,7 +318,7 @@
                 ele2[j].style['-moz-appearance'] = "none";
             }
         }
-
+       
         $scope.Updatesemesterdat = function (data, ind, Title) {
 
             var file = document.getElementById("studentFile" + ind);
@@ -287,7 +343,26 @@
             var NotificationDate = moment(data.NotificationDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var uploadexcl = AdminService.UpdateDownloads($scope.updatepdffile, file.value.split("\\").pop(), data.Title, data.CircularTypeId, NotificationDate, data.ID);
             uploadexcl.then(function (res) {
-                if (res[0].ResponceCode == '200') {
+
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+
+                else if (res[0].ResponceCode == '200') {
                     $scope.updatepdffile = '';
                     $scope.loading = false;
                     //$scope.error = false;

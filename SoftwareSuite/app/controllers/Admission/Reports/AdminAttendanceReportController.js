@@ -6,7 +6,12 @@
         //var AcademicId = authData.AcademicId;
         //var authData = $localStorage.authorizationData;  
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         $scope.userType = authData.SystemUserTypeId;
         if ($scope.userType == 1 || $scope.userType == 1000 || $scope.userType  == 1014){
             var AdminAttendanceReports = AttendanceService.getAdminAttendanceReports()
@@ -59,7 +64,41 @@
             $state.go('Dashboard.AdmissionDashboard.GetAttendanceReport');
         }
 
-       
+
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
+            GetUserLogout.then(function (response) {
+                if (response.Table[0].ResponceCode == '200') {
+                    alert(response.Table[0].ResponceDescription);
+                } else {
+                    alert('Unsuccess')
+                }
+            },
+                function (error) {
+                    //   alert("error while loading Notification");
+                    var err = JSON.parse(error);
+                });
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('authToken')
+            sessionStorage.removeItem('SessionID')
+            sessionStorage.clear();
+
+            $localStorage.authorizationData = ""
+            $localStorage.authToken = ""
+            delete $localStorage.authorizationData;
+            delete $localStorage.authToken;
+            delete $scope.SessionID;
+            $scope.authentication = {
+                isAuth: false,
+                UserId: 0,
+                userName: ""
+            };
+            $state.go('index.WebsiteLogin')
+
+        }
+
+
 
         $scope.openCollegeAttendance = function (CollegeCode) {
             $localStorage.CollegeAttendanceReports = {}

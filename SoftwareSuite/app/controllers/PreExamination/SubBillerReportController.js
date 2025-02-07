@@ -1,5 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("SubBillerReportController", function ($scope, $http, $localStorage, $state, AppSettings, PreExaminationService, MarksEntryService) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.SubBillers = ['TSDOFP', 'TSCCIC', 'LATEFEE', 'TSTWSH', 'STUSERVICES'];
         $scope.ExcelView = false;
         $scope.isShowResults = false;
