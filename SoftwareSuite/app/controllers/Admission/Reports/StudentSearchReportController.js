@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.factory('Excel', function ($window) {
         //alert("hello");
         var uri = 'data:application/vnd.ms-excel;base64,',
@@ -18,45 +18,7 @@
 
 
 
-    var authData = JSON.parse(sessionStorage.getItem('user'));
-    $scope.userType = authData.SystemUserTypeId;
-    if ($scope.userType != 1) {
-        alert("UnAuthorized Access")
-        $state.go('Dashboard')
-    }
 
-    $scope.logOut = function () {
-        sessionStorage.loggedIn = "no";
-        var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
-        GetUserLogout.then(function (response) {
-            if (response.Table[0].ResponceCode == '200') {
-                alert(response.Table[0].ResponceDescription);
-            } else {
-                alert('Unsuccess')
-            }
-        },
-            function (error) {
-                //   alert("error while loading Notification");
-                var err = JSON.parse(error);
-            });
-        sessionStorage.removeItem('user')
-        sessionStorage.removeItem('authToken')
-        sessionStorage.removeItem('SessionID')
-        sessionStorage.clear();
-
-        $localStorage.authorizationData = ""
-        $localStorage.authToken = ""
-        delete $localStorage.authorizationData;
-        delete $localStorage.authToken;
-        delete $scope.SessionID;
-        $scope.authentication = {
-            isAuth: false,
-            UserId: 0,
-            userName: ""
-        };
-        $state.go('index.WebsiteLogin')
-
-    }
 
 
 
@@ -65,6 +27,14 @@
 
     app.controller("StudentSearchReportController", function ($scope, $state, $stateParams, $localStorage, AppSettings, ReportService, $uibModal, Excel, $timeout, AttendanceService, $rootScope) {
         var authdata = $localStorage.authorizationData;
+
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
+
         var markslist = [];
         $scope.StudentSearchReportStats = [];
         $scope.searchResult = false;

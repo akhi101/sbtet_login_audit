@@ -96,6 +96,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         public string OrgId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public string SessioniD { get; set; }
     }
 
     public class SsoResetPasswordObj

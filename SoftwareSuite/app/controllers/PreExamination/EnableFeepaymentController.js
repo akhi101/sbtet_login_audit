@@ -1,8 +1,13 @@
 ﻿define(['app'], function (app) {
     app.controller("EnableFeepaymentController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $uibModal, PreExaminationService) {
         //var authdata = $localStorage.authorizationData;
-        var authdata = JSON.parse(sessionStorage.getItem('user'));
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         $scope.UserId = authdata.SysUserID;
         $scope.Fee = 0;
         $scope.LateFee = 0;
@@ -144,17 +149,23 @@
             }
             var SetFeePayment = PreExaminationService.EnableFeePayment($scope.ExamMonthYear, $scope.Pin, $scope.StudentTypeId, $scope.Fee, $scope.LateFee, $scope.TatkalFee, $scope.PremiumTatkalFee, Semester);
             SetFeePayment.then(function (res) {
-                var response = JSON.parse(res)
-
+                var res = JSON.parse(res);
+                try {
+                    var res = JSON.parse(res);
+                }
+            catch 
+    {
+       
+    }      
                 const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.hasOwnProperty(keyToExclude)) {
-                    var keys = Object.keys(res);
+                if (res.Status) {
+                   // var keys = Object.keys(res);
 
-                    $scope.statusKey = keys[0];
-                    $scope.statusValue = res[$scope.statusKey];
+                 //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
 
-                    $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res[$scope.descriptionKey];
+                   // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
 
                     $scope.EncStatusDescription2 = $scope.descriptionValue;
                     if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
@@ -162,13 +173,10 @@
                         alert($scope.decryptedParameter2);
 
                     }
-                }
-
-              
-               else if (response.Table[0].ResponseCode =='200') {
-                    alert(response.Table[0].ResponseDescription)
-                } else if (response.Table[0].ResponseCode == '400') {
-                    alert(response.Table[0].ResponseDescription)
+                } else if (res.Table[0].ResponseCode =='200') {
+                    alert(res.Table[0].ResponseDescription)
+                } else if (res.Table[0].ResponseCode == '400') {
+                    alert(res.Table[0].ResponseDescription)
                 }else {
                     //$scope.getExamMonthYears = [];
                     alert("Something Went Wrong");
@@ -179,5 +187,25 @@
                  console.log(error);
              });
         }
+
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
     })
 })

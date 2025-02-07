@@ -3,7 +3,11 @@
 
         //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 1 || $scope.userType == 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.userName = authData.UserName;
         $scope.CollegeCode = authData.College_Code;
         AppSettings.College_Name = authData.College_Name;

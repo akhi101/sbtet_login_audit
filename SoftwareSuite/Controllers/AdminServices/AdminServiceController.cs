@@ -31,6 +31,9 @@ using SoftwareSuite.BLL;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Web.UI.WebControls;
+using DocumentFormat.OpenXml.Office.CustomXsn;
+using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -387,6 +390,180 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        public class LoginCaptchaDetails{
+
+            public string Session { get; set; }
+            public string SessionID { get; set; }
+            public string Captcha { get; set; }
+            public string LoginName { get; set; }
+            public string Password { get; set; }
+        }
+
+        private static int loginAttempts = 0; // Ensure it's a static variable for tracking across requests
+        private static bool loginLocked = false;
+        private static readonly object lockObj = new object(); // Object for thread safety
+
+        private async Task ResetLoginAttempts()
+        {
+            await Task.Delay(1 * 60 * 1000); // 1-minute delay
+            lock (lockObj)  // Lock to prevent race condition
+            {
+                loginAttempts = 0;
+                loginLocked = false;
+            }
+        }
+
+        [HttpPost, ActionName("ValidateUserLoginCaptcha")]
+        public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
+        {
+            bool loginFailed = false;
+            var dbHandler = new dbHandler();
+            List<Output> p = new List<Output>();
+            Output p1 = new Output();
+            var captcha = string.Empty;
+
+            try
+            {
+                string loginLock = loginLocked ? "Yes" : "No";
+                string islock = "loginLock";
+                string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                string lockiv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                string isLocked = Encryption.Encrypt(islock, lockkey, lockiv);
+                if (loginLock == "Yes")
+                {
+                    string message = "Account is temporarily locked. Try again later.";
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                    string MESSAGE = Encryption.Encrypt(message, key, iv);
+                    return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
+                }
+                string token = "";
+                string decryptsession = GetDecryptedData(ReqData.Session);
+                string decryptCaptcha = GetDecryptedData(ReqData.Captcha);
+                string decryptLoginname = GetDecryptedData(ReqData.LoginName);
+                string decryptpassword = GetDecryptedData(ReqData.Password);
+
+
+                var crypt = new HbCrypt();
+                string encrypassword = crypt.Encrypt(decryptpassword);
+
+
+                var param = new SqlParameter[2];
+                param[0] = new SqlParameter("@SessionId", decryptsession);
+                param[1] = new SqlParameter("@Captcha", decryptCaptcha);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
+
+                if (dt.Rows[0]["ResponseCode"].ToString() == "200")
+                {
+                    var hbcrypt = new HbCrypt();
+                    string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
+                    SystemUserBLL SystemUserBLL = new SystemUserBLL();
+                    SystemUserAuth User;
+                    User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), encrypassword, clientIpAddress);
+
+                    if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
+                    {
+                        lock (lockObj) { loginAttempts = 0; } // Reset login attempts on successful login
+                        var u = User.SystemUser[0];
+                        var v = User.UserAuth[0];
+                        AuthToken t = new AuthToken
+                        {
+                            UserName = u.UserName ?? "",
+                            UserId = u.UserId ?? "",
+                            UserTypeId = u.UserTypeId ?? "",
+                            CollegeCode = u.CollegeCode ?? "",
+                            collegeType = u.collegeType ?? "",
+                            ResponceCode = v.ResponceCode ?? "",
+                            RespoceDescription = v.RespoceDescription ?? "",
+                            ExpiryDate = DateTime.Now.AddHours(1)
+                        };
+
+                        var username = u.UserName;
+                        var userid = u.UserId;
+                        var usertypeid = u.UserTypeId;
+                        var ccode = u.CollegeCode;
+                        var ctype = u.collegeType;
+                        var rescode = v.ResponceCode;
+                        var resdesc = v.RespoceDescription;
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string USERNAME = Encryption.Encrypt(username, key, iv);
+                        string USERID = Encryption.Encrypt(userid, key, iv);
+                        string USERTYPEID = Encryption.Encrypt(usertypeid, key, iv);
+                        string CCODE = Encryption.Encrypt(ccode, key, iv);
+                        string CTYPE = Encryption.Encrypt(ctype, key, iv);
+                        string RESPONSECODE = Encryption.Encrypt(rescode, key, iv);
+                        string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
+
+                        token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
+                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERNAME, USERID, USERTYPEID, CCODE, CTYPE, RESPONSECODE, RESDESCRIPTION,t.ExpiryDate, clientIpAddress });
+                        return response;
+                    }
+
+                    else if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "401")
+                    {
+                        lock (lockObj) // Ensure thread-safe increment
+                        {
+                            loginAttempts++;
+                        }
+                        if (loginAttempts > 2)
+                        {
+                            lock (lockObj) { loginLocked = true; }
+                            Task.Run(() => ResetLoginAttempts());
+                            string message = "Account locked for 1 minute.";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                            string MESSAGE = Encryption.Encrypt(message, key, iv);
+                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
+                            return response;
+                        }
+                        else
+                        {
+                            string message = "No such username or password";
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                            string MESSAGE = Encryption.Encrypt(message, key, iv);
+                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+                            return response;
+                        }
+                    }
+                    else
+                    {
+                        string message = "Login failed. Please try again.";
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                        string MESSAGE = Encryption.Encrypt(message, key, iv);
+                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+                        return response;
+                    }
+
+                }
+                else
+                {
+                    var message = "Invalid Captcha";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                    string MESSAGE = Encryption.Encrypt(message, key, iv);
+                    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+                    return response;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("USP_GET_ExamsCaptchaSessionLog", 0, ex.Message);
+                //captcha = GetCaptchaString(data);
+                p1.ResponceCode = "400";
+                p1.ResponceDescription = ex.Message;
+                p1.Captcha = captcha;
+                p.Add(p1);
+                return null;
+            }
+        }
 
         public class AccountStatus
         {
@@ -397,14 +574,14 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         //[AuthorizationFilter()]
         [HttpPost, ActionName("AddorGetAccountStatus")]
-        public string AddorGetAccountStatus([FromBody] AccountStatus data)
+        public string AddorGetAccountStatus(string DataType,string UserName)
         {
             try
             {
 
 
-                string decrptedDataType = GetDecryptedData(data.DataType.ToString());
-                string decrptedUserName = GetDecryptedData(data.UserName.ToString());
+                string decrptedDataType = GetDecryptedData(DataType.ToString());
+                string decrptedUserName = GetDecryptedData(UserName.ToString());
                 //var tokenStr = ActionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
                 //var tkn = tokenStr.Value.FirstOrDefault();
                 //var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);

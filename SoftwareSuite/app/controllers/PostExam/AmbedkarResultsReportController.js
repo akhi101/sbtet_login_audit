@@ -1,5 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("AmbedkarResultsReportController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $uibModal, $timeout, PreExaminationService, StudentResultService) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         var SCHEMESEMINFO = StudentResultService.GetSchemeDataForResults();
         $scope.seminfo = [];
         $scope.examtypeinfo = [];

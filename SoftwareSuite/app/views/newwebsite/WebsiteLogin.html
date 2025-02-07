@@ -58,15 +58,17 @@
                                                 <input class="form-control" maxlength="6" placeholder="Enter Captcha" ng-keypress="keyLogin($event)" type="text" ng-model="CaptchaText">
                                             </label>
                                         </div>
-                                        <div class="form-group">
+                                        <!--<div class="form-group">
                                             <label></label>
                                             <img class="refresh_captcha" data-ng-src="data:image/png;base64,{{CaptchaImage}}" width="150" height="33" />
                                             <a class="pull-right" title="Click to Refresh Captcha" ng-click="GetCaptchaData()"><img class="refresh_img" src="/assets/img/reload.png" /> </a>
 
-                                        </div>
+                                        </div>-->
 
                                         <div class="form-group">
-                                            <button type="button" class="btn btn-primary submit" id='submit' ng-click="validatecaptcha()" ng-disabled="Loginbutton">LogIn</button>
+
+                                            <button type="button" class="btn btn-primary submit" id='submit' ng-click="Login()" ng-disabled="Loginbutton">LogIn</button>
+
                                             <p class="forgot-pass">
                                                 <a ng-click="ForgetPasswordChange()">Forgot Password?</a>
                                             </p>

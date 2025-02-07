@@ -1,11 +1,12 @@
 define(['app'], function (app) {
     app.controller("DaywisePcodeReportController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $timeout, $uibModal, AcademicService, PreExaminationService) {
-        //var authData = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
-
-        //console.log(authData)
-        var ccode = "";
-        $scope.UserTypeId = authData.SystemUserTypeId
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         
 
 

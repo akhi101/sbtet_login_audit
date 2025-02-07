@@ -55,7 +55,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -90,7 +90,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_3BacklogODCReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_3BacklogODCReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -124,7 +124,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_SubBillerIdBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_SubBillerIdBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -154,7 +154,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_SubBillerDateBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_SubBillerDateBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -187,7 +187,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("SP_Get_SubBillerDateBasedReportslist", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("SP_Get_SubBillerDateBasedReportslist", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -233,7 +233,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_3BacklogODCReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_3BacklogODCReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -277,7 +277,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return ex.StackTrace;
             }
             return "0";
@@ -371,7 +371,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -400,7 +400,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_SFP_GET_NotPaidList", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_SFP_GET_NotPaidList", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -452,7 +452,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_NRForPrinter", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_NRForPrinter", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -504,7 +504,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_NRForPrinter", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_NRForPrinter", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
             }
             return "";
         }
@@ -626,7 +626,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("GetFeePaymentReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "";
             }
         }
@@ -760,7 +760,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -794,7 +794,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -828,7 +828,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_ResultStatistics", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -934,7 +934,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("SP_Get_SubBillerMonthBasedReportslist", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("SP_Get_SubBillerMonthBasedReportslist", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -966,7 +966,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_SubBillerMonthBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_SubBillerMonthBasedReports", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }

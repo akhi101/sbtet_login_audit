@@ -49,7 +49,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
             catch (Exception ex) 
             {
-                dbHandler.SaveErorr("USP_GET_Assessment_AdminDetailedReportPinsExcel", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_Assessment_AdminDetailedReportPinsExcel", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }
@@ -274,7 +274,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_Assessment_AdminDetailedReportPinsExcel", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
+                //dbHandler.SaveErorr("USP_GET_Assessment_AdminDetailedReportPinsExcel", token.UserId, ex.Message + "\n-----------\n" + ex.StackTrace);
                 return "Error Occured. Please Try Again";
             }
         }

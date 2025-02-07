@@ -284,7 +284,7 @@
                             <div class="form-group ">
                                 <label for="datetimepicker3" class="font-weight-bold">Fine Amount :</label>
                                 <div class='input-group' id='Fineamount'>
-                                    <input type='text' class="form-control" ng-model="fineAmount" autocomplete="off" name="Fineamount" required />
+                                    <input type='text' maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" class="form-control" ng-model="fineAmount" autocomplete="off" name="Fineamount" required />
                                 </div>
                             </div>
                         </div>

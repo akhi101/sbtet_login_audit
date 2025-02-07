@@ -1,6 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("GenerateC18MemosDataController", function ($scope, $http, $localStorage, $state, $location, $window, $stateParams, AppSettings, PreExaminationService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.GradePoints='130'
 
         var ExamYearMonths = PreExaminationService.getExamYearMonths();
@@ -130,12 +135,7 @@
                 });
         }
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType != 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
+
 
 
         $scope.logOut = function () {

@@ -65,8 +65,9 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             string token = "";
             var data = await Request.Content.ReadAsStringAsync();
             var res = data.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
-            var crypt = new HbCrypt(res[2]);
+            var crypt = new HbCrypt(res[3]);
             var passcrypt = new HbCrypt();
+            string SessionID = crypt.AesDecrypt(res[2]);
             string UserName = crypt.AesDecrypt(res[1]);
             string Password = crypt.AesDecrypt(res[0]).Replace("'", "''");
             string encrypassword = passcrypt.Encrypt(Password);

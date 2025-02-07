@@ -8,15 +8,19 @@ namespace SoftwareSuite.Models.Security
     public class SystemUser
     {
         public string UserName { get; set; }
-        public string BranchCode { get; set; }
+        public string UserId { get; set; }
+        public string UserTypeId { get; set; }
         public string CollegeCode { get; set; }
+        public string collegeType { get; set; }
+        public string AccountLocked { get; set; }
+        public DateTime ExpiryDate { get; set; }
+        public string BranchCode { get; set; }
         public string CollegeName { get; set; }
         public int CollegeId { get; set; }
-        public int UserId { get; set; }
-        public int UserTypeId { get; set; }
         public int BranchId { get; set; }
         public int AcademicId { get; set; }
-        public string collegeType { get;  set; }
+        public string ResponceCode { get; set; }
+        public string RespoceDescription { get; set; }
     }
     public class ReCaptcha
     { 

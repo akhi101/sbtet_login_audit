@@ -795,7 +795,7 @@ namespace SoftwareSuite.Controllers.Admission
         {
             System.IO.File.Delete(s);
             ((Timer)sender).Stop();
-            ((Timer)sender).Dispose();
+          //  ((Timer)sender).Dispose();
         }
         [HttpGet, ActionName("GetStudentByPin")]
         public string GetStudentByPin(string Pin)

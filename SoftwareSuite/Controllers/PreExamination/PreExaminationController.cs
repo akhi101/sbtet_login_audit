@@ -520,135 +520,6 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("GenerateC18MemosData")]
-        public HttpResponseMessage GenerateC18MemosData(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year)
-        {
-            try
-            {
-                string day = NameCheck(Day);
-                if (day == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Day";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-
-              
-
-                string month = NameCheck(Month);
-                if (month == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Month";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-                string year = OnlyFourDigitCheck(Year);
-                if (year == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Year";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-                var dbHandler = new dbHandler();
-                var param = new SqlParameter[5];
-                param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[1] = new SqlParameter("@MinCredits", MinCredits);
-                param[2] = new SqlParameter("@Day", Day);
-                param[3] = new SqlParameter("@Month", Month);
-                param[4] = new SqlParameter("@Year", Year);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_GenerateC18ConsolidatedMemo", param);
-                if (dt.Tables[0].Rows[0]["ResponceCode"].ToString() == "200")
-                {
-
-                    //var Date = DateTime.Now.ToString("dd-MM-yyyy_hh:mm:ss");
-                    var filename = "C18_Consolidated_Memo" + ".xlsx";
-                    var eh = new ExcelHelper();
-                    var path = ConfigurationManager.AppSettings["DownloadsFolderPath"];
-                    bool folderExists = Directory.Exists(path);
-                    if (!folderExists)
-                        Directory.CreateDirectory(path);
-                    eh.ExportDataSet(dt, path + filename);
-                    Timer timer = new Timer(200000);
-                    timer.Elapsed += (sender, e) => elapse(sender, e, ConfigurationManager.AppSettings["DownloadsFolderPath"] + filename);
-                    timer.Start();
-                    var file = "/Downloads/" + filename;
-                    List<person> p = new List<person>();
-                    person p1 = new person();
-                    p1.file = file;
-                    p1.ResponceCode = dt.Tables[0].Rows[0]["ResponceCode"].ToString();
-                    p1.ResponceDescription = dt.Tables[0].Rows[0]["ResponceDescription"].ToString();
-                    p.Add(p1);
-
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                    //return ;
-
-                }
-                else
-                {
-                    List<person> p = new List<person>();
-                    person p1 = new person();
-                    p1.file = "";
-                    p1.ResponceCode = dt.Tables[0].Rows[0]["ResponceCode"].ToString();
-                    p1.ResponceDescription = dt.Tables[0].Rows[0]["ResponceDescription"].ToString();
-                    p.Add(p1);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                //return JsonConvert.SerializeObject(dt);
-            }
-            catch (Exception ex)
-            {
-                dbHandler.SaveErorr("USP_SET_GenerateC18ConsolidatedMemo", 0, ex.Message);
-                return ex.Message;
-            }
-        }
 
         [AuthorizationFilter()][HttpGet, ActionName("GetTwoYearsOdcData")]
         public string GetTwoYearsOdcData(string FromDate, string todate)
@@ -3657,125 +3528,32 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("EnableFeePayment")]
-        public HttpResponseMessage EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, float ExamFee, float LateFee, float TatkalFee, float PremiumTatkalFee, int Semid = 0)
+        public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, int ExamFee, int LateFee, int TatkalFee, int PremiumTatkalFee, int Semid = 0)
         {
             try
             {
-
-
-                string ef = NameCheck(ExamFee);
-                if (ef == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid ExamFee";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-
-
-
-                string lf = NameCheck(LateFee);
-                if (lf == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid LateFee";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-                string tf = OnlyFourDigitCheck(TatkalFee);
-                if (tf == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid TatkalFee";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-                string Ptf = OnlyFourDigitCheck(PremiumTatkalFee);
-                if (Ptf == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid PremiumTatkalFee";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-
-
-
-
-
-
+                string pin1 = PinCheck(Pin);
+                string ExamMonthYear1 = CheckFee(ExamMonthYear);
+                string studenttypeid1 = CheckFee(studenttypeid);
+                string ExamFee1 = CheckFee(ExamFee);
+                string LateFee1 = CheckFee(LateFee);
+                string TatkalFee1 = CheckFee(TatkalFee);
+                string PremiumTatkalFee1 = CheckFee(PremiumTatkalFee);
+                string Semid1 = CheckFee(Semid);
 
                 var dbHandler = new dbHandler();
-                var param = new SqlParameter[8];
-                param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
-                param[1] = new SqlParameter("@Pin", Pin);
-                param[2] = new SqlParameter("@studenttypeid", studenttypeid);
-                param[3] = new SqlParameter("@ExamFee", ExamFee);
-                param[4] = new SqlParameter("@LateFee", LateFee);
-                param[5] = new SqlParameter("@TatkalFee", TatkalFee);
-                param[6] = new SqlParameter("@PremiumTatkalFee", PremiumTatkalFee);
-                param[7] = new SqlParameter("@Semid", Semid);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_SET_ManualUpdation", param);
-                return JsonConvert.SerializeObject(dt);
+                    var param = new SqlParameter[8];
+                    param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
+                    param[1] = new SqlParameter("@Pin", Pin);
+                    param[2] = new SqlParameter("@studenttypeid", studenttypeid);
+                    param[3] = new SqlParameter("@ExamFee", ExamFee);
+                    param[4] = new SqlParameter("@LateFee", LateFee);
+                    param[5] = new SqlParameter("@TatkalFee", TatkalFee);
+                    param[6] = new SqlParameter("@PremiumTatkalFee", PremiumTatkalFee);
+                    param[7] = new SqlParameter("@Semid", Semid);
+                    var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_SET_ManualUpdation", param);
+                    return JsonConvert.SerializeObject(dt);
+              
             }
             catch (Exception ex)
             {
@@ -3783,6 +3561,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
+
+
 
 
         [AuthorizationFilter()][HttpGet, ActionName("getDetailsByPins")]
@@ -8721,24 +8501,30 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
             }
         }
+        
 
         [AuthorizationFilter()][HttpPost, ActionName("AddorUpdateFeeSettings")]
         public string AddorUpdateFeeSettings([FromBody] JsonObject request)
         {
             try
             {
-                var dbHandler = new dbHandler();
-                var param = new SqlParameter[8];
-                param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
-                param[1] = new SqlParameter("@ID", request["ID"]);
-                param[2] = new SqlParameter("@Name", request["Name"]);
-                param[3] = new SqlParameter("@Is_Active", request["Is_Active"]);
-                param[4] = new SqlParameter("@Price", request["Price"]);
-                param[5] = new SqlParameter("@ServiceType", request["ServiceType"]);
-                param[6] = new SqlParameter("@ChallanPrefix", request["ChallanPrefix"]);
-                param[7] = new SqlParameter("@UserName", request["UserName"]);
-                var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Add_Update_CertificateTypes", param);
-                return JsonConvert.SerializeObject(dt);
+              
+                    var dbHandler = new dbHandler();
+                    var param = new SqlParameter[8];
+                    param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
+                    param[1] = new SqlParameter("@ID", request["ID"]);
+                    param[2] = new SqlParameter("@Name", request["Name"]);
+                    param[3] = new SqlParameter("@Is_Active", request["Is_Active"]);
+                    param[4] = new SqlParameter("@Price", request["Price"]);
+                    param[5] = new SqlParameter("@ServiceType", request["ServiceType"]);
+                    param[6] = new SqlParameter("@ChallanPrefix", request["ChallanPrefix"]);
+                    param[7] = new SqlParameter("@UserName", request["UserName"]);
+                    var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Add_Update_CertificateTypes", param);
+                    return JsonConvert.SerializeObject(dt);
+
+              
+
+                
             }
             catch (Exception ex)
             {
@@ -8918,8 +8704,99 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("CheckFee")]
+        public string CheckFee(int DataType)
+        {
+            try
+            {
+                if (DataType != 0)
+                {
+                    Regex regex = new Regex("[0-9]");
+                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType.ToString()))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input "+ DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PinCheck")]
+        public string PinCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^[a-zA-Z0-9_.-]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
 
 
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
 
 
 
@@ -8934,7 +8811,25 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z\\s]*$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                       
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Input "+ DataType;
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                      // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                          //  return Content;
+                       var  res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
                     }
                     else
                     {
@@ -8963,7 +8858,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[MF]$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -8991,7 +8901,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{10}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9019,7 +8944,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -10234,8 +10174,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string Title { get; set; }
             public string Description { get; set; }
             public string Url { get; set; }
-            public string CircularFileName { get; set; }
-            public int CircularTypeId { get; set; }
+            public string DownloadFileName { get; set; }
+            public int DownloadTypeId { get; set; }
             public DateTime NotificationDate { get; set; }
 
         }
@@ -10861,6 +10801,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+
+
         [AuthorizationFilter()][HttpPost, ActionName("SetTender")]
         public HttpResponseMessage SetTender([FromBody] TenderData TenderData)
         {
@@ -10870,19 +10812,39 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var TenderUrl = string.Empty;
                 string relativePath = string.Empty;
                 var path = ConfigurationManager.AppSettings["TenderPath"];
-                var CircularName = TenderData.TenderFileName;
-                bool folder = Directory.Exists(path);
-                if (!folder)
-                    Directory.CreateDirectory(path);
-                string TenderPath = Path.Combine(path, CircularName);
+                var TenderName = TenderData.TenderFileName;
 
-                byte[] PrincipalimageBytes = Convert.FromBase64String(TenderData.Url);
-                File.WriteAllBytes(TenderPath, PrincipalimageBytes);
-                relativePath = TenderPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
-                TenderUrl = relativePath;
 
-                string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
-                if (FileType1 == "Invalid Mime Type")
+                TenderName = TenderName.Replace("\0", ""); // Prevent null byte injection
+
+                TenderName = Regex.Replace(TenderName, @"[^\w\-.]", "_");
+
+
+                string FileType1 = CheckFileTypeDocs(TenderName.ToString().Replace(",", ""));
+                if (TenderName == null)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Please upload file";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
+
+
+                else if (FileType1 == "Invalid Mime Type")
                 {
 
                     var plaintext = "400";
@@ -10903,7 +10865,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "Invalid Extension")
+                else if (FileType1 == "Invalid Extension")
                 {
 
                     var plaintext = "400";
@@ -10924,7 +10886,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
                 {
 
                     var plaintext = "400";
@@ -10945,11 +10907,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-
-
-
-                string Desc = NameCheck(TenderData.Title.ToString());
-                if (Desc == "NO")
+                string description = NameCheck(TenderData.Title.ToString());
+                if (description == "NO")
                 {
 
                     var plaintext = "400";
@@ -10970,6 +10929,101 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
+                else if (TenderName.Contains("\0"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Null byte injection detected!";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (TenderName.Count(c => c == '.') > 1)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Double extensions are not allowed.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+                else if (TenderName.Contains(".."))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (Regex.IsMatch(TenderName, @"[<>|:*?""\\/]+"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid characters in filename.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
+
+
+
+
+
+                bool folder = Directory.Exists(path);
+                if (!folder)
+                    Directory.CreateDirectory(path);
+                string TenderPath = Path.Combine(path, TenderName);
+                byte[] PrincipalimageBytes = Convert.FromBase64String(TenderData.Url);
+                File.WriteAllBytes(TenderPath, PrincipalimageBytes);
+                relativePath = TenderPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
+                TenderUrl = relativePath;
+
+               
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Title", TenderData.Title);
@@ -11001,19 +11055,37 @@ namespace SoftwareSuite.Controllers.PreExamination
                 string relativePath = string.Empty;
                 var path = ConfigurationManager.AppSettings["circularPath"];
                 var CircularName = CircularData.CircularFileName;
-                bool folder = Directory.Exists(path);
-                if (!folder)
-                    Directory.CreateDirectory(path);
-                string CircularPath = Path.Combine(path, CircularName);
 
-                byte[] PrincipalimageBytes = Convert.FromBase64String(CircularData.Url);
-                File.WriteAllBytes(CircularPath, PrincipalimageBytes);
-                relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
-                CircularUrl = relativePath;
+                CircularName = CircularName.Replace("\0", ""); // Prevent null byte injection
+                
+                CircularName = Regex.Replace(CircularName, @"[^\w\-.]", "_");
 
 
                 string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
-                if (FileType1 == "Invalid Mime Type")
+                if (CircularName == null)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Please upload file";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
+
+
+                else if (FileType1 == "Invalid Mime Type")
                 {
 
                     var plaintext = "400";
@@ -11034,7 +11106,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "Invalid Extension")
+                else if (FileType1 == "Invalid Extension")
                 {
 
                     var plaintext = "400";
@@ -11055,7 +11127,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
                 {
 
                     var plaintext = "400";
@@ -11076,8 +11148,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                string desc = NameCheck(CircularData.Title.ToString());
-                if (desc == "NO")
+                string description = NameCheck(CircularData.Title.ToString());
+                if (description == "NO")
                 {
 
                     var plaintext = "400";
@@ -11097,6 +11169,98 @@ namespace SoftwareSuite.Controllers.PreExamination
                         Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
                     };
                 }
+
+                else if (CircularName.Contains("\0"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Null byte injection detected!";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (CircularName.Count(c => c == '.') > 1)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Double extensions are not allowed.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+                else if (CircularName.Contains(".."))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (Regex.IsMatch(CircularName, @"[<>|:*?""\\/]+"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid characters in filename.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
+
+
+                bool folder = Directory.Exists(path);
+                if (!folder)
+                    Directory.CreateDirectory(path);
+                string CircularPath = Path.Combine(path, CircularName);
+
+                byte[] PrincipalimageBytes = Convert.FromBase64String(CircularData.Url);
+                File.WriteAllBytes(CircularPath, PrincipalimageBytes);
+                relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
+                CircularUrl = relativePath;
 
 
                 var dbHandler = new dbHandler();
@@ -11120,27 +11284,46 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpPost, ActionName("UploadDownload")]
-        public HttpResponseMessage UploadDownload([FromBody] CircularData CircularData)
+        public HttpResponseMessage UploadDownload([FromBody] DownloadData DownloadData)
         {
             try
             {
 
-                var CircularUrl = string.Empty;
+                var DownloadUrl = string.Empty;
                 string relativePath = string.Empty;
                 var path = ConfigurationManager.AppSettings["circularPath"];
-                var CircularName = CircularData.CircularFileName;
-                bool folder = Directory.Exists(path);
-                if (!folder)
-                    Directory.CreateDirectory(path);
-                string CircularPath = Path.Combine(path, CircularName);
+                var DownloadName = DownloadData.DownloadFileName;
 
-                byte[] PrincipalimageBytes = Convert.FromBase64String(CircularData.Url);
-                File.WriteAllBytes(CircularPath, PrincipalimageBytes);
-                relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
-                CircularUrl = relativePath;
+                DownloadName = DownloadName.Replace("\0", ""); // Prevent null byte injection
 
-                string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
-                if (FileType1 == "Invalid Mime Type")
+                DownloadName = Regex.Replace(DownloadName, @"[^\w\-.]", "_");
+
+
+                string FileType1 = CheckFileTypeDocs(DownloadName.ToString().Replace(",", ""));
+                if (DownloadName == null)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Please upload file";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+
+
+
+                else if (FileType1 == "Invalid Mime Type")
                 {
 
                     var plaintext = "400";
@@ -11161,7 +11344,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "Invalid Extension")
+                else if (FileType1 == "Invalid Extension")
                 {
 
                     var plaintext = "400";
@@ -11182,7 +11365,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
                 {
 
                     var plaintext = "400";
@@ -11203,10 +11386,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-
-
-                string Desc = NameCheck(CircularData.Title.ToString());
-                if (Desc == "NO")
+                string description = NameCheck(DownloadData.Title.ToString());
+                if (description == "NO")
                 {
 
                     var plaintext = "400";
@@ -11227,15 +11408,110 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
+                else if (DownloadName.Contains("\0"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Null byte injection detected!";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (DownloadName.Count(c => c == '.') > 1)
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Double extensions are not allowed.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+                else if (DownloadName.Contains(".."))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
+
+                else if (Regex.IsMatch(DownloadName, @"[<>|:*?""\\/]+"))
+                {
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid characters in filename.";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+                }
 
 
 
+
+
+
+
+
+
+                bool folder = Directory.Exists(path);
+                if (!folder)
+                    Directory.CreateDirectory(path);
+                string CircularPath = Path.Combine(path, DownloadName);
+
+                byte[] PrincipalimageBytes = Convert.FromBase64String(DownloadData.Url);
+                File.WriteAllBytes(CircularPath, PrincipalimageBytes);
+                relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
+                DownloadUrl = relativePath;
+
+               
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
-                param[0] = new SqlParameter("@Url", CircularUrl);
-                param[1] = new SqlParameter("@CircularTypeId", CircularData.CircularTypeId);
-                param[2] = new SqlParameter("@NotificationDate", CircularData.NotificationDate);
-                param[3] = new SqlParameter("@Title", CircularData.Title);
+                param[0] = new SqlParameter("@Url", DownloadUrl);
+                param[1] = new SqlParameter("@CircularTypeId", DownloadData.DownloadTypeId);
+                param[2] = new SqlParameter("@NotificationDate", DownloadData.NotificationDate);
+                param[3] = new SqlParameter("@Title", DownloadData.Title);
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_DownloadsForAdmin", param);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
                 return response;
@@ -11355,11 +11631,209 @@ namespace SoftwareSuite.Controllers.PreExamination
                     {
                         string relativePath = string.Empty;
                         var path = ConfigurationManager.AppSettings["TenderPath"];
-                        var CircularName = TenderData.TenderFileName;
+                        var TenderName = TenderData.TenderFileName;
+
+
+                        TenderName = TenderName.Replace("\0", ""); // Prevent null byte injection
+
+                        TenderName = Regex.Replace(TenderName, @"[^\w\-.]", "_");
+
+
+                        string FileType1 = CheckFileTypeDocs(TenderName.ToString().Replace(",", ""));
+                        if (TenderName == null)
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Please upload file";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+
+
+
+                        else if (FileType1 == "Invalid Mime Type")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Mime Type";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (FileType1 == "Invalid Extension")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Extension";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        string description = NameCheck(TenderData.Title.ToString());
+                        if (description == "NO")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Description";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (TenderName.Contains("\0"))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Null byte injection detected!";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (TenderName.Count(c => c == '.') > 1)
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Double extensions are not allowed.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+                        else if (TenderName.Contains(".."))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (Regex.IsMatch(TenderName, @"[<>|:*?""\\/]+"))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid characters in filename.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+
+
+
                         bool folder = Directory.Exists(path);
                         if (!folder)
                             Directory.CreateDirectory(path);
-                        string TenderPath = Path.Combine(path, CircularName);
+                        string TenderPath = Path.Combine(path, TenderName);
 
                         byte[] PrincipalimageBytes = Convert.FromBase64String(TenderData.Url);
                         File.WriteAllBytes(TenderPath, PrincipalimageBytes);
@@ -11368,6 +11842,202 @@ namespace SoftwareSuite.Controllers.PreExamination
                     }
                     else
                     {
+                        var TenderName = TenderData.TenderFileName;
+                        TenderName = TenderName.Replace("\0", ""); // Prevent null byte injection
+
+                        TenderName = Regex.Replace(TenderName, @"[^\w\-.]", "_");
+
+
+                        string FileType1 = CheckFileTypeDocs(TenderName.ToString().Replace(",", ""));
+                        if (TenderName == null)
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Please upload file";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+
+
+
+                        else if (FileType1 == "Invalid Mime Type")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Mime Type";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (FileType1 == "Invalid Extension")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Extension";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        string description = NameCheck(TenderData.Title.ToString());
+                        if (description == "NO")
+                        {
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Description";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (TenderName.Contains("\0"))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Null byte injection detected!";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (TenderName.Count(c => c == '.') > 1)
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Double extensions are not allowed.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+                        else if (TenderName.Contains(".."))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+                        else if (Regex.IsMatch(TenderName, @"[<>|:*?""\\/]+"))
+                        {
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid characters in filename.";
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                            return new HttpResponseMessage(HttpStatusCode.OK)
+                            {
+                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                            };
+                        }
+
+
+
                         TenderUrl = TenderData.Url;
                     }
                     var dbHandler = new dbHandler();
@@ -11396,12 +12066,211 @@ namespace SoftwareSuite.Controllers.PreExamination
             var CircularUrl = string.Empty;
             try
             {
+
                 if (CircularData.Url != "Empty")
                 {
 
                     string relativePath = string.Empty;
                     var path = ConfigurationManager.AppSettings["circularPath"];
                     var CircularName = CircularData.CircularFileName;
+
+                    CircularName = CircularName.Replace("\0", ""); // Prevent null byte injection
+
+                    CircularName = Regex.Replace(CircularName, @"[^\w\-.]", "_");
+
+
+                    string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
+                    if (CircularName == null)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Please upload file";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+                    else if (FileType1 == "Invalid Mime Type")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Mime Type";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "Invalid Extension")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Extension";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    string description = NameCheck(CircularData.Title.ToString());
+                    if (description == "NO")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Description";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (CircularName.Contains("\0"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Null byte injection detected!";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (CircularName.Count(c => c == '.') > 1)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Double extensions are not allowed.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+                    else if (CircularName.Contains(".."))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (Regex.IsMatch(CircularName, @"[<>|:*?""\\/]+"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid characters in filename.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+
                     bool folder = Directory.Exists(path);
                     if (!folder)
                         Directory.CreateDirectory(path);
@@ -11414,6 +12283,204 @@ namespace SoftwareSuite.Controllers.PreExamination
                 }
                 else
                 {
+                    var CircularName = CircularData.CircularFileName;
+
+                    CircularName = CircularName.Replace("\0", ""); // Prevent null byte injection
+
+                    CircularName = Regex.Replace(CircularName, @"[^\w\-.]", "_");
+
+
+                    string FileType1 = CheckFileTypeDocs(CircularName.ToString().Replace(",", ""));
+                    if (CircularName == null)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Please upload file";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+                    else if (FileType1 == "Invalid Mime Type")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Mime Type";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "Invalid Extension")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Extension";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    string description = NameCheck(CircularData.Title.ToString());
+                    if (description == "NO")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Description";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (CircularName.Contains("\0"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Null byte injection detected!";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (CircularName.Count(c => c == '.') > 1)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Double extensions are not allowed.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+                    else if (CircularName.Contains(".."))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (Regex.IsMatch(CircularName, @"[<>|:*?""\\/]+"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid characters in filename.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
                     CircularUrl = CircularData.Url;
                 }
                 //  return path;
@@ -11450,11 +12517,210 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                     string relativePath = string.Empty;
                     var path = ConfigurationManager.AppSettings["circularPath"];
-                    var CircularName = DownloadData.CircularFileName;
+                    var DownloadName = DownloadData.DownloadFileName;
+
+                    DownloadName = DownloadName.Replace("\0", ""); // Prevent null byte injection
+
+                    DownloadName = Regex.Replace(DownloadName, @"[^\w\-.]", "_");
+
+
+                    string FileType1 = CheckFileTypeDocs(DownloadName.ToString().Replace(",", ""));
+                    if (DownloadName == null)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Please upload file";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+                    else if (FileType1 == "Invalid Mime Type")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Mime Type";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "Invalid Extension")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Extension";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    string description = NameCheck(DownloadData.Title.ToString());
+                    if (description == "NO")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Description";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (DownloadName.Contains("\0"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Null byte injection detected!";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (DownloadName.Count(c => c == '.') > 1)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Double extensions are not allowed.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+                    else if (DownloadName.Contains(".."))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (Regex.IsMatch(DownloadName, @"[<>|:*?""\\/]+"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid characters in filename.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+
+
                     bool folder = Directory.Exists(path);
                     if (!folder)
                         Directory.CreateDirectory(path);
-                    string CircularPath = Path.Combine(path, CircularName);
+                    string CircularPath = Path.Combine(path, DownloadName);
 
                     byte[] PrincipalimageBytes = Convert.FromBase64String(DownloadData.Url);
                     File.WriteAllBytes(CircularPath, PrincipalimageBytes);
@@ -11463,6 +12729,201 @@ namespace SoftwareSuite.Controllers.PreExamination
                 }
                 else
                 {
+                    var DownloadName = DownloadData.DownloadFileName;
+                    DownloadName = DownloadName.Replace("\0", ""); // Prevent null byte injection
+
+                    DownloadName = Regex.Replace(DownloadName, @"[^\w\-.]", "_");
+
+
+                    string FileType1 = CheckFileTypeDocs(DownloadName.ToString().Replace(",", ""));
+                    if (DownloadName == null)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Please upload file";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
+
+
+                    else if (FileType1 == "Invalid Mime Type")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Mime Type";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "Invalid Extension")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Extension";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (FileType1 == "File size exceeds the maximum limit of 2 MB.")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "File size exceeds the maximum limit of 2 MB.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    string description = NameCheck(DownloadData.Title.ToString());
+                    if (description == "NO")
+                    {
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Description";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (DownloadName.Contains("\0"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Null byte injection detected!";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (DownloadName.Count(c => c == '.') > 1)
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Double extensions are not allowed.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+                    else if (DownloadName.Contains(".."))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid filename detected (double dot `..` not allowed).";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+                    else if (Regex.IsMatch(DownloadName, @"[<>|:*?""\\/]+"))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid characters in filename.";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        return new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        };
+                    }
+
+
                     CircularUrl = DownloadData.Url;
                 }
                 //  return path;
@@ -11470,7 +12931,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var param = new SqlParameter[5];
                 param[0] = new SqlParameter("@Title", DownloadData.Title);
                 param[1] = new SqlParameter("@Url", CircularUrl);
-                param[2] = new SqlParameter("@CircularTypeId", DownloadData.CircularTypeId);
+                param[2] = new SqlParameter("@CircularTypeId", DownloadData.DownloadTypeId);
                 param[3] = new SqlParameter("@NotificationDate", DownloadData.NotificationDate);
                 param[4] = new SqlParameter("@Id", DownloadData.Id);
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_UpdateDownloadsForAdmin", param);
@@ -13234,34 +14695,6 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-
-                string emy = NameCheck(ExamMonthYear);
-                if (emy == "NO")
-                {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid ExamMonthYear";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
-
-                }
-
-
-
-
-
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
