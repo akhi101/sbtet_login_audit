@@ -47,6 +47,26 @@
             $scope.Pin = "";
         }
 
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
+
         $scope.Submit = function () {
             $scope.loading = true;
             $scope.Data = false;
@@ -56,7 +76,26 @@
             var loadData2 = PreExaminationService.GenerateC18MemosData($scope.ExamMonthYear, $scope.GradePoints,$scope.Day,$scope.Month,$scope.Year)
             loadData2.then(function (res) {
                 var response = JSON.parse(res)
-                if (response[0].ResponceCode == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.hasOwnProperty(keyToExclude)) {
+                    var keys = Object.keys(res);
+
+                    $scope.statusKey = keys[0];
+                    $scope.statusValue = res[$scope.statusKey];
+
+                    $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res[$scope.descriptionKey];
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+
+
+                else if (response[0].ResponceCode == '200') {
                     $scope.loading = false;
                     var msg = response[0].ResponceDescription;
                     alert(msg)

@@ -68,19 +68,19 @@
                                         <label for="sel1">
                                             Day:
                                         </label>
-                                        <input class="form-control" ng-model="Day" placeholder="Enter Day" name="Day" required />
+                                        <input class="form-control" ng-model="Day" onkeypress='return ((event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32))'   placeholder="Enter Day" name="Day" required />
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="sel1">
                                             Month:
                                         </label>
-                                        <input class="form-control" ng-model="Month" placeholder="Enter Month" name="Month" required />
+                                        <input class="form-control" ng-model="Month" onkeypress='return ((event.charCode >= 65 && event.charCode <= 90) || (event.charCode >= 97 && event.charCode <= 122) || (event.charCode == 32))' placeholder="Enter Month" name="Month" required />
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="sel1">
                                             Year:
                                         </label>
-                                        <input class="form-control" ng-model="Year" placeholder="Enter Year" name="Year" required />
+                                        <input class="form-control" ng-model="Year" maxlength="4"  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"  placeholder="Enter Year" name="Year" required />
                                     </div>
                                     <div class="col-md-3">
                                         <div class="gr-btn">

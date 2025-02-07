@@ -521,10 +521,82 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("GenerateC18MemosData")]
-        public string GenerateC18MemosData(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year)
+        public HttpResponseMessage GenerateC18MemosData(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year)
         {
             try
             {
+                string day = NameCheck(Day);
+                if (day == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Day";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+
+              
+
+                string month = NameCheck(Month);
+                if (month == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Month";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+                string year = OnlyFourDigitCheck(Year);
+                if (year == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid Year";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
                 param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
@@ -555,7 +627,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     p1.ResponceDescription = dt.Tables[0].Rows[0]["ResponceDescription"].ToString();
                     p.Add(p1);
 
-                    return JsonConvert.SerializeObject(p);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                     //return ;
 
                 }
@@ -567,7 +639,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     p1.ResponceCode = dt.Tables[0].Rows[0]["ResponceCode"].ToString();
                     p1.ResponceDescription = dt.Tables[0].Rows[0]["ResponceDescription"].ToString();
                     p.Add(p1);
-                    return JsonConvert.SerializeObject(p);
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                 }
                 //return JsonConvert.SerializeObject(dt);
             }
@@ -3585,10 +3657,112 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("EnableFeePayment")]
-        public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, float ExamFee, float LateFee, float TatkalFee, float PremiumTatkalFee, int Semid = 0)
+        public HttpResponseMessage EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, float ExamFee, float LateFee, float TatkalFee, float PremiumTatkalFee, int Semid = 0)
         {
             try
             {
+
+
+                string ef = NameCheck(ExamFee);
+                if (ef == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid ExamFee";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+
+
+
+                string lf = NameCheck(LateFee);
+                if (lf == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid LateFee";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+                string tf = OnlyFourDigitCheck(TatkalFee);
+                if (tf == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid TatkalFee";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+                string Ptf = OnlyFourDigitCheck(PremiumTatkalFee);
+                if (Ptf == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid PremiumTatkalFee";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+
+
+
+
+
+
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[8];
@@ -8922,6 +9096,35 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyFourDigitCheck")]
+        public string OnlyFourDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{4}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        return "NO";
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         [AuthorizationFilter()][HttpGet, ActionName("OnlyTwelveDigitCheck")]
         public string OnlyTwelveDigitCheck(string DataType)
         {
@@ -13031,6 +13234,34 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+                string emy = NameCheck(ExamMonthYear);
+                if (emy == "NO")
+                {
+
+                    var plaintext = "400";
+                    var plaintext1 = "Invalid ExamMonthYear";
+                    var plaintext2 = "status";
+                    var plaintext3 = "description";
+
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                    string Status = Encryption.Encrypt(plaintext2, key, iv);
+                    string Description = Encryption.Encrypt(plaintext3, key, iv);
+                    return new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                    };
+
+                }
+
+
+
+
+
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
