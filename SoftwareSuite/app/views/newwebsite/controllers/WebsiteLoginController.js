@@ -400,13 +400,18 @@
                                             };
 
                                             sessionStorage.setItem('user', JSON.stringify(authorizationData));
-                                            $scope.gotoLogin();
+                                            setTimeout(function () {
+                                                $state.go('Dashboard');
+                                                $scope.gotoLogin();
+                                            }, 200);
+                                            
                                             $scope.Loginbutton = false;
                                         }
 
                                         catch (err) {
 
                                         }
+                                        $state.go('Dashboard');
                                     }
                                     else {
                                         alert('Account is Locked');

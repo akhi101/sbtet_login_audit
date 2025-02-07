@@ -1672,7 +1672,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext1 = "Invalid Input " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
