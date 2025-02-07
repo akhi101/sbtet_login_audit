@@ -223,7 +223,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Fee Amount :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="feeAmount" autocomplete="off" name="Fineamount" required />
+                                            <input type='text' class="form-control" ng-model="feeAmount" maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)"  autocomplete="off" name="Fineamount" required />
                                         </div>
                                     </div>
                                 </div>
@@ -232,7 +232,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Late Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="lateFee" autocomplete="off" name="Fineamount" required />
+                                            <input type='text' class="form-control" ng-model="lateFee"  maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="Fineamount" required />
                                         </div>
                                     </div>
                                 </div>
@@ -240,7 +240,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Tatkal Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="tatkalFee" autocomplete="off" name="Fineamount" required />
+                                            <input type='text' class="form-control" ng-model="tatkalFee" maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="Fineamount" required />
                                         </div>
                                     </div>
                                 </div>
@@ -248,7 +248,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Premium Tatkal Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="PremiumTatkalFee" autocomplete="off" name="PremiumTatkalFee" required />
+                                            <input type='text' class="form-control" ng-model="PremiumTatkalFee" maxlength="6"  onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="PremiumTatkalFee" required />
                                         </div>
                                     </div>
                                 </div>
@@ -256,7 +256,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Condonational Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="condonationalFee" autocomplete="off" name="Fineamount" required />
+                                            <input type='text' class="form-control" ng-model="condonationalFee" maxlength="6"  onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="Fineamount" required />
                                         </div>
                                     </div>
                                 </div>
@@ -264,7 +264,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Certificate Fee(CF) :</label>
                                         <div id='CertificateFee'>
-                                            <input type='text' class="form-control" ng-model="certificateFee" autocomplete="off" name="CertificateFee" required />
+                                            <input type='text' class="form-control" ng-model="certificateFee" maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)"  autocomplete="off" name="CertificateFee" required />
                                         </div>
                                     </div>
                                 </div>
@@ -272,7 +272,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Presemptive Attended Days(PAD) :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="attendedDays" autocomplete="off" name="attendedDays" required />
+                                            <input type='text' class="form-control" ng-model="attendedDays" maxlength="6"  onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="attendedDays" required />
                                         </div>
                                     </div>
                                 </div>
@@ -280,7 +280,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Total Attended Days(TAD) :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="maxWorkingDays" autocomplete="off" name="maxWorkingDays" required />
+                                            <input type='text' class="form-control" ng-model="maxWorkingDays" maxlength="6" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="maxWorkingDays" required />
                                         </div>
                                     </div>
                                 </div>
@@ -288,7 +288,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Condonation Percentage(%) :</label>
                                         <div id='condonation'>
-                                            <input type='text' maxlength="2" class="form-control" ng-model="CondonationPercent" autocomplete="off" name="CondonationPercent" required />
+                                            <input type='text' maxlength="2" class="form-control"  ng-model="CondonationPercent" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="CondonationPercent" required />
                                         </div>
                                     </div>
                                 </div>
@@ -296,7 +296,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Detend Percentage(%) :</label>
                                         <div id='detend'>
-                                            <input type='text' maxlength="2" class="form-control" ng-model="DetendPercent" autocomplete="off" name="DetendPercent" required />
+                                            <input type='text' maxlength="2" class="form-control" ng-model="DetendPercent" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" autocomplete="off" name="DetendPercent" required />
                                         </div>
                                     </div>
                                 </div>
@@ -377,7 +377,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Fee Amount :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="feeAmount1" autocomplete="off" name="Fineamount1" required />
+                                            <input type='text' class="form-control" ng-model="feeAmount1" autocomplete="off" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" name="Fineamount1" required />
                                         </div>
                                     </div>
                                 </div>
@@ -386,7 +386,7 @@
                                     <div class="form-group">
                                         <label for="datetimepicker3" class="font-weight-bold">Late Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="lateFee1" autocomplete="off" name="Fineamount1" required />
+                                            <input type='text' class="form-control" ng-model="lateFee1" autocomplete="off" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" name="Fineamount1" required />
                                         </div>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Tatkal Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="tatkalFee1" autocomplete="off" name="Fineamount" required />
+                                            <input type='text' class="form-control" ng-model="tatkalFee1" autocomplete="off" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" name="Fineamount" required />
                                         </div>
                                     </div>
                                 </div>
@@ -402,7 +402,7 @@
                                     <div class="form-group ">
                                         <label for="datetimepicker3" class="font-weight-bold">Premium Tatkal Fee :</label>
                                         <div id='Fineamount'>
-                                            <input type='text' class="form-control" ng-model="PremiumTatkalFee" autocomplete="off" name="PremiumTatkalFee" required />
+                                            <input type='text' class="form-control" ng-model="PremiumTatkalFee" autocomplete="off" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" name="PremiumTatkalFee" required />
                                         </div>
                                     </div>
                                 </div>

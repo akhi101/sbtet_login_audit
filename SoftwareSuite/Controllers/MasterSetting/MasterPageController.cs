@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 
 namespace SoftwareSuite.Controllers.MasterSetting
@@ -1656,11 +1657,126 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
+
+        [HttpGet, ActionName("PinCheck")]
+        public string PinCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^[a-zA-Z0-9_.-]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [HttpGet, ActionName("CheckFee")]
+        public string CheckFee(int DataType)
+        {
+            try
+            {
+                if (DataType != 0)
+                {
+                    Regex regex = new Regex("[0-9]");
+                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType.ToString()))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         [HttpGet, ActionName("SetExamMonthYear")]
         public string SetExamMonthYear(int DataTypeId, string ExamMonthYear, int ExamMonthYearId, int SequenceId)
         {
             try
             {
+                string ExamMonthYear1 = PinCheck(ExamMonthYear);
+                string DataTypeId1 = CheckFee(DataTypeId);
+                string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
+                string SequenceId1 = CheckFee(SequenceId);
+                if (ExamMonthYear1 != "YES")
+                {
+                    return ExamMonthYear1;
+                }
+                if (DataTypeId1 != "YES")
+                {
+                    return DataTypeId1;
+                }
+                if (ExamMonthYearId1 != "YES")
+                {
+                    return ExamMonthYearId1;
+
+                }
+                if (SequenceId1 != "YES")
+                {
+                    return SequenceId1;
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Datatypeid", DataTypeId);

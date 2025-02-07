@@ -91,7 +91,7 @@
                         <form novalidate="" class="ng-pristine ng-invalid ng-invalid-required">
                             <div class="row">
                                 <div class="col-md-3 form-group">
-                                    <label  class="font-weight-bold"> Start of Academic Year :</label> <input autocomplete="off" class="form-control" type="text" ng-model="StartYear" ng-change="UpdateAcaYear(StartYear)" placeholder="Select Academic Year" id="example1">
+                                    <label  class="font-weight-bold"> Start of Academic Year :</label> <input autocomplete="off" class="form-control" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" type="text" ng-model="StartYear" ng-change="UpdateAcaYear(StartYear)" placeholder="Select Academic Year" id="example1">
                                 </div>
                                 <div class="col-md-3 form-group">
                                     <label  class="font-weight-bold">Academic Year :</label> <input autocomplete="off" class="form-control" type="text" ng-model="AcademicYear" disabled placeholder="Academic Year">

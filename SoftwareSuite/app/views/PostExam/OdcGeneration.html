@@ -109,19 +109,19 @@
                                         <label for="sel1">
                                             Day:
                                         </label>
-                                        <input class="form-control" ng-model="Day" placeholder="Enter Day" name="Day" required />
+                                        <input class="form-control" ng-model="Day" maxlength="2" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" placeholder="Enter Day" name="Day" required />
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="sel1">
                                             Month:
                                         </label>
-                                        <input class="form-control" ng-model="Month" placeholder="Enter Month" name="Month" required />
+                                        <input class="form-control" ng-model="Month" maxlength="2" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" placeholder="Enter Month" name="Month" required />
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label for="sel1">
                                             Year:
                                         </label>
-                                        <input class="form-control" ng-model="Year" placeholder="Enter Year" name="Year" required />
+                                        <input class="form-control" ng-model="Year" maxlength="4" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" placeholder="Enter Year" name="Year" required />
                                     </div>
                                     <div class="col-md-12">
                                         <div class="gr-btn">
@@ -164,7 +164,7 @@
                                         <label for="sel1">
                                             Pin:
                                         </label>
-                                        <input class="form-control" ng-model="Pin" autocomplete="off" placeholder="Enter Pin" name="Year" required />
+                                        <input class="form-control" ng-model="Pin" autocomplete="off" onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)" placeholder="Enter Pin" name="Year" required />
                                     </div>
                                     <div class="col-md-2">
                                         <div class="gr-btn">
@@ -207,7 +207,7 @@
                                         <label for="sel1">
                                             Pin:
                                         </label>
-                                        <input class="form-control" ng-model="ODCPin" placeholder="Enter Pin" name="Year" required />
+                                        <input class="form-control" ng-model="ODCPin" placeholder="Enter Pin" onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)" name="Year" required />
                                     </div>
                                     <div class="col-md-2">
                                         <div class="gr-btn">

@@ -3585,23 +3585,66 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("EnableFeePayment")]
-        public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, float ExamFee, float LateFee, float TatkalFee, float PremiumTatkalFee, int Semid = 0)
+        public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, int ExamFee, int LateFee, int TatkalFee, int PremiumTatkalFee, int Semid = 0)
         {
             try
             {
+                string pin1 = PinCheck(Pin);
+                string ExamMonthYear1 = CheckFee(ExamMonthYear);
+                string studenttypeid1 = CheckFee(studenttypeid);
+                string ExamFee1 = CheckFee(ExamFee);
+                string LateFee1 = CheckFee(LateFee);
+                string TatkalFee1 = CheckFee(TatkalFee);
+                string PremiumTatkalFee1 = CheckFee(PremiumTatkalFee);
+                string Semid1 = CheckFee(Semid);
+
+                if (pin1 != "YES")
+                {
+                    return pin1;
+                }
+                if (ExamMonthYear1 != "YES")
+                {
+                    return ExamMonthYear1;
+                }
+                if (studenttypeid1 != "YES")
+                {
+                    return studenttypeid1;
+                }
+                if (ExamFee1 != "YES")
+                {
+                    return ExamFee1;
+                }
+                if (LateFee1 != "YES")
+                {
+                    return LateFee1;
+                }
+                if (TatkalFee1 != "YES")
+                {
+                    return TatkalFee1;
+                }
+                if (PremiumTatkalFee1 != "YES")
+                {
+                    return PremiumTatkalFee1;
+                }
+                if (Semid1 != "YES")
+                {
+                    return Semid1;
+                }
+
 
                 var dbHandler = new dbHandler();
-                var param = new SqlParameter[8];
-                param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
-                param[1] = new SqlParameter("@Pin", Pin);
-                param[2] = new SqlParameter("@studenttypeid", studenttypeid);
-                param[3] = new SqlParameter("@ExamFee", ExamFee);
-                param[4] = new SqlParameter("@LateFee", LateFee);
-                param[5] = new SqlParameter("@TatkalFee", TatkalFee);
-                param[6] = new SqlParameter("@PremiumTatkalFee", PremiumTatkalFee);
-                param[7] = new SqlParameter("@Semid", Semid);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_SET_ManualUpdation", param);
-                return JsonConvert.SerializeObject(dt);
+                    var param = new SqlParameter[8];
+                    param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
+                    param[1] = new SqlParameter("@Pin", Pin);
+                    param[2] = new SqlParameter("@studenttypeid", studenttypeid);
+                    param[3] = new SqlParameter("@ExamFee", ExamFee);
+                    param[4] = new SqlParameter("@LateFee", LateFee);
+                    param[5] = new SqlParameter("@TatkalFee", TatkalFee);
+                    param[6] = new SqlParameter("@PremiumTatkalFee", PremiumTatkalFee);
+                    param[7] = new SqlParameter("@Semid", Semid);
+                    var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_SET_ManualUpdation", param);
+                    return JsonConvert.SerializeObject(dt);
+              
             }
             catch (Exception ex)
             {
@@ -3609,6 +3652,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
+
+
 
 
         [AuthorizationFilter()][HttpGet, ActionName("getDetailsByPins")]
@@ -8547,24 +8592,30 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.OK, ex.Message);
             }
         }
+        
 
         [AuthorizationFilter()][HttpPost, ActionName("AddorUpdateFeeSettings")]
         public string AddorUpdateFeeSettings([FromBody] JsonObject request)
         {
             try
             {
-                var dbHandler = new dbHandler();
-                var param = new SqlParameter[8];
-                param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
-                param[1] = new SqlParameter("@ID", request["ID"]);
-                param[2] = new SqlParameter("@Name", request["Name"]);
-                param[3] = new SqlParameter("@Is_Active", request["Is_Active"]);
-                param[4] = new SqlParameter("@Price", request["Price"]);
-                param[5] = new SqlParameter("@ServiceType", request["ServiceType"]);
-                param[6] = new SqlParameter("@ChallanPrefix", request["ChallanPrefix"]);
-                param[7] = new SqlParameter("@UserName", request["UserName"]);
-                var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Add_Update_CertificateTypes", param);
-                return JsonConvert.SerializeObject(dt);
+              
+                    var dbHandler = new dbHandler();
+                    var param = new SqlParameter[8];
+                    param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
+                    param[1] = new SqlParameter("@ID", request["ID"]);
+                    param[2] = new SqlParameter("@Name", request["Name"]);
+                    param[3] = new SqlParameter("@Is_Active", request["Is_Active"]);
+                    param[4] = new SqlParameter("@Price", request["Price"]);
+                    param[5] = new SqlParameter("@ServiceType", request["ServiceType"]);
+                    param[6] = new SqlParameter("@ChallanPrefix", request["ChallanPrefix"]);
+                    param[7] = new SqlParameter("@UserName", request["UserName"]);
+                    var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Add_Update_CertificateTypes", param);
+                    return JsonConvert.SerializeObject(dt);
+
+              
+
+                
             }
             catch (Exception ex)
             {
@@ -8744,8 +8795,99 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("CheckFee")]
+        public string CheckFee(int DataType)
+        {
+            try
+            {
+                if (DataType != 0)
+                {
+                    Regex regex = new Regex("[0-9]");
+                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType.ToString()))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input "+ DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PinCheck")]
+        public string PinCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^[a-zA-Z0-9_.-]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
 
 
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
 
 
 
@@ -8760,7 +8902,25 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z\\s]*$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                       
+
+                            var plaintext = "400";
+                            var plaintext1 = "Invalid Input "+ DataType;
+                            var plaintext2 = "status";
+                            var plaintext3 = "description";
+
+                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                            string Status = Encryption.Encrypt(plaintext2, key, iv);
+                            string Description = Encryption.Encrypt(plaintext3, key, iv);
+                      // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                          //  return Content;
+                       var  res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
                     }
                     else
                     {
@@ -8789,7 +8949,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[MF]$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -8817,7 +8992,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{10}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -8845,7 +9035,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -14552,7 +14757,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-
+                
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
