@@ -69,7 +69,6 @@ namespace SoftwareSuite.BLL
                 DataSet tblUsersList = new DataSet();
                 tblUsersList = SystemUserService.GetUserLogin(dbHandler, UserName, Password, Ipaddress);
                 var ds = JsonConvert.SerializeObject(tblUsersList);
-                // List<SystemUser> User = tblUsersList.DataTableToList<SystemUser>();
                 List<SystemUser> User = tblUsersList.Tables[1].DataTableToList<SystemUser>();
                 List<UserAuth> Userstat = tblUsersList.Tables[0].DataTableToList<UserAuth>();
                 SystemUserAuth SystemUserAuthData = new SystemUserAuth()

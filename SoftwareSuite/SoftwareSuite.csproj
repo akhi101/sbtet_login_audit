@@ -524,6 +524,7 @@
     <Compile Include="Controllers\IVC\PreExamination\IVCPreExaminationController.cs" />
     <Compile Include="Controllers\IVC\RegistrationService\IVCRegistrationController.cs" />
     <Compile Include="Controllers\IVC\SystemAdministration\IVCSystemUserController.cs" />
+    <Compile Include="Controllers\LockOutPolicy.cs" />
     <Compile Include="Controllers\MailOTPServiceController.cs" />
     <Compile Include="Controllers\MasterSetting\MasterPageController.cs" />
     <Compile Include="Controllers\SMSServiceController.cs" />
