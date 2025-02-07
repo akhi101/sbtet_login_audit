@@ -160,7 +160,7 @@
                                     <div class="col-md-10">
                                         <div class="form-group">
                                             <label>Notification Message</label>
-                                            <textarea rows="5" style="resize:none" ng-model="UserNotification" class="form-control"></textarea>
+                                            <textarea rows="5" style="resize:none" onkeypress="return /[0-9a-zA-Z ]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z ]/i.test(event.key)" ng-model="UserNotification" class="form-control"></textarea>
                                         </div>
                                     </div>
 

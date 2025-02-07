@@ -271,7 +271,7 @@
                                         <label class="font-weight-bold">
                                             No of Working Days :
                                         </label>
-                                        <input autocomplete="off" placeholder="Working Days" style="width:100%;" class="form-control" maxlength="3" type="text" ng-model="WorkingDay" />
+                                        <input autocomplete="off" placeholder="Working Days" style="width:100%;" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" class="form-control" maxlength="3" type="text" ng-model="WorkingDay" />
                                     </div>
 
                                     <div class="col-md-12">

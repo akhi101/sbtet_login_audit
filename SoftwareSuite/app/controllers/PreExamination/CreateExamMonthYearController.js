@@ -17,14 +17,40 @@
                 return;
             }
             var ApprovalList = PreExaminationService.SetExamMonthYear(datatypeid,$scope.ExamMonthYear,0,0);
-            ApprovalList.then(function (response) {  
-                $scope.ExamMonthYear = "";
-                if (response[0].ResponceCode == '200') {
-                    alert(response[0].ResponceDescription);
+            ApprovalList.then(function (response) {
+                var res = JSON.parse(res);
+                try {
+                    var res = JSON.parse(res);
+                }
+                catch
+                {
+
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                } else
+               
+                    if (res[0].ResponceCode == '200') {
+                        alert(res[0].ResponceDescription);
                     $scope.GetExamYearMonth();
                 }else
-                    if (response[0].ResponceCode == '400') {
-                        alert(response[0].ResponceDescription);
+                        if (res[0].ResponceCode == '400') {
+                            alert(res[0].ResponceDescription);
                         $scope.GetExamYearMonth();
                 } else {
                     alert('Something Went Wrong')
@@ -69,12 +95,37 @@
             }
             var SetSemester = PreExaminationService.SetExamMonthYear(datatypeid, data.ExamYearMonth, parseInt(data.Id), parseInt(data.SequenceId))
             SetSemester.then(function (response) {
+                var res = JSON.parse(res);
+                try {
+                    var res = JSON.parse(res);
+                }
+                catch
+                {
+
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                } else
                // var response = JSON.parse(response)
-                if (response[0].ResponceCode == '200') {
-                    alert(response[0].ResponceDescription)
+                    if (res[0].ResponceCode == '200') {
+                        alert(res[0].ResponceDescription)
                     $scope.GetExamYearMonth();
-                }else if (response[0].ResponceCode == '400') {
-                        alert(response[0].ResponceDescription);
+                    } else if (res[0].ResponceCode == '400') {
+                        alert(res[0].ResponceDescription);
                         $scope.GetExamYearMonth();
                 } else {
                     alert('Something Went Wrong')

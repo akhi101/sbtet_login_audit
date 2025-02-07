@@ -257,7 +257,7 @@
                             <div class="col-md-12">
                                 <label class="font-weight-bold">Description</label>
                                 <div class="form-group">
-                                    <textarea type="text" rows="5" maxlength="500" class="form-control" placeholder="Enter Description" ng-model="Description" required></textarea>
+                                    <textarea type="text" rows="5" maxlength="500" class="form-control" onkeypress="return /[0-9a-zA-Z ]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z ]/i.test(event.key)" placeholder="Enter Description" ng-model="Description" required></textarea>
                                 </div>
                             </div>
                             
