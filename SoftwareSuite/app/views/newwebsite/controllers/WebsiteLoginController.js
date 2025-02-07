@@ -189,6 +189,7 @@
         $scope.loginAttempts = 0;
         $scope.validatelogincaptcha = function () {
 
+            delete $localStorage.authorizationData;
 
             if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
                 $scope.UserNamemessage = "* Enter user name";
@@ -258,8 +259,12 @@
                     return;
                 }
                 else if ($scope.token.length > 0) {
+                    var UserRights = [];
+                    sessionStorage.loggedIn = "yes";
+                    $localStorage.authToken = response.token + "$$@@$$" + $scope.LoginEKey;
+                    $scope.SessionID = $scope.LoginSessionEKey;
 
-                    console.log("Login Success. Navigating to Dashboard...");
+                    //console.log("Login Success. Navigating to Dashboard...");
                     $scope.USERNAME = response.USERNAME;
                     $scope.USERID = response.USERID;
                     $scope.USERTYPEID = response.USERTYPEID;
@@ -272,11 +277,11 @@
                     $scope.decryptParameter4();
                     $scope.decryptParameter5();
 
-                    delete $localStorage.authToken;
-                    $localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
+                    //delete $localStorage.authToken;
+                    //$localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
 
-                    sessionStorage.loggedIn = "yes";
-                    $scope.SessionID = $scope.LoginSessionEKey;
+                    //sessionStorage.loggedIn = "yes";
+                    //$scope.SessionID = $scope.LoginSessionEKey;
 
                     //response.data = response.data.SystemUser[0];
                           let authorizationData = {
@@ -297,17 +302,18 @@
                             };
 
                             sessionStorage.setItem('user', JSON.stringify(authorizationData));
+                            $state.go('Dashboard');
 
-                    $timeout(function () {
-                        try {
-                            $state.go('Dashboard'); // Preferred AngularJS way
-                            $scope.$apply(); // Ensure digest cycle updates
-                        } catch (e) {
-                            console.error("State transition failed, using window.location.href instead.");
-                            window.location.href = '#/Dashboard'; // Fallback
-                            window.location.reload(); // Ensure refresh
-                        }
-                    }, 0);
+                    //$timeout(function () {
+                    //    try {
+                    //        $state.go('Dashboard'); // Preferred AngularJS way
+                    //        $scope.$apply(); // Ensure digest cycle updates
+                    //    } catch (e) {
+                    //        console.error("State transition failed, using window.location.href instead.");
+                    //        window.location.href = '#/Dashboard'; // Fallback
+                    //        window.location.reload(); // Ensure refresh
+                    //    }
+                    //}, 0);
 
 
                     }
