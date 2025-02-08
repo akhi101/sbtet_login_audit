@@ -1,6 +1,12 @@
 ﻿define(['app'], function (app) {
     app.controller("AttendanceReportController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $uibModal, $timeout, PreExaminationService) {
-
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 1) {
+            alert("UnAuthorized Access");
+            $state.go('Dashboard');
+            return;
+        }
         var LoadBacklogSemesters = PreExaminationService.getAllSemester();
         LoadBacklogSemesters.then(function (response) {
             $scope.ActiveSemesters = response.Table;
@@ -24,6 +30,13 @@
                 console.log(error);
             });
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
     $scope.Submit = function () {
     $scope.loading = true;
     $scope.Noresult = false

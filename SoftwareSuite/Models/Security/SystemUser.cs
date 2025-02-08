@@ -8,6 +8,7 @@ namespace SoftwareSuite.Models.Security
     public class SystemUser
     {
         public string UserName { get; set; }
+        public string AuthTokenId { get; set; }
         public string UserId { get; set; }
         public string UserTypeId { get; set; }
         public string CollegeCode { get; set; }
@@ -16,8 +17,8 @@ namespace SoftwareSuite.Models.Security
         public DateTime ExpiryDate { get; set; }
         public string BranchCode { get; set; }
         public string CollegeName { get; set; }
-        public int CollegeId { get; set; }
-        public int BranchId { get; set; }
+        public string CollegeId { get; set; }
+        public string BranchId { get; set; }
         public int AcademicId { get; set; }
         public string ResponceCode { get; set; }
         public string RespoceDescription { get; set; }

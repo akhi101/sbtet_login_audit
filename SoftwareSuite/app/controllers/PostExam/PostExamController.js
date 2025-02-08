@@ -36,6 +36,14 @@
             console.log(err);
         });
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
+
         $scope.$on('showLoading', function (evt, data) {
             $('.overlayCss').css('display', 'block');
         });

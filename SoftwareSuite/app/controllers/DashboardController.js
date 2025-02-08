@@ -247,14 +247,10 @@
 
             $scope.logOut = function () {
                 sessionStorage.loggedIn = "no";
-                delete $localStorage.authorizationData;
+                var GetUserLogout = SystemUserService.getUserLogout();
+                alert('Logout Successfully');
+                $state.go('index.WebsiteLogin');
 
-                $scope.authentication = {
-                    isAuth: false,
-                    UserId: 0,
-                    UserName: ""
-                };
-                $state.go('index.WebsiteLogin')
             }
 
         }

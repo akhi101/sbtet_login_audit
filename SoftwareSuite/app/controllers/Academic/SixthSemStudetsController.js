@@ -60,7 +60,13 @@
 
         }
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
         $scope.pushData = function (Id,pin, Is6thSemStudied) {
             return {
                 Id: Id,

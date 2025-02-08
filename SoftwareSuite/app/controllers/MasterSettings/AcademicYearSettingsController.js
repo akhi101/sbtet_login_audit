@@ -28,7 +28,13 @@ define(['app'], function (app) {
           
         }
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
      
         $scope.UpdateAcaYear = function (StartYear) {
             var tempyr = (parseInt(StartYear) + 1).toString();

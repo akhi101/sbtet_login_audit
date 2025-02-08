@@ -19,38 +19,6 @@ define(['app'], function (app) {
 
 
 
-    $scope.logOut = function () {
-        sessionStorage.loggedIn = "no";
-        var GetUserLogout = SystemUserService.postUserLogout($scope.userName);
-        GetUserLogout.then(function (response) {
-            if (response.Table[0].ResponceCode == '200') {
-                alert(response.Table[0].ResponceDescription);
-            } else {
-                alert('Unsuccess')
-            }
-        },
-            function (error) {
-                //   alert("error while loading Notification");
-                var err = JSON.parse(error);
-            });
-        sessionStorage.removeItem('user')
-        sessionStorage.removeItem('authToken')
-        sessionStorage.removeItem('SessionID')
-        sessionStorage.clear();
-
-        $localStorage.authorizationData = ""
-        $localStorage.authToken = ""
-        delete $localStorage.authorizationData;
-        delete $localStorage.authToken;
-        delete $scope.SessionID;
-        $scope.authentication = {
-            isAuth: false,
-            UserId: 0,
-            userName: ""
-        };
-        $state.go('index.WebsiteLogin')
-
-    }
 
 
 
@@ -70,7 +38,13 @@ define(['app'], function (app) {
         var data = {};
         $scope.$emit('showLoading', data);
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
 
         $scope.searchtxt = "";
         $scope.DownloadExcelResult = function (tableId) {

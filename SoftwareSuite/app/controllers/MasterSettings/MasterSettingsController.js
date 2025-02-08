@@ -34,6 +34,13 @@
         $scope.OpenSubModule = function (Module) {
             $state.go("Dashboard.AssessmentDashbaord." + Module.ModuleRouteName);
         }
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
     })
 })
 

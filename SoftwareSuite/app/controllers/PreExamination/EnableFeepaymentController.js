@@ -101,6 +101,13 @@
             $scope.FeeType = data.FeeType
         }
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
         $scope.Submit = function () {
 
             //$scope.Fee = 0;
