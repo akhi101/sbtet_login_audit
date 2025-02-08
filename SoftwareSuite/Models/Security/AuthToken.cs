@@ -9,7 +9,13 @@ namespace SoftwareSuite.Models.Security
     {
         //internal object collegeType;
         public string UserName { get; set; }
+        public string AuthTokenId { get; set; }
         public string UserId { get; set; }
+        public string BranchCode { get; set; }
+        public string BranchId { get; set; }
+
+        public string CollegeId { get; set; }
+        public string CollegeName { get; set; }
         public string UserTypeId { get; set; }
         public string CollegeCode { get; set; }
         public string collegeType { get; set; }

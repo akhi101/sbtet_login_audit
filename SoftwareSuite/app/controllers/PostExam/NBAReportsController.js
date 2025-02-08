@@ -1,7 +1,13 @@
 ﻿define(['app'], function (app) {
     app.controller("NBAReportsController", function ($scope, $http, $localStorage, $state, $location, $window, $stateParams, AppSettings, PreExaminationService) {
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
         $scope.DownloadReport1 = function () {
             $scope.loading = true;
             $scope.Noresult = false

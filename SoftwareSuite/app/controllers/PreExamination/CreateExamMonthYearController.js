@@ -67,7 +67,13 @@
             $scope.$emit('hideLoading', data);
         });
         }
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
         $scope.Editsemesterdat = function (data, ind) {
 
             var ele1 = document.getElementsByClassName("enabletable" + ind);

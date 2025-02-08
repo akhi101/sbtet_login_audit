@@ -84,6 +84,11 @@
             var promise = DataAccessService.postData('api/SystemUser/PostLogoutLog', paramObject);
             return promise;
         }
+
+        this.getUserLogout = function () {
+            var data = DataAccessService.getDataAll('api/AdminService/getUserLogout');
+            return data;
+        }
         this.GetUserLoginPermissions = function (username, password) {
             var paramObject = { "username": username, "password": password };
             var promise = DataAccessService.getDataWithPara('api/SystemUser/GetUserLoginPermissions', paramObject);

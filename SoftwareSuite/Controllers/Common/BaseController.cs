@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using SoftwareSuite.Models.Security;
 using Org.BouncyCastle.Ocsp;
 using SoftwareSuite.Controllers.SystemAdministration;
+using System.IO;
 
 namespace SoftwareSuite.Controllers
 {
@@ -24,6 +25,9 @@ namespace SoftwareSuite.Controllers
                 var t = tokenStr.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                 tokenStr = t[0];
                 token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(tokenStr));
+                if (!validatetoken(token.AuthTokenId)) {
+                    ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
+                }
                 if (token.ExpiryDate < DateTime.Now)
                 {
                     ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
@@ -34,6 +38,25 @@ namespace SoftwareSuite.Controllers
                 ctx.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Authentication Token");
             }
             base.OnActionExecuting(ctx);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+            
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+
+            return istokenvalid;
         }
 
 

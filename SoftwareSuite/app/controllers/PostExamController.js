@@ -58,20 +58,11 @@
         }
         $scope.logOut = function () {
             sessionStorage.loggedIn = "no";
-            delete $localStorage.authorizationData;
-            var InsertLoginList = MenuService.GetUpdateLogoutInfo(AppSettings.LoggedUserId, $scope.userName);
-            InsertLoginList.then(function (Districtdata, status, headers, config, error) {
-            }, function (error) {
-                alert(error);
-            });
-            $scope.authentication = {
-                isAuth: false,
-                UserId: 0,
-                userName: ""
-            };
-            $state.go('login');
-        }
-    });
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }    });
 });
 
 

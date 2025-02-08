@@ -9,6 +9,13 @@
 
         $scope.search = "";
         $scope.loading = true;
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
         var getcircular = AdminService.getTendersActive();
         getcircular.then(function (res) {
             var response = JSON.parse(res)

@@ -85,16 +85,11 @@
             $state.go("Dashboard.Academic." + Module.ModuleRouteName);
         }
         $scope.logOut = function () {
-            $scope.$emit("logout", authData.userName);
             sessionStorage.loggedIn = "no";
-            delete $localStorage.authorizationData;
-           
-            $scope.authentication = {
-                isAuth: false,
-                UserId: 0,
-                userName: ""
-            };
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
             $state.go('index.WebsiteLogin');
+
         }
 
     });

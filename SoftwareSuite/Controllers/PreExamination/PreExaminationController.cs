@@ -1,4 +1,4 @@
-extern alias itextalias;
+﻿extern alias itextalias;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.FileProviders;
 using System;
@@ -8411,7 +8411,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
+        [HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
         public HttpResponseMessage GetExamMonthYearByAcademicYear(int Academicyearid, int SessionId)
         {
             try
@@ -8474,7 +8474,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearAcademicYear")]
+        [HttpGet, ActionName("GetExamMonthYearAcademicYear")]
         public HttpResponseMessage GetExamMonthYearAcademicYear(int Academicyearid)
         {
             try

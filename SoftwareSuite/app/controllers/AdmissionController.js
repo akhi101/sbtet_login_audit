@@ -185,16 +185,11 @@ define(['app'], function (app) {
             //}
             $scope.logOut = function () {
                 sessionStorage.loggedIn = "no";
-                delete $localStorage.authorizationData;
+                var GetUserLogout = SystemUserService.getUserLogout();
+                alert('Logout Successfully');
+                $state.go('index.WebsiteLogin');
 
-                $scope.authentication = {
-                    isAuth: false,
-                    UserId: 0,
-                    userName: ""
-                };
-                $state.go('login')
-            },
-
+            }
             //$scope.$on('onBeforeUnload', function (e, confirmation) {
             //    confirmation.message = "If you refresh or close browser, your session will expire and all data will be lost";
             //    e.preventDefault();
