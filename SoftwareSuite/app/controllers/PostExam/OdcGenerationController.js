@@ -33,7 +33,7 @@
                 
             } else {
                 $scope.getExamMonthYears = [];
-                alert("No Exam Month Years found.");
+                alert("No Exam Months Years found.");
             }
         },
          function (error) {
