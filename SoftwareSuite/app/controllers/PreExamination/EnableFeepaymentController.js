@@ -153,18 +153,18 @@
                 try {
                     var res = JSON.parse(res);
                 }
-            catch 
-    {
-       
-    }      
+                catch
+                {
+
+                }
                 const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
                 if (res.Status) {
-                   // var keys = Object.keys(res);
+                    // var keys = Object.keys(res);
 
-                 //   $scope.statusKey = keys[0];
+                    //   $scope.statusKey = keys[0];
                     $scope.statusValue = res.Status;
 
-                   // $scope.descriptionKey = keys[1];
+                    // $scope.descriptionKey = keys[1];
                     $scope.descriptionValue = res.Description;
 
                     $scope.EncStatusDescription2 = $scope.descriptionValue;
@@ -173,7 +173,7 @@
                         alert($scope.decryptedParameter2);
 
                     }
-                } else if (res.Table[0].ResponseCode =='200') {
+                }else if (res.Table[0].ResponseCode =='200') {
                     alert(res.Table[0].ResponseDescription)
                 } else if (res.Table[0].ResponseCode == '400') {
                     alert(res.Table[0].ResponseDescription)

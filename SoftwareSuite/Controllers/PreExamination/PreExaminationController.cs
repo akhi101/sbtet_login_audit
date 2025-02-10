@@ -741,6 +741,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@pin", pin);
@@ -1303,6 +1305,32 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+                string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
+                string Day1 = PinCheck(day);
+                string Month1 = PinCheck(month);
+                string Year1 = PinCheck(year);
+                
+
+
+                if (ExamMonthYearId1 != "YES")
+                {
+                    return ExamMonthYearId1;
+                }
+                if (Day1 != "YES")
+                {
+                    return Day1;
+                }
+                if (Month1 != "YES")
+                {
+                    return Month1;
+                }
+                if (Year1 != "YES")
+                {
+                    return Year1;
+                }
+               
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
@@ -2747,6 +2775,57 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string DataTypeId1 = CheckFee(DataTypeId);
+                string AcademicYear1 = PinCheck(AcademicYear);
+                string AcademicStartYear1 = CheckFee(AcademicStartYear);
+                //string StartDate1 = CheckFee(StartDate);
+                //string EndDate1 = CheckFee(EndDate);
+                string UserName1 = PinCheck(UserName);
+                //string IsCurrentAcademicYear1 = CheckFee(IsCurrentAcademicYear);
+                string AcademicID1 = CheckFee(AcademicID);
+                string ActiveFlag1 = CheckFee(ActiveFlag);
+
+
+                if (DataTypeId1 != "YES")
+                {
+                    return DataTypeId1;
+                }
+                if (AcademicYear1 != "YES")
+                {
+                    return AcademicYear1;
+                }
+                if (AcademicStartYear1 != "YES")
+                {
+                    return AcademicStartYear1;
+                }
+                //if (StartDate1 != "YES")
+                //{
+                //    return StartDate1;
+                //}
+                //if (EndDate1 != "YES")
+                //{
+                //    return EndDate1;
+                //}
+                if (UserName1 != "YES")
+                {
+                    return UserName1;
+                }
+                //if (IsCurrentAcademicYear1 != "YES")
+                //{
+                //    return IsCurrentAcademicYear1;
+                //}
+                if (AcademicID1 != "YES")
+                {
+                    return AcademicID1;
+                }
+                if (ActiveFlag1 != "YES")
+                {
+                    return ActiveFlag1;
+                }
+
+
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[9];
                 param[0] = new SqlParameter("@DataTypeId", DataTypeId);
@@ -3532,14 +3611,52 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string pin1 = PinCheck(Pin);
+
+
                 string ExamMonthYear1 = CheckFee(ExamMonthYear);
+                string pin1 = PinCheck(Pin);
                 string studenttypeid1 = CheckFee(studenttypeid);
                 string ExamFee1 = CheckFee(ExamFee);
                 string LateFee1 = CheckFee(LateFee);
                 string TatkalFee1 = CheckFee(TatkalFee);
                 string PremiumTatkalFee1 = CheckFee(PremiumTatkalFee);
                 string Semid1 = CheckFee(Semid);
+
+
+                if (ExamMonthYear1 != "YES")
+                {
+                    return ExamMonthYear1;
+                }
+                if (pin1 != "YES")
+                {
+                    return pin1;
+                }
+                if (studenttypeid1 != "YES")
+                {
+                    return studenttypeid1;
+                }
+                if (ExamFee1 != "YES")
+                {
+                    return ExamFee1;
+                }
+                if (LateFee1 != "YES")
+                {
+                    return LateFee1;
+                }
+                if (TatkalFee1 != "YES")
+                {
+                    return TatkalFee1;
+                }
+                if (PremiumTatkalFee1 != "YES")
+                {
+                    return PremiumTatkalFee1;
+                }
+                if (Semid1 != "YES")
+                {
+                    return Semid1;
+                }
+
+               
 
                 var dbHandler = new dbHandler();
                     var param = new SqlParameter[8];
@@ -3778,6 +3895,25 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string DataTypeId1 = CheckFee(DataTypeId);
+                string CollegeCode1 = PinCheck(CollegeCode);
+                string BranchCode1 = PinCheck(BranchCode);
+              
+
+
+                if (DataTypeId1 != "YES")
+                {
+                    return DataTypeId1;
+                }
+                if (CollegeCode1 != "YES")
+                {
+                    return CollegeCode1;
+                }
+                if (BranchCode1 != "YES")
+                {
+                    return BranchCode1;
+                }
+               
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
                 param[0] = new SqlParameter("@DataTypeId", DataTypeId);
@@ -6598,11 +6734,45 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GenerateC18MemosDataByPin")]
-        public string GenerateC18MemosDataByPin(int ExamMonthYearId, int MinCredits, string Day, string Month, string Year, string PIN)
+        [HttpGet, ActionName("GenerateC18MemosDataByPin")]
+        public string GenerateC18MemosDataByPin(int ExamMonthYearId, int MinCredits, int Day, int Month, int Year, string PIN)
         {
             try
             {
+
+                //string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
+                //string MinCredits1 = CheckFee(MinCredits);
+                //string Day1 = CheckFee(Day);
+                //string Month1 = CheckFee(Month);
+                //string Year1 = CheckFee(Year);
+                //string pin1 = PinCheck(PIN);
+
+
+                //if (ExamMonthYearId1 != "YES")
+                //{
+                //    return ExamMonthYearId1;
+                //}
+                //if (MinCredits1 != "YES")
+                //{
+                //    return MinCredits1;
+                //}
+                //if (Day1 != "YES")
+                //{
+                //    return Day1;
+                //}
+                //if (Month1 != "YES")
+                //{
+                //    return Month1;
+                //}
+                //if (Year1 != "YES")
+                //{
+                //    return Year1;
+                //}
+                //if (pin1 != "YES")
+                //{
+                //    return pin1;
+                //}
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
                 param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
@@ -10065,6 +10235,28 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string Scheme1 = PinCheck(Scheme);
+                string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
+                string Date1 = PinCheck(Date);
+                
+               
+
+
+                if (Scheme1 != "YES")
+                {
+                    return Scheme1;
+                }
+                if (ExamMonthYearId1 != "YES")
+                {
+                    return ExamMonthYearId1;
+                }
+                if (Date1 != "YES")
+                {
+                    return Date1;
+                }
+
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
                 param[0] = new SqlParameter("@Scheme", Scheme);
@@ -14695,6 +14887,16 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+                string ExamMonthYear1 = PinCheck(ExamMonthYear);
+
+
+                if (ExamMonthYear1 != "YES")
+                {
+                    return ExamMonthYear1;
+                }
+
+
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
