@@ -8,6 +8,8 @@ namespace SoftwareSuite.Models.Security
     public class SystemUser
     {
         public string UserName { get; set; }
+        public string UserPassword { get; set; }
+        public string Salt { get; set; }
         public string AuthTokenId { get; set; }
         public string UserId { get; set; }
         public string UserTypeId { get; set; }

@@ -27,8 +27,9 @@ namespace SoftwareSuite.Controllers.ExternalServices
             var ekey = _eps.GetEncryptionKeyByOrgId(data.OrgId);
             var crypt = new HbCrypt();
             string encrypassword = crypt.Encrypt(data.Password);
+            string encrySalt = crypt.Encrypt(data.Salt);
             var userBll = new SystemUserBLL();
-            var User = userBll.GetUserLogin(data.Username.Replace("'", "''"), encrypassword, "");
+            var User = userBll.GetUserLogin(data.Username.Replace("'", "''"), "");
             if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
             {
                 return $"IsValidUser=true|SessionTimeOut={DateTime.Now.AddHours(3)}";
@@ -96,6 +97,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         public string OrgId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public string Salt { get; set; }
         public string SessioniD { get; set; }
     }
 

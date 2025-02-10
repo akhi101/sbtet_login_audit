@@ -35,6 +35,7 @@ using DocumentFormat.OpenXml.Office.CustomXsn;
 using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -394,6 +395,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         public class LoginCaptchaDetails{
 
             public string Session { get; set; }
+            public string DataType { get; set; }
             public string SessionID { get; set; }
             public string Captcha { get; set; }
             public string LoginName { get; set; }
@@ -440,6 +442,60 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
+        // Method to generate a secure salt
+        public static byte[] GenerateSalt(int size = 16)
+        {
+            var salt = new byte[size];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(salt);
+            }
+            return salt;
+        }
+
+
+        // Method to hash data with salt using SHA256
+        public static byte[] HashWithSalt(string data, byte[] salt)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                // Combine data and salt
+                var dataBytes = Encoding.UTF8.GetBytes(data);
+                var dataWithSalt = new byte[dataBytes.Length + salt.Length];
+                Buffer.BlockCopy(dataBytes, 0, dataWithSalt, 0, dataBytes.Length);
+                Buffer.BlockCopy(salt, 0, dataWithSalt, dataBytes.Length, salt.Length);
+
+                // Compute hash
+                return sha256.ComputeHash(dataWithSalt);
+            }
+        }
+
+        // Method to validate the password
+        public static bool ValidatePassword(string enteredPassword, byte[] storedSalt, byte[] storedHash)
+        {
+            byte[] enteredHash = HashWithSalt(enteredPassword, storedSalt);
+            return CompareByteArrays(enteredHash, storedHash);
+        }
+
+
+        // Helper method to compare byte arrays
+        private static bool CompareByteArrays(byte[] a, byte[] b)
+        {
+            if (a.Length != b.Length) return false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i]) return false;
+            }
+            return true;
+        }
+
+        public static void StorePassword(string password, out byte[] salt, out byte[] hashedPassword)
+        {
+            salt = GenerateSalt(); // Generate salt only during password setup
+            hashedPassword = HashWithSalt(password, salt);
+        }
+
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
         {
@@ -452,12 +508,22 @@ namespace SoftwareSuite.Controllers.AdminServices
             try
             {
 
+
+
                 string loginLock = loginLocked ? "Yes" : "No";
                 string islock = "loginLock";
                 string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
                 string lockiv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
                 string isLocked = Encryption.Encrypt(islock, lockkey, lockiv);
-                if (loginLock == "Yes")
+
+                string DataType = "1482cS+YzslJtmNjRWaaRgEVGBuxXXnqhU5WaptbY14kryoQ6HfnRxJgnmKWzqRBfp9RORS/dwlutMR6IA+Qlaf0Io2Ao7cfL1UJ0/hja+jkZ6C5GyuzEy6ZDzxEGX4CBXn9taRmDr0JYogxBWJT8Q==$$@@$$zkdrgkjzna";
+
+                string UserAccountStatus = AddorGetAccountStatus(DataType, ReqData.LoginName);
+
+                var users = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(UserAccountStatus);
+
+                string AccountLocked= users[0]["AccountLocked"].ToString();
+                if (loginLock == "Yes" && AccountLocked=="true")
                 {
                     string message = "Account is temporarily locked. Try again later.";
                     string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
@@ -466,10 +532,15 @@ namespace SoftwareSuite.Controllers.AdminServices
                     return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
                 }
                 string token = "";
+
+
+
                 string decryptsession = GetDecryptedData(ReqData.Session);
                 string decryptCaptcha = GetDecryptedData(ReqData.Captcha);
                 string decryptLoginname = GetDecryptedData(ReqData.LoginName);
                 string decryptpassword = GetDecryptedData(ReqData.Password);
+
+ 
 
 
                 var crypt = new HbCrypt();
@@ -487,7 +558,12 @@ namespace SoftwareSuite.Controllers.AdminServices
                     string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
                     SystemUserBLL SystemUserBLL = new SystemUserBLL();
                     SystemUserAuth User;
-                    User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), encrypassword, clientIpAddress);
+                    byte[] salt = GenerateSalt(); // Generate salt
+                    byte[] hashedPassword = HashWithSalt(encrypassword, salt); // Hash password with salt
+
+                    string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
+                    string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
+                    User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), clientIpAddress);
                     StringBuilder builder = new StringBuilder();
                     Random random = new Random();
                     char ch;
@@ -498,90 +574,133 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                     }
                     AddTokenToStore(builder.ToString().ToLower());
+
                     if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
                     {
-                        lock (lockObj) { loginAttempts = 0; } // Reset login attempts on successful login
+
                         var u = User.SystemUser[0];
                         var v = User.UserAuth[0];
-                        
-                        AuthToken t = new AuthToken
+                        string Salt = User.SystemUser[0].Salt.ToString();
+                        string HashedPassword = User.SystemUser[0].UserPassword.ToString();
+
+                        byte[] storedSalt = Convert.FromBase64String(Salt);
+                        byte[] storedHash = Convert.FromBase64String(HashedPassword);
+
+                        // Hash the entered password with the stored salt
+                        byte[] enteredHash = HashWithSalt(encrypassword, storedSalt);
+
+                        // Compare stored and computed hashes
+                        bool isPasswordValid = CompareByteArrays(enteredHash, storedHash);
+                        if (!isPasswordValid)
                         {
-                            UserName = u.UserName ?? "",
-                            UserId = u.UserId ?? "",
-                            UserTypeId = u.UserTypeId ?? "",
-                            CollegeId = u.CollegeId ?? "",
-                            CollegeName = u.CollegeName ?? "",
-                            CollegeCode = u.CollegeCode ?? "",
-                            collegeType = u.collegeType ?? "",
-                            BranchCode = u.BranchCode ?? "",
-                            BranchId = u.BranchId ?? "",
-                            ResponceCode = v.ResponceCode ?? "",
-                            RespoceDescription = v.RespoceDescription ?? "",
-                            ExpiryDate = DateTime.Now.AddHours(1),
-                            AuthTokenId = builder.ToString().ToLower() 
-                        };
+                            lock (lockObj) // Ensure thread-safe increment
+                            {
+                                loginAttempts++;
+                            }
+                            if (loginAttempts > 2)
+                            {
+                                lock (lockObj) { loginLocked = true; }
+                                Task.Run(() => ResetLoginAttempts());
+                                string message1 = "Account locked for 1 minute.";
 
-                        var username = u.UserName;
-                        var userid = u.UserId;
-                        var collegeid = u.CollegeId;
-                        var collegename = u.CollegeName;
-                        var usertypeid = u.UserTypeId;
-                        var ccode = u.CollegeCode;
-                        var ctype = u.collegeType;
-                        var bcode = u.BranchCode;
-                        var bid = u.BranchId;
-                        var rescode = v.ResponceCode;
-                        var resdesc = v.RespoceDescription;
-                        var AuthTokenId = builder.ToString().ToLower();
+                                string key1 = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                                string iv1 = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                                string MESSAGE = Encryption.Encrypt(message1, key1, iv1);
+                                HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
+                                return response1;
 
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string USERNAME = Encryption.Encrypt(username, key, iv);
-                        string USERID = Encryption.Encrypt(userid, key, iv);
-                        string COLLEGEID = Encryption.Encrypt(collegeid, key, iv);
-                        string CNAME = Encryption.Encrypt(collegename, key, iv);
-                        string USERTYPEID = Encryption.Encrypt(usertypeid, key, iv);
-                        string CCODE = Encryption.Encrypt(ccode, key, iv);
-                        string CTYPE = Encryption.Encrypt(ctype, key, iv);
-                        string BCODE = Encryption.Encrypt(bcode, key, iv);
-                        string BID = Encryption.Encrypt(bid, key, iv);
-                        string RESPONSECODE = Encryption.Encrypt(rescode, key, iv);
-                        string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
-
-                        token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
-                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE,CNAME,BID,BCODE, RESPONSECODE, RESDESCRIPTION,t.ExpiryDate, clientIpAddress, AuthTokenId });
-                        return response;
-                    }
-
-                    else if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "401")
-                    {
-                        lock (lockObj) // Ensure thread-safe increment
-                        {
-                            loginAttempts++;
-                        }
-                        if (loginAttempts > 2)
-                        {
-                            lock (lockObj) { loginLocked = true; }
-                            Task.Run(() => ResetLoginAttempts());
-                            string message = "Account locked for 1 minute.";
-
-                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                            string MESSAGE = Encryption.Encrypt(message, key, iv);
-                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
-                            return response;
+                            }
+                            else
+                            {
+                                string message = "No such username or password";
+                                string key1 = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                                string iv1 = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                                string MESSAGE = Encryption.Encrypt(message, key1, iv1);
+                                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+                            }
                         }
                         else
                         {
-                            string message = "No such username or password";
+                            lock (lockObj) { loginAttempts = 0; } // Reset login attempts on successful login
+                            AuthToken t = new AuthToken
+                            {
+                                UserName = u.UserName ?? "",
+                                UserId = u.UserId ?? "",
+                                UserTypeId = u.UserTypeId ?? "",
+                                CollegeId = u.CollegeId ?? "",
+                                CollegeName = u.CollegeName ?? "",
+                                CollegeCode = u.CollegeCode ?? "",
+                                collegeType = u.collegeType ?? "",
+                                BranchCode = u.BranchCode ?? "",
+                                BranchId = u.BranchId ?? "",
+                                ResponceCode = v.ResponceCode ?? "",
+                                RespoceDescription = v.RespoceDescription ?? "",
+                                ExpiryDate = DateTime.Now.AddHours(1),
+                                AuthTokenId = builder.ToString().ToLower()
+                            };
+
+                            var username = u.UserName;
+                            var userid = u.UserId;
+                            var collegeid = u.CollegeId;
+                            var collegename = u.CollegeName;
+                            var usertypeid = u.UserTypeId;
+                            var ccode = u.CollegeCode;
+                            var ctype = u.collegeType;
+                            var bcode = u.BranchCode;
+                            var bid = u.BranchId;
+                            var rescode = v.ResponceCode;
+                            var resdesc = v.RespoceDescription;
+                            var AuthTokenId = builder.ToString().ToLower();
+
                             string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
                             string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                            string MESSAGE = Encryption.Encrypt(message, key, iv);
-                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+
+                            string USERNAME = Encryption.Encrypt(username, key, iv);
+                            string USERID = Encryption.Encrypt(userid, key, iv);
+                            string COLLEGEID = Encryption.Encrypt(collegeid, key, iv);
+                            string CNAME = Encryption.Encrypt(collegename, key, iv);
+                            string USERTYPEID = Encryption.Encrypt(usertypeid, key, iv);
+                            string CCODE = Encryption.Encrypt(ccode, key, iv);
+                            string CTYPE = Encryption.Encrypt(ctype, key, iv);
+                            string BCODE = Encryption.Encrypt(bcode, key, iv);
+                            string BID = Encryption.Encrypt(bid, key, iv);
+                            string RESPONSECODE = Encryption.Encrypt(rescode, key, iv);
+                            string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
+
+                            token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
+                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE, CNAME, BID, BCODE, RESPONSECODE, RESDESCRIPTION, t.ExpiryDate, clientIpAddress, AuthTokenId });
                             return response;
                         }
                     }
+                    //else if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "401")
+                    //{
+                    //    lock (lockObj) // Ensure thread-safe increment
+                    //    {
+                    //        loginAttempts++;
+                    //    }
+                    //    if (loginAttempts > 2)
+                    //    {
+                    //        lock (lockObj) { loginLocked = true; }
+                    //        UserAccountStatus = AddorGetAccountStatus(ReqData.DataType, ReqData.LoginName);
+                    //        Task.Run(() => ResetLoginAttempts());
+                    //        string message = "Account locked for 1 minute.";
+
+                    //        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    //        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                    //        string MESSAGE = Encryption.Encrypt(message, key, iv);
+                    //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
+                    //        return response;
+                    //    }
+                    //    else
+                    //    {
+                    //        string message = "No such username or password";
+                    //        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                    //        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                    //        string MESSAGE = Encryption.Encrypt(message, key, iv);
+                    //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+                    //        return response;
+                    //    }
+                    //}
                     else
                     {
                         string message = "Login failed. Please try again.";
@@ -660,7 +779,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@DataType", decrptedDataType);
                 param[1] = new SqlParameter("@UserName", decrptedUserName);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("SP_Get_AccountStatus", param);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Get_AccountStatus", param);
                 return JsonConvert.SerializeObject(dt);
             }
             catch (Exception ex)

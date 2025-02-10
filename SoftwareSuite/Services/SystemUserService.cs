@@ -53,7 +53,7 @@ namespace SoftwareSuite.Services
 
         //}
 
-        public DataSet GetUserLogin(dbHandler dbHandler, string UserName, string Password, string Ipaddress)
+        public DataSet GetUserLogin(dbHandler dbHandler, string UserName, string Ipaddress)
         {
 
             DataSet ds = new DataSet();
@@ -65,7 +65,6 @@ namespace SoftwareSuite.Services
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@UserName", UserName));
-                        cmd.Parameters.Add(new SqlParameter("@Password", Password));
                         cmd.Parameters.Add(new SqlParameter("@ipaddress", Ipaddress));
                         //cmd.Parameters.Add(new SqlParameter("@SessionID", SessionID));
                         conn.Open();
@@ -232,7 +231,7 @@ namespace SoftwareSuite.Services
             }
         }
 
-        public DataTable GetChangePassword(dbHandler dbHandler, Int32 UserId, string OldPassword, string NewPassword)
+        public DataTable GetChangePassword(dbHandler dbHandler, Int32 UserId, string OldPassword, string NewPassword,string Salt)
         {
             DataTable dt = new DataTable();
             try
@@ -245,6 +244,7 @@ namespace SoftwareSuite.Services
                         cmd.Parameters.Add(new SqlParameter("@UserId", UserId));
                         cmd.Parameters.Add(new SqlParameter("@UserPassword", OldPassword));
                         cmd.Parameters.Add(new SqlParameter("@NewPassword", NewPassword));
+                        cmd.Parameters.Add(new SqlParameter("@Salt", Salt));
                         conn.Open();
                         var da = new SqlDataAdapter(cmd);
                         da.Fill(dt);

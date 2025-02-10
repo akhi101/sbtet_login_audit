@@ -60,14 +60,14 @@ namespace SoftwareSuite.BLL
         //    }
         //}
 
-        public SystemUserAuth GetUserLogin(string UserName, string Password, string Ipaddress)
+        public SystemUserAuth GetUserLogin(string UserName, string Ipaddress)
         {
             try
             {
                 SystemUserService SystemUserService = new SystemUserService();
                 dbHandler dbHandler = new dbHandler();
                 DataSet tblUsersList = new DataSet();
-                tblUsersList = SystemUserService.GetUserLogin(dbHandler, UserName, Password, Ipaddress);
+                tblUsersList = SystemUserService.GetUserLogin(dbHandler, UserName, Ipaddress);
                 var ds = JsonConvert.SerializeObject(tblUsersList);
                 List<SystemUser> User = tblUsersList.Tables[1].DataTableToList<SystemUser>();
                 List<UserAuth> Userstat = tblUsersList.Tables[0].DataTableToList<UserAuth>();
@@ -241,14 +241,14 @@ namespace SoftwareSuite.BLL
             public String UserPassword;
 
         }
-        public SystemRes GetChangePassword(Int32 UserId, string OldPassword, string NewPassword)
+        public SystemRes GetChangePassword(Int32 UserId, string OldPassword, string NewPassword,string Salt)
         {
             try
             {
                 SystemUserService SystemUserService = new SystemUserService();
                 dbHandler dbHandler = new dbHandler();
                 DataTable tblUsersList = new DataTable();
-                tblUsersList = SystemUserService.GetChangePassword(dbHandler, UserId, OldPassword, NewPassword);
+                tblUsersList = SystemUserService.GetChangePassword(dbHandler, UserId, OldPassword, NewPassword, Salt);
                 SystemRes res = new SystemRes();
                 res.ResponceCode = Convert.ToString(tblUsersList.Rows[0]["ResponceCode"]);
                 res.ResponceDescription = Convert.ToString(tblUsersList.Rows[0]["ResponceDescription"]);
