@@ -144,6 +144,8 @@
             $scope.decryptedResDesc = $scope.decryptedText5;
         };
 
+
+
         $scope.decryptParameter6 = function () {
             var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
             var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
@@ -184,11 +186,131 @@
             $scope.decryptedislocked = $scope.decryptedText7;
         };
 
+        $scope.decryptParameter8 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.COLLEGEID; // Encrypted text (Base64)
 
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText8 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedCollegeId = $scope.decryptedText8;
+        };
+
+        $scope.decryptParameter9 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.BRANCHID; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText9 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedBranchId = $scope.decryptedText9;
+        };
+
+        $scope.decryptParameter10 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.BRANCHCODE; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText10 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedBranchCode = $scope.decryptedText10;
+        };
+
+
+        $scope.decryptParameter11 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.CCODE; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText11 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedCollegeCode = $scope.decryptedText11;
+        };
+
+        $scope.decryptParameter12 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.CTYPE; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText12 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedCollegeType = $scope.decryptedText12;
+        };
+
+        $scope.decryptParameter13 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.CNAME; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText13 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedCollegeName = $scope.decryptedText13;
+        };
         $scope.loginFailed = false;
         $scope.loginAttempts = 0;
         $scope.validatelogincaptcha = function () {
 
+            delete $localStorage.authorizationData;
 
             if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
                 $scope.UserNamemessage = "* Enter user name";
@@ -258,10 +380,20 @@
                     return;
                 }
                 else if ($scope.token.length > 0) {
+                    var UserRights = [];
+                    sessionStorage.loggedIn = "yes";
+                    $localStorage.authToken = response.token + "$$@@$$" + $scope.LoginEKey;
+                    $scope.SessionID = $scope.LoginSessionEKey;
 
-                    console.log("Login Success. Navigating to Dashboard...");
+                    //console.log("Login Success. Navigating to Dashboard...");
                     $scope.USERNAME = response.USERNAME;
                     $scope.USERID = response.USERID;
+                    $scope.COLLEGEID = response.COLLEGEID;
+                    $scope.CCODE = response.CCODE;
+                    $scope.CTYPE = response.CTYPE;
+                    $scope.CNAME = response.CNAME;
+                    $scope.BRANCHID = response.BID;
+                    $scope.BRANCHCODE = response.BCODE;
                     $scope.USERTYPEID = response.USERTYPEID;
                     $scope.RESPONSECODE = response.RESPONSECODE;
                     $scope.RESDESCRIPTION = response.RESDESCRIPTION;
@@ -271,25 +403,33 @@
                     $scope.decryptParameter3();
                     $scope.decryptParameter4();
                     $scope.decryptParameter5();
+                    $scope.decryptParameter8();
+                    $scope.decryptParameter9();
+                    $scope.decryptParameter10();
+                    $scope.decryptParameter11();
+                    $scope.decryptParameter12();
+                    $scope.decryptParameter13();
 
-                    delete $localStorage.authToken;
-                    $localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
 
-                    sessionStorage.loggedIn = "yes";
-                    $scope.SessionID = $scope.LoginSessionEKey;
+                    //delete $localStorage.authToken;
+                    //$localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
+
+                    //sessionStorage.loggedIn = "yes";
+                    //$scope.SessionID = $scope.LoginSessionEKey;
 
                     //response.data = response.data.SystemUser[0];
                           let authorizationData = {
                                 token: $localStorage.authToken,
-                                //SessionID: $localStorage.SessionID,
+                                AuthTokenId: response.AuthTokenId,
                                 SysUserID: $scope.decryptedUserID,
-                                //College_Code: response.data.CollegeCode,
-                                //College_Name: response.data.CollegeName,
+                                College_Code: $scope.decryptedCollegeCode,
+                                College_Name: $scope.decryptedCollegeName,
+                                College_Type: $scope.decryptedCollegeType,
                                 SystemUserTypeId: $scope.decryptedUserTypeID,
                                 UserName: $scope.decryptedUserName.toUpperCase(),
-                                //CollegeID: response.data.CollegeId,
-                                //BranchCode: response.data.BranchCode,
-                                //BranchId: response.data.BranchId,
+                                CollegeID: $scope.decryptedCollegeId,
+                                BranchCode: $scope.decryptedBranchCode,
+                                BranchId: $scope.decryptedBranchId,
                                 //TypeFlag: response.data.TypeFlag,
                                 //MngtTypID: response.data.MngtTypID,
                                 //SysUsrGrpID: response.data.SysUsrGrpID,
@@ -297,17 +437,18 @@
                             };
 
                             sessionStorage.setItem('user', JSON.stringify(authorizationData));
+                            $state.go('Dashboard');
 
-                    $timeout(function () {
-                        try {
-                            $state.go('Dashboard'); // Preferred AngularJS way
-                            $scope.$apply(); // Ensure digest cycle updates
-                        } catch (e) {
-                            console.error("State transition failed, using window.location.href instead.");
-                            window.location.href = '#/Dashboard'; // Fallback
-                            window.location.reload(); // Ensure refresh
-                        }
-                    }, 0);
+                    //$timeout(function () {
+                    //    try {
+                    //        $state.go('Dashboard'); // Preferred AngularJS way
+                    //        $scope.$apply(); // Ensure digest cycle updates
+                    //    } catch (e) {
+                    //        console.error("State transition failed, using window.location.href instead.");
+                    //        window.location.href = '#/Dashboard'; // Fallback
+                    //        window.location.reload(); // Ensure refresh
+                    //    }
+                    //}, 0);
 
 
                     }

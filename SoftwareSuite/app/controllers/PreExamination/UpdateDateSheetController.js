@@ -90,7 +90,13 @@
             });
         }
 
-      
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
+        }
         $scope.GetAcademicData = function () {
             var GetMonthYear = PreExaminationService.GetMonthYear()
             GetMonthYear.then(function (response) {

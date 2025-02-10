@@ -8490,7 +8490,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
+        [HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
         public HttpResponseMessage GetExamMonthYearByAcademicYear(int Academicyearid, int SessionId)
         {
             try
@@ -8553,7 +8553,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetExamMonthYearAcademicYear")]
+        [HttpGet, ActionName("GetExamMonthYearAcademicYear")]
         public HttpResponseMessage GetExamMonthYearAcademicYear(int Academicyearid)
         {
             try

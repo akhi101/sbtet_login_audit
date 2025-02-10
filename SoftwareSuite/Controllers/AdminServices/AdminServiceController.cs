@@ -34,6 +34,7 @@ using System.Web.UI.WebControls;
 using DocumentFormat.OpenXml.Office.CustomXsn;
 using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Text;
 
 namespace SoftwareSuite.Controllers.AdminServices
 {
@@ -413,6 +414,32 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        public void AddTokenToStore(string Message)
+        {
+            try
+            {
+                String str = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt";
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(str, true))
+                {
+                    try
+                    {
+                        //file.WriteLine(System.DateTime.Now.ToString());
+                        file.WriteLine(Message);
+                        file.WriteLine("");
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
         {
@@ -424,6 +451,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
             try
             {
+
                 string loginLock = loginLocked ? "Yes" : "No";
                 string islock = "loginLock";
                 string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
@@ -460,45 +488,69 @@ namespace SoftwareSuite.Controllers.AdminServices
                     SystemUserBLL SystemUserBLL = new SystemUserBLL();
                     SystemUserAuth User;
                     User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), encrypassword, clientIpAddress);
+                    StringBuilder builder = new StringBuilder();
+                    Random random = new Random();
+                    char ch;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                        builder.Append(ch);
 
+                    }
+                    AddTokenToStore(builder.ToString().ToLower());
                     if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
                     {
                         lock (lockObj) { loginAttempts = 0; } // Reset login attempts on successful login
                         var u = User.SystemUser[0];
                         var v = User.UserAuth[0];
+                        
                         AuthToken t = new AuthToken
                         {
                             UserName = u.UserName ?? "",
                             UserId = u.UserId ?? "",
                             UserTypeId = u.UserTypeId ?? "",
+                            CollegeId = u.CollegeId ?? "",
+                            CollegeName = u.CollegeName ?? "",
                             CollegeCode = u.CollegeCode ?? "",
                             collegeType = u.collegeType ?? "",
+                            BranchCode = u.BranchCode ?? "",
+                            BranchId = u.BranchId ?? "",
                             ResponceCode = v.ResponceCode ?? "",
                             RespoceDescription = v.RespoceDescription ?? "",
-                            ExpiryDate = DateTime.Now.AddHours(1)
+                            ExpiryDate = DateTime.Now.AddHours(1),
+                            AuthTokenId = builder.ToString().ToLower() 
                         };
 
                         var username = u.UserName;
                         var userid = u.UserId;
+                        var collegeid = u.CollegeId;
+                        var collegename = u.CollegeName;
                         var usertypeid = u.UserTypeId;
                         var ccode = u.CollegeCode;
                         var ctype = u.collegeType;
+                        var bcode = u.BranchCode;
+                        var bid = u.BranchId;
                         var rescode = v.ResponceCode;
                         var resdesc = v.RespoceDescription;
+                        var AuthTokenId = builder.ToString().ToLower();
 
                         string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
                         string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
 
                         string USERNAME = Encryption.Encrypt(username, key, iv);
                         string USERID = Encryption.Encrypt(userid, key, iv);
+                        string COLLEGEID = Encryption.Encrypt(collegeid, key, iv);
+                        string CNAME = Encryption.Encrypt(collegename, key, iv);
                         string USERTYPEID = Encryption.Encrypt(usertypeid, key, iv);
                         string CCODE = Encryption.Encrypt(ccode, key, iv);
                         string CTYPE = Encryption.Encrypt(ctype, key, iv);
+                        string BCODE = Encryption.Encrypt(bcode, key, iv);
+                        string BID = Encryption.Encrypt(bid, key, iv);
                         string RESPONSECODE = Encryption.Encrypt(rescode, key, iv);
                         string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
 
                         token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
-                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERNAME, USERID, USERTYPEID, CCODE, CTYPE, RESPONSECODE, RESDESCRIPTION,t.ExpiryDate, clientIpAddress });
+                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE,CNAME,BID,BCODE, RESPONSECODE, RESDESCRIPTION,t.ExpiryDate, clientIpAddress, AuthTokenId });
                         return response;
                     }
 
@@ -562,6 +614,23 @@ namespace SoftwareSuite.Controllers.AdminServices
                 p1.Captcha = captcha;
                 p.Add(p1);
                 return null;
+            }
+        }
+
+        [HttpGet, ActionName("getUserLogout")]
+        public void getUserLogout()
+        {
+            try
+            {
+                String str = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt";
+                if (File.Exists(str))
+                {
+                    File.Delete(str);
+                    File.Create(str).Close(); // Creates a new empty file
+                }
+            }
+            catch (Exception ex)
+            {
             }
         }
 

@@ -50,7 +50,13 @@
                 console.log(error);
             });
 
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
         $scope.GetTransaction = function () {
 
             $scope.isShowResults = true;

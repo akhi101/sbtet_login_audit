@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("CreateExamMonthYearController", function ($scope, $http, $localStorage, $state, AppSettings, PreExaminationService, $timeout) {
 
 
@@ -67,30 +67,13 @@
             $scope.$emit('hideLoading', data);
         });
         }
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
-
-
-        $scope.decryptParameter2 = function () {
-            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
-            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
-            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
-
-            var key = CryptoJS.enc.Base64.parse(base64Key);
-            var iv = CryptoJS.enc.Base64.parse(base64IV);
-
-            // Decrypt the ciphertext
-            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
-                iv: iv,
-                mode: CryptoJS.mode.CBC, // Ensure CBC mode
-                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
-            });
-
-            // Convert decrypted data to a UTF-8 string
-            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
-            $scope.decryptedParameter2 = $scope.decryptedText2;
-        };
-
-
+        }
         $scope.Editsemesterdat = function (data, ind) {
 
             var ele1 = document.getElementsByClassName("enabletable" + ind);

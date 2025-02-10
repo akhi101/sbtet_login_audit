@@ -54,7 +54,13 @@
                     console.log(err.Message);
                 });
         }
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
+        }
         $scope.BacklogSemesters = function () {
             var LoadBacklogSemesters = PreExaminationService.getAllSemester();
             LoadBacklogSemesters.then(function (response) {

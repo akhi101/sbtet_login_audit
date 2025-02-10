@@ -46,7 +46,7 @@
             //    $scope.MarksEntryData = [];
 
             //}
-            $scope.GetExamMonthYearsData()
+            //$scope.GetExamMonthYearsData()
         },
             function (error) {
                 alert("error");
@@ -76,7 +76,7 @@
 
         if ($scope.userType == '3') {
 
-            var branchCode = authData.userName.split('_')[0];
+            var branchCode = authData.UserName.split('_')[0];
 
             //getting Branch name from Branch Code
 
@@ -718,17 +718,11 @@
 
 
         $scope.logOut = function () {
-            $scope.$emit("logout", authData.userName);
             sessionStorage.loggedIn = "no";
-            delete $localStorage.authorizationData;
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
 
-
-            $scope.authentication = {
-                isAuth: false,
-                UserId: 0,
-                userName: ""
-            };
-            $state.go('login');
         }
     });
     app.factory('Excel', function ($window) {

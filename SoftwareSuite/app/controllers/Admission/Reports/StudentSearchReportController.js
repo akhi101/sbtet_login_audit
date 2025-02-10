@@ -459,14 +459,10 @@ define(['app'], function (app) {
 
         $scope.logOut = function () {
             sessionStorage.loggedIn = "no";
-            delete $localStorage.authorizationData;
-           
-            $scope.authentication = {
-                isAuth: false,
-                UserId: 0,
-                userName: ""
-            };
-            $state.go('login')
+            var GetUserLogout = SystemUserService.getUserLogout();
+            alert('Logout Successfully');
+            $state.go('index.WebsiteLogin');
+
         }
 
 
