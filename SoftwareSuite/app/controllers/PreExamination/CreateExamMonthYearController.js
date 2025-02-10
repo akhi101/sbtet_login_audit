@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("CreateExamMonthYearController", function ($scope, $http, $localStorage, $state, AppSettings, PreExaminationService, $timeout) {
 
 

@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("EnableFeepaymentController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $uibModal, PreExaminationService) {
         //var authdata = $localStorage.authorizationData;
         var authData = JSON.parse(sessionStorage.getItem('user'));
