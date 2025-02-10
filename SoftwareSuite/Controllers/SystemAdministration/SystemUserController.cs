@@ -19,6 +19,7 @@ using SoftwareSuite.BLL;
 using System.Net.Http.Headers;
 using System.Web;
 using static SoftwareSuite.Controllers.AdminServices.AdminServiceController;
+using SoftwareSuite.Controllers.AdminServices;
 
 namespace SoftwareSuite.Controllers.SystemAdministration
 {
@@ -59,45 +60,46 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             public string EncriptedPassword { get; set; }
         }
 
-        [HttpPost, ActionName("GetUserLogin")]
-        public async Task<HttpResponseMessage> GetUserLogin()
-        {
-            string token = "";
-            var data = await Request.Content.ReadAsStringAsync();
-            var res = data.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
-            var crypt = new HbCrypt(res[3]);
-            var passcrypt = new HbCrypt();
-            string SessionID = crypt.AesDecrypt(res[2]);
-            string UserName = crypt.AesDecrypt(res[1]);
-            string Password = crypt.AesDecrypt(res[0]).Replace("'", "''");
-            string encrypassword = passcrypt.Encrypt(Password);
-            string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
-            SystemUserBLL SystemUserBLL = new SystemUserBLL();
-            SystemUserAuth User;
-            User = SystemUserBLL.GetUserLogin(UserName.Replace("'", "''"), encrypassword, clientIpAddress);
+        //[HttpPost, ActionName("GetUserLogin")]
+        //public async Task<HttpResponseMessage> GetUserLogin()
+        //{
+        //    string token = "";
+        //    var data = await Request.Content.ReadAsStringAsync();
+        //    var res = data.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+        //    var crypt = new HbCrypt(res[3]);
+        //    var passcrypt = new HbCrypt();
+        //    string SessionID = crypt.AesDecrypt(res[2]);
+        //    string UserName = crypt.AesDecrypt(res[1]);
+        //    string Password = crypt.AesDecrypt(res[0]).Replace("'", "''");
+        //    string encrypassword = passcrypt.Encrypt(Password);
+        //    string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
+        //    SystemUserBLL SystemUserBLL = new SystemUserBLL();
+        //    SystemUserAuth User;
+        //    string Salt = "";
+        //    User = SystemUserBLL.GetUserLogin(UserName.Replace("'", "''"), clientIpAddress);
           
-            if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
-            {
-                var u = User.SystemUser[0];
-                AuthToken t = new AuthToken { UserName=u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType=u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
+        //    if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
+        //    {
+        //        var u = User.SystemUser[0];
+        //        AuthToken t = new AuthToken { UserName=u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType=u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
 
-                token = crypt.Encrypt(JsonConvert.SerializeObject(t));
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User, clientIpAddress });
-                return response;
+        //        token = crypt.Encrypt(JsonConvert.SerializeObject(t));
+        //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User, clientIpAddress });
+        //        return response;
 
-            }
-            else
-            {
-                var u = User.SystemUser[0];
-                AuthToken t = new AuthToken { UserName = u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
+        //    }
+        //    else
+        //    {
+        //        var u = User.SystemUser[0];
+        //        AuthToken t = new AuthToken { UserName = u.UserName,UserId = u.UserId, UserTypeId = u.UserTypeId, CollegeCode = u.CollegeCode, collegeType = u.collegeType, ExpiryDate = DateTime.Now.AddHours(1) };
 
-                token = crypt.Encrypt(JsonConvert.SerializeObject(t));
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User });
-                return response;
+        //        token = crypt.Encrypt(JsonConvert.SerializeObject(t));
+        //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, data = User });
+        //        return response;
 
-            }
+        //    }
 
-        }
+        //}
 
 
         [HttpGet]
@@ -325,7 +327,12 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             SystemRes SystemRes = new SystemRes();
             var encOldpass = passcrypt.Encrypt(oldPassword);
             var encNewpass = passcrypt.Encrypt(NewPassword);
-            SystemRes = SystemUserBLL.GetChangePassword(UserID, encOldpass, encNewpass);
+            byte[] salt = GenerateSalt(); // Generate salt
+            byte[] hashedPassword = HashWithSalt(encNewpass, salt); // Hash password with salt
+
+            string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
+            string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
+            SystemRes = SystemUserBLL.GetChangePassword(UserID, encOldpass, hashBase64, saltBase64);
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, SystemRes);
             return response;
         }

@@ -32,7 +32,7 @@
                     alert("Enter Old Password");
                     return false;
                 }
-                let reqdata = $crypto.encrypt($scope.OldPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.SessionID) + "$$@@$$" + sessionStorage.SessionID;
+                let reqdata = $crypto.encrypt($scope.OldPassword, authData.AuthTokenId) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), authData.AuthTokenId) + "$$@@$$" + authData.AuthTokenId;
                 var getPromise = ChangePasswordService.GetCheckOldPassword(reqdata);
                 getPromise.then(function (data) {
                     if (data == 0) {
@@ -59,7 +59,7 @@
                     alert("Enter Confirm Password");
                     return;
                 }
-                if ($scope.NewPassword != $scope.ConfirmPassword) {
+            if (($scope.NewPassword && $scope.NewPassword.length) != ($scope.ConfirmPassword && $scope.ConfirmPassword.length)) {
                     alert("New Password and Confirm Password did not match.");
                     return;
             }
@@ -78,7 +78,7 @@
                 alert('Password does not meet the requirements');
                 return;
             }
-            let reqdata = $crypto.encrypt($scope.NewPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt($scope.OldPassword, sessionStorage.SessionID) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), sessionStorage.SessionID) + "$$@@$$" + sessionStorage.SessionID;
+            let reqdata = $crypto.encrypt($scope.NewPassword, authData.AuthTokenId) + "$$@@$$" + $crypto.encrypt($scope.OldPassword, authData.AuthTokenId) + "$$@@$$" + $crypto.encrypt(AppSettings.LoggedUserId.toString(), authData.AuthTokenId) + "$$@@$$" + authData.AuthTokenId;
             var getPromise = ChangePasswordService.GetChangePassword(reqdata);
             getPromise.then(function (data) {
                 if (data.ResponceCode == "200") {
