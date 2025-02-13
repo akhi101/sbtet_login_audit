@@ -20,6 +20,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using static SoftwareSuite.Controllers.AdminServices.AdminServiceController;
 using SoftwareSuite.Controllers.AdminServices;
+using System.Security.Cryptography;
 
 namespace SoftwareSuite.Controllers.SystemAdministration
 {
@@ -311,7 +312,17 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             }
         }
 
-                     
+        private static byte[] HashWithSalt(string data, byte[] salt)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var dataBytes = Encoding.UTF8.GetBytes(data);
+                var dataWithSalt = new byte[dataBytes.Length + salt.Length];
+                Buffer.BlockCopy(dataBytes, 0, dataWithSalt, 0, dataBytes.Length);
+                Buffer.BlockCopy(salt, 0, dataWithSalt, dataBytes.Length, salt.Length);
+                return sha256.ComputeHash(dataWithSalt);
+            }
+        }
 
         [HttpPost]
         public async Task<HttpResponseMessage> GetChangePassword()
@@ -325,14 +336,14 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             var passcrypt = new HbCrypt();
             SystemUserBLL SystemUserBLL = new SystemUserBLL();
             SystemRes SystemRes = new SystemRes();
-            var encOldpass = passcrypt.Encrypt(oldPassword);
-            var encNewpass = passcrypt.Encrypt(NewPassword);
+            //var encOldpass = passcrypt.Encrypt(oldPassword);
+            //var encNewpass = passcrypt.Encrypt(NewPassword);
             byte[] salt = GenerateSalt(); // Generate salt
-            byte[] hashedPassword = HashWithSalt(encNewpass, salt); // Hash password with salt
+            byte[] hashedPassword = HashWithSalt(NewPassword, salt); // Hash password with salt
 
             string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
             string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
-            SystemRes = SystemUserBLL.GetChangePassword(UserID, encOldpass, hashBase64, saltBase64);
+            SystemRes = SystemUserBLL.GetChangePassword(UserID, oldPassword, hashBase64, saltBase64);
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, SystemRes);
             return response;
         }
