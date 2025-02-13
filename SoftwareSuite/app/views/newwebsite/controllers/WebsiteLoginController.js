@@ -63,40 +63,40 @@
             $scope.decryptedSalt = $scope.decryptedText;
         };
 
-        $scope.hashPasswordWithSalt =function(password, salt) {
-            const encoder = new TextEncoder();
-            const passwordBytes = encoder.encode(password);
-            const saltBytes = encoder.encode(salt);
+        //$scope.hashPasswordWithSalt =function(password, salt) {
+        //    const encoder = new TextEncoder();
+        //    const passwordBytes = encoder.encode(password);
+        //    const saltBytes = encoder.encode(salt);
 
-            // Concatenate password and salt
-            const combinedBytes = new Uint8Array(passwordBytes.length + saltBytes.length);
-            combinedBytes.set(passwordBytes);
-            combinedBytes.set(saltBytes, passwordBytes.length);
+        //    // Concatenate password and salt
+        //    const combinedBytes = new Uint8Array(passwordBytes.length + saltBytes.length);
+        //    combinedBytes.set(passwordBytes);
+        //    combinedBytes.set(saltBytes, passwordBytes.length);
 
-            // Hash using SHA-256
-            const hashBuffer = await crypto.subtle.digest("SHA-256", combinedBytes);
-            return btoa(String.fromCharCode(...new Uint8Array(hashBuffer))); // Convert to Base64
-        }
-        $scope.getSalt = function () {
-            var EncriptedPassword = $crypto.encrypt($crypto.encrypt($scope.Password, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
-            var salt = AdminService.RequestSalt();
-            salt.then(function (response) {
-                try {
-                    //var res = JSON.parse(response);
-                    $scope.SALT = response.MESSAGE1;
-                    $scope.newsalt = atob($scope.decryptedSalt);
-                    $scope.hashPasswordWithSalt(EncriptedPassword, $scope.newsalt);
-                }
+        //    // Hash using SHA-256
+        //    const hashBuffer = await crypto.subtle.digest("SHA-256", combinedBytes);
+        //    return btoa(String.fromCharCode(...new Uint8Array(hashBuffer))); // Convert to Base64
+        //}
+        //$scope.getSalt = function () {
+        //    var EncriptedPassword = $crypto.encrypt($crypto.encrypt($scope.Password, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+        //    var salt = AdminService.RequestSalt();
+        //    salt.then(function (response) {
+        //        try {
+        //            //var res = JSON.parse(response);
+        //            $scope.SALT = response.MESSAGE1;
+        //            $scope.newsalt = atob($scope.decryptedSalt);
+        //            $scope.hashPasswordWithSalt(EncriptedPassword, $scope.newsalt);
+        //        }
 
 
-                catch (err) {
-                    $scope.GetCatcha = ''
-                }
-            }, function (error) {
-                $scope.GetCatcha = ''
-                alert('Unable to load Captcha')
-            });
-        }
+        //        catch (err) {
+        //            $scope.GetCatcha = ''
+        //        }
+        //    }, function (error) {
+        //        $scope.GetCatcha = ''
+        //        alert('Unable to load Captcha')
+        //    });
+        //}
 
 
         $scope.decryptParameter1 = function () {
