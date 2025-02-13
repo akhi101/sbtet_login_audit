@@ -496,9 +496,33 @@ namespace SoftwareSuite.Controllers.AdminServices
             hashedPassword = HashWithSalt(password, salt);
         }
 
+
+        [HttpPost]
+        public HttpResponseMessage RequestSalt()
+        {
+            try
+            {
+                // Generate a unique salt per login attempt
+                byte[] salt = GenerateSalt();
+                string saltBase64 = Convert.ToBase64String(salt);
+
+                // Send the salt to the client
+                string message = saltBase64;
+                string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                string MESSAGE1 = Encryption.Encrypt(message, key, iv);
+                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE1 });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, new { ex });
+            }
+        }
+
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
         {
+
             bool loginFailed = false;
             var dbHandler = new dbHandler();
             List<Output> p = new List<Output>();
@@ -507,9 +531,6 @@ namespace SoftwareSuite.Controllers.AdminServices
 
             try
             {
-
-
-
                 string loginLock = loginLocked ? "Yes" : "No";
                 string islock = "loginLock";
                 string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
@@ -543,8 +564,8 @@ namespace SoftwareSuite.Controllers.AdminServices
  
 
 
-                var crypt = new HbCrypt();
-                string encrypassword = crypt.Encrypt(decryptpassword);
+                //var crypt = new HbCrypt();
+                //string encrypassword = crypt.Encrypt(decryptpassword);
 
 
                 var param = new SqlParameter[2];
@@ -559,7 +580,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                     SystemUserBLL SystemUserBLL = new SystemUserBLL();
                     SystemUserAuth User;
                     byte[] salt = GenerateSalt(); // Generate salt
-                    byte[] hashedPassword = HashWithSalt(encrypassword, salt); // Hash password with salt
+                    byte[] hashedPassword = HashWithSalt(decryptpassword, salt); // Hash password with salt
 
                     string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
                     string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
@@ -587,7 +608,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                         byte[] storedHash = Convert.FromBase64String(HashedPassword);
 
                         // Hash the entered password with the stored salt
-                        byte[] enteredHash = HashWithSalt(encrypassword, storedSalt);
+                        byte[] enteredHash = HashWithSalt(decryptpassword, storedSalt);
 
                         // Compare stored and computed hashes
                         bool isPasswordValid = CompareByteArrays(enteredHash, storedHash);

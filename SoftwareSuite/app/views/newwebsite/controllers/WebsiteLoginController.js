@@ -43,6 +43,61 @@
             });
         }
 
+        $scope.decryptSalt = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.SALT; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedSalt = $scope.decryptedText;
+        };
+
+        $scope.hashPasswordWithSalt =function(password, salt) {
+            const encoder = new TextEncoder();
+            const passwordBytes = encoder.encode(password);
+            const saltBytes = encoder.encode(salt);
+
+            // Concatenate password and salt
+            const combinedBytes = new Uint8Array(passwordBytes.length + saltBytes.length);
+            combinedBytes.set(passwordBytes);
+            combinedBytes.set(saltBytes, passwordBytes.length);
+
+            // Hash using SHA-256
+            const hashBuffer = await crypto.subtle.digest("SHA-256", combinedBytes);
+            return btoa(String.fromCharCode(...new Uint8Array(hashBuffer))); // Convert to Base64
+        }
+        $scope.getSalt = function () {
+            var EncriptedPassword = $crypto.encrypt($crypto.encrypt($scope.Password, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+            var salt = AdminService.RequestSalt();
+            salt.then(function (response) {
+                try {
+                    //var res = JSON.parse(response);
+                    $scope.SALT = response.MESSAGE1;
+                    $scope.newsalt = atob($scope.decryptedSalt);
+                    $scope.hashPasswordWithSalt(EncriptedPassword, $scope.newsalt);
+                }
+
+
+                catch (err) {
+                    $scope.GetCatcha = ''
+                }
+            }, function (error) {
+                $scope.GetCatcha = ''
+                alert('Unable to load Captcha')
+            });
+        }
+
 
         $scope.decryptParameter1 = function () {
             var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key

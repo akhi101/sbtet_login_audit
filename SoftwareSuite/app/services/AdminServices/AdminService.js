@@ -613,7 +613,10 @@
 
         //    return DataAccessService.postData('api/AdminService/ValidateUserLoginCaptcha', object);
         //};
-
+        this.RequestSalt = function () {
+            var promise = DataAccessService.postData('api/AdminService/RequestSalt');
+            return promise;
+        }
 
     })
 })

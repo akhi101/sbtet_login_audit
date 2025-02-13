@@ -14893,7 +14893,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 if (ExamMonthYear1 != "YES")
                 {
-                    return ExamMonthYear1;
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ExamMonthYear1);
                 }
 
 
