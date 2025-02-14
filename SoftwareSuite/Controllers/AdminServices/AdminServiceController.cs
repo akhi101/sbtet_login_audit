@@ -543,8 +543,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                 var users = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(UserAccountStatus);
 
-                string AccountLocked= users[0]["AccountLocked"].ToString();
-                if (loginLock == "Yes" && AccountLocked=="true")
+                string AccountLocked = users[0]["AccountLocked"].ToString();
+                if (loginLock == "Yes" && AccountLocked == "true")
                 {
                     string message = "Account is temporarily locked. Try again later.";
                     string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
@@ -561,7 +561,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 string decryptLoginname = GetDecryptedData(ReqData.LoginName);
                 string decryptpassword = GetDecryptedData(ReqData.Password);
 
- 
+
 
 
                 //var crypt = new HbCrypt();
