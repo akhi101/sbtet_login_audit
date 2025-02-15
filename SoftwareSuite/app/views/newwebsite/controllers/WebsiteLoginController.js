@@ -306,6 +306,17 @@
             $scope.decryptedText13 = decrypted.toString(CryptoJS.enc.Utf8);
             $scope.decryptedCollegeName = $scope.decryptedText13;
         };
+
+
+        $scope.generateHMAC = function (requestData, secretKey) {
+            // Construct the exact same string format used in C# `GetDataString()`
+            let dataString = `Session=${requestData.Session}&Captcha=${requestData.Captcha}&LoginName=${requestData.LoginName}&Password=${requestData.Password}&DataType=${requestData.DataType}`;
+
+            let key = CryptoJS.enc.Base64.parse(secretKey); // Decode base64 key
+            let hash = CryptoJS.HmacSHA256(dataString, key); // Generate HMAC
+            return CryptoJS.enc.Base64.stringify(hash); // Convert to Base64
+        };
+
         $scope.loginFailed = false;
         $scope.loginAttempts = 0;
         $scope.validatelogincaptcha = function () {
@@ -354,8 +365,21 @@
             var EncriptedCaptchaText = $crypto.encrypt($crypto.encrypt($scope.CaptchaText.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var EncriptedSessionId = $crypto.encrypt($crypto.encrypt($scope.LoginSessionEKey.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
 
+            let requestData = {
+                Session: $scope.EncriptedSession,
+                Captcha: EncriptedCaptchaText,
+                LoginName: EncriptedLoginName,
+                Password: EncriptedPassword,
+                DataType: EncriptedDataType
+            };
+            let secretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64="; // Secure this
+            let hmacSignature = $scope.generateHMAC(requestData, secretKey);
 
-            var captcha = AdminService.ValidateUserLoginCaptcha($scope.EncriptedSession, EncriptedCaptchaText, EncriptedLoginName, EncriptedPassword, EncriptedDataType);
+            let finalPayload = { ...requestData, HMACSignature: hmacSignature };
+
+
+
+            var captcha = AdminService.ValidateUserLoginCaptcha(finalPayload);
             captcha.then(function (response) {
                 $scope.token = response.token;
                 $scope.loginLocked = response.isLocked;
