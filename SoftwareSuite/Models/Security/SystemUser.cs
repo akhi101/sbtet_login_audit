@@ -45,4 +45,6 @@ namespace SoftwareSuite.Models.Security
         public List<SystemUser> SystemUser { get; set; }
         public List<UserAuth> UserAuth { get; set; }
     }
+
+
 }

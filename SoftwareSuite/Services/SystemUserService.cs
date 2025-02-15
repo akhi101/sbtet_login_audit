@@ -66,7 +66,6 @@ namespace SoftwareSuite.Services
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@UserName", UserName));
                         cmd.Parameters.Add(new SqlParameter("@ipaddress", Ipaddress));
-                        //cmd.Parameters.Add(new SqlParameter("@SessionID", SessionID));
                         conn.Open();
                         var da = new SqlDataAdapter(cmd);
                         da.Fill(ds);
@@ -258,6 +257,7 @@ namespace SoftwareSuite.Services
                 throw ex;
             }
         }
+
         
 
 

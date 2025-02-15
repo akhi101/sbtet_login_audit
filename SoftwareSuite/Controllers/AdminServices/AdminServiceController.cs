@@ -392,6 +392,28 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+
+        [HttpGet, ActionName("UpdatePassword")]
+        public void UpdatePassword(string UserName, string Password, string Salt)
+        {
+            var dbHandler = new dbHandler();
+
+            try
+            {
+                var param = new SqlParameter[3];
+                param[0] = new SqlParameter("@UserName", UserName);
+                param[1] = new SqlParameter("@Password", Password);
+                param[2] = new SqlParameter("@Salt", Salt);
+                var dt = dbHandler.ReturnDataWithStoredProcedure("SP_Update_Password", param);
+            }
+            catch (Exception ex)
+            {
+
+                dbHandler.SaveErorr("SP_Update_Password", 0, ex.Message);
+            }
+
+        }
+
         public class LoginCaptchaDetails{
 
             public string Session { get; set; }
@@ -497,32 +519,73 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost]
-        public HttpResponseMessage RequestSalt()
-        {
-            try
-            {
-                // Generate a unique salt per login attempt
-                byte[] salt = GenerateSalt();
-                string saltBase64 = Convert.ToBase64String(salt);
 
-                // Send the salt to the client
-                string message = saltBase64;
-                string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                string MESSAGE1 = Encryption.Encrypt(message, key, iv);
-                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE1 });
-            }
-            catch (Exception ex)
+        private static bool IsValidRequest(SecureRequest requestData)
+        {
+            if (requestData == null || string.IsNullOrEmpty(requestData.HMACSignature))
+                return false;
+
+            // Generate expected HMAC on the server
+            string computedHMAC = GenerateHMAC(requestData.GetDataString());
+
+            // Compare received HMAC with expected HMAC (constant time comparison to prevent timing attacks)
+            return SlowEquals(Convert.FromBase64String(requestData.HMACSignature), Convert.FromBase64String(computedHMAC));
+        }
+
+        // Secure HMAC Generation
+        private static string GenerateHMAC(string data)
+        {
+            byte[] key = Convert.FromBase64String(SecretKey); // Ensure SecretKey is Base64 decoded
+            using (var hmac = new HMACSHA256(key))
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new { ex });
+                byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
+                return Convert.ToBase64String(hash);
             }
         }
 
-        [HttpPost, ActionName("ValidateUserLoginCaptcha")]
-        public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] LoginCaptchaDetails ReqData)
+        // Secure string comparison to prevent timing attacks
+        private static bool SlowEquals(byte[] a, byte[] b)
         {
+            int diff = a.Length ^ b.Length;
+            for (int i = 0; i < a.Length && i < b.Length; i++)
+            {
+                diff |= a[i] ^ b[i];
+            }
+            return diff == 0;
+        }
 
+        public class SecureRequest
+        {
+            public string Session { get; set; }
+            public string Captcha { get; set; }
+            public string LoginName { get; set; }
+            public string Password { get; set; }
+            public string DataType { get; set; }
+            public string HMACSignature { get; set; }
+
+            // Ensure this string format matches AngularJS exactly
+            public string GetDataString()
+            {
+                return $"Session={Session}&Captcha={Captcha}&LoginName={LoginName}&Password={Password}&DataType={DataType}";
+            }
+        }
+
+        private static string SecretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64=";
+
+
+        [HttpPost, ActionName("ValidateUserLoginCaptcha")]
+        public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] SecureRequest requestData)
+        {
+            if (!IsValidRequest(requestData))
+            {
+                Request.CreateResponse(HttpStatusCode.BadRequest, "Tampered request detected!");
+
+                string message = "Tampered request detected!";
+                string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+                string MESSAGE = Encryption.Encrypt(message, key, iv);
+                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
+            }
             bool loginFailed = false;
             var dbHandler = new dbHandler();
             List<Output> p = new List<Output>();
@@ -531,6 +594,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
             try
             {
+
+
                 string loginLock = loginLocked ? "Yes" : "No";
                 string islock = "loginLock";
                 string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
@@ -539,7 +604,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                 string DataType = "1482cS+YzslJtmNjRWaaRgEVGBuxXXnqhU5WaptbY14kryoQ6HfnRxJgnmKWzqRBfp9RORS/dwlutMR6IA+Qlaf0Io2Ao7cfL1UJ0/hja+jkZ6C5GyuzEy6ZDzxEGX4CBXn9taRmDr0JYogxBWJT8Q==$$@@$$zkdrgkjzna";
 
-                string UserAccountStatus = AddorGetAccountStatus(DataType, ReqData.LoginName);
+                string UserAccountStatus = AddorGetAccountStatus(DataType, requestData.LoginName);
 
                 var users = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(UserAccountStatus);
 
@@ -556,10 +621,10 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-                string decryptsession = GetDecryptedData(ReqData.Session);
-                string decryptCaptcha = GetDecryptedData(ReqData.Captcha);
-                string decryptLoginname = GetDecryptedData(ReqData.LoginName);
-                string decryptpassword = GetDecryptedData(ReqData.Password);
+                string decryptsession = GetDecryptedData(requestData.Session);
+                string decryptCaptcha = GetDecryptedData(requestData.Captcha);
+                string decryptLoginname = GetDecryptedData(requestData.LoginName);
+                string decryptpassword = GetDecryptedData(requestData.Password);
 
 
 
@@ -579,11 +644,6 @@ namespace SoftwareSuite.Controllers.AdminServices
                     string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
                     SystemUserBLL SystemUserBLL = new SystemUserBLL();
                     SystemUserAuth User;
-                    byte[] salt = GenerateSalt(); // Generate salt
-                    byte[] hashedPassword = HashWithSalt(decryptpassword, salt); // Hash password with salt
-
-                    string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
-                    string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
                     User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), clientIpAddress);
                     StringBuilder builder = new StringBuilder();
                     Random random = new Random();
@@ -595,7 +655,12 @@ namespace SoftwareSuite.Controllers.AdminServices
 
                     }
                     AddTokenToStore(builder.ToString().ToLower());
+                    //byte[] salt = GenerateSalt(); // Generate salt
+                    //byte[] hashedPassword = HashWithSalt(decryptpassword, salt); // Hash password with salt
 
+                    //string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
+                    //string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
+                    //UpdatePassword(decryptLoginname, hashBase64, saltBase64);
                     if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
                     {
 
@@ -603,7 +668,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                         var v = User.UserAuth[0];
                         string Salt = User.SystemUser[0].Salt.ToString();
                         string HashedPassword = User.SystemUser[0].UserPassword.ToString();
-
+                        
                         byte[] storedSalt = Convert.FromBase64String(Salt);
                         byte[] storedHash = Convert.FromBase64String(HashedPassword);
 
