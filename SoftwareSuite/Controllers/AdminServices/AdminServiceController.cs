@@ -152,15 +152,11 @@ namespace SoftwareSuite.Controllers.AdminServices
                 string decryptsessionid = null;
                 if (data["SessionId"].ToString().Length > 10)
                 {
-                    string encriptedsessionid = "";
-
                     var res = data["SessionId"].ToString().Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                     var crypt = new HbCrypt(res[1]);
-                    var sessionencrypt = new HbCrypt();
-
-                    //long CellNo = Convert.ToInt64(crypt.AesDecrypt(res[1]));
+                    var encrypt = new HbCrypt();
                     string sessionid = crypt.AesDecrypt(res[0]);
-                    decryptsessionid = sessionencrypt.AesDecrypt(sessionid);
+                    decryptsessionid = encrypt.AesDecrypt(sessionid);
                 }
                 else
                 {
@@ -522,14 +518,14 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         private static bool IsValidRequest(SecureRequest requestData)
         {
-            if (requestData == null || string.IsNullOrEmpty(requestData.HMACSignature))
+            if (requestData == null || string.IsNullOrEmpty(requestData.NameofUser))
                 return false;
 
             // Generate expected HMAC on the server
             string computedHMAC = GenerateHMAC(requestData.GetDataString());
 
             // Compare received HMAC with expected HMAC (constant time comparison to prevent timing attacks)
-            return SlowEquals(Convert.FromBase64String(requestData.HMACSignature), Convert.FromBase64String(computedHMAC));
+            return SlowEquals(Convert.FromBase64String(requestData.NameofUser), Convert.FromBase64String(computedHMAC));
         }
 
         // Secure HMAC Generation
@@ -561,7 +557,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             public string LoginName { get; set; }
             public string Password { get; set; }
             public string DataType { get; set; }
-            public string HMACSignature { get; set; }
+            public string NameofUser { get; set; }
 
             // Ensure this string format matches AngularJS exactly
             public string GetDataString()
@@ -572,6 +568,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         private static string SecretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64=";
 
+        public string decryptsessionid { get; private set; }
 
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] SecureRequest requestData)
@@ -620,23 +617,22 @@ namespace SoftwareSuite.Controllers.AdminServices
                 string token = "";
 
 
-
-                string decryptsession = GetDecryptedData(requestData.Session);
+                string decryptsessionid = null;
+                //string decryptsession = GetDecryptedData(requestData.Session);
                 string decryptCaptcha = GetDecryptedData(requestData.Captcha);
                 string decryptLoginname = GetDecryptedData(requestData.LoginName);
                 string decryptpassword = GetDecryptedData(requestData.Password);
 
-
-
-
-                //var crypt = new HbCrypt();
-                //string encrypassword = crypt.Encrypt(decryptpassword);
-
+                var res = requestData.Session.ToString().Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var crypt = new HbCrypt(res[1]);
+                var encrypt = new HbCrypt();
+                string sessionid = crypt.AesDecrypt(res[0]);
+                decryptsessionid = encrypt.AesDecrypt(sessionid);
 
                 var param = new SqlParameter[2];
-                param[0] = new SqlParameter("@SessionId", decryptsession);
+                param[0] = new SqlParameter("@SessionId", decryptsessionid);
                 param[1] = new SqlParameter("@Captcha", decryptCaptcha);
-                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_TEST_GET_ExamsCaptchaSessionLog", param);
 
                 if (dt.Rows[0]["ResponseCode"].ToString() == "200")
                 {
@@ -754,7 +750,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                             string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
 
                             token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
-                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE, CNAME, BID, BCODE, RESPONSECODE, RESDESCRIPTION, t.ExpiryDate, clientIpAddress, AuthTokenId });
+                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE, CNAME, BID, BCODE, RESPONSECODE, RESDESCRIPTION, t.ExpiryDate, AuthTokenId });
                             return response;
                         }
                     }
@@ -928,7 +924,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@SessionId", SessionId);
                 param[1] = new SqlParameter("@Captcha", Captcha);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_ExamsCaptchaSessionLog", param);
+                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_TEST_ExamsCaptchaSessionLog", param);
                 return JsonConvert.SerializeObject(dt);
             }
             catch (Exception ex)

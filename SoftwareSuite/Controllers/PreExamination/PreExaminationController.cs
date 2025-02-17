@@ -4226,7 +4226,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("GetAllBranches")]
+        [HttpGet, ActionName("GetAllBranches")]
         public HttpResponseMessage GetAllBranches()
         {
             try
