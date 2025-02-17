@@ -11,7 +11,7 @@
             var eKey = SystemUserService.GetEKey();
             eKey.then(function (res) {
                 $scope.LoginEKey = res;
-                $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt($scope.SessionCaptcha, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+                $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt($scope.LoginEKey, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
                 $scope.GetCaptchaData()
 
             });
@@ -27,6 +27,11 @@
         }
 
         $scope.GetCaptchaData = function () {
+            //var eKey = SystemUserService.GetEKey();
+            //eKey.then(function (res) {
+            //    $scope.LoginEKey = res;
+            //    $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt($scope.LoginEKey, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+            //});
             var captcha = PreExaminationService.GetCaptchaString($scope.EncriptedSession);
             captcha.then(function (response) {
                 try {
@@ -363,7 +368,6 @@
             var EncriptedLoginName = $crypto.encrypt($crypto.encrypt($scope.UserName, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var EncriptedPassword = $crypto.encrypt($crypto.encrypt($scope.Password, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var EncriptedCaptchaText = $crypto.encrypt($crypto.encrypt($scope.CaptchaText.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
-            var EncriptedSessionId = $crypto.encrypt($crypto.encrypt($scope.LoginSessionEKey.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
 
             let requestData = {
                 Session: $scope.EncriptedSession,
@@ -375,7 +379,7 @@
             let secretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64="; // Secure this
             let hmacSignature = $scope.generateHMAC(requestData, secretKey);
 
-            let finalPayload = { ...requestData, HMACSignature: hmacSignature };
+            let finalPayload = { ...requestData, NameofUser: hmacSignature };
 
 
 
@@ -388,12 +392,14 @@
                     $scope.message = response.MESSAGE;
                     $scope.decryptParameter6();
                     alert($scope.decryptedmessage);
+                    $scope.GetCaptchaData();
                     return;
                 }
                 else if ($scope.loginLocked != undefined) {
                     $scope.message = response.MESSAGE;
                     $scope.decryptParameter6();
                     alert($scope.decryptedmessage);
+                    $scope.GetCaptchaData();
                     return;
                 }
 
@@ -401,6 +407,7 @@
                     $scope.message = response.MESSAGE;
                     $scope.decryptParameter6();
                     alert($scope.decryptedmessage);
+                    $scope.GetCaptchaData();
                     return;
                 }
                 else if ($scope.token.length > 0) {
@@ -409,7 +416,6 @@
                     $localStorage.authToken = response.token + "$$@@$$" + $scope.LoginEKey;
                     $scope.SessionID = $scope.LoginSessionEKey;
 
-                    //console.log("Login Success. Navigating to Dashboard...");
                     $scope.USERNAME = response.USERNAME;
                     $scope.USERID = response.USERID;
                     $scope.COLLEGEID = response.COLLEGEID;
@@ -434,14 +440,6 @@
                     $scope.decryptParameter12();
                     $scope.decryptParameter13();
 
-
-                    //delete $localStorage.authToken;
-                    //$localStorage.authToken = $scope.token + "$$@@$$" + $scope.LoginEKey;
-
-                    //sessionStorage.loggedIn = "yes";
-                    //$scope.SessionID = $scope.LoginSessionEKey;
-
-                    //response.data = response.data.SystemUser[0];
                     let authorizationData = {
                         token: $localStorage.authToken,
                         AuthTokenId: response.AuthTokenId,
@@ -454,25 +452,13 @@
                         CollegeID: $scope.decryptedCollegeId,
                         BranchCode: $scope.decryptedBranchCode,
                         BranchId: $scope.decryptedBranchId,
-                        //TypeFlag: response.data.TypeFlag,
-                        //MngtTypID: response.data.MngtTypID,
-                        //SysUsrGrpID: response.data.SysUsrGrpID,
-                        //SeqNo: response.data.SeqNo
+
                     };
 
                     sessionStorage.setItem('user', JSON.stringify(authorizationData));
-                    $state.go('Dashboard');
 
-                    //$timeout(function () {
-                    //    try {
-                    //        $state.go('Dashboard'); // Preferred AngularJS way
-                    //        $scope.$apply(); // Ensure digest cycle updates
-                    //    } catch (e) {
-                    //        console.error("State transition failed, using window.location.href instead.");
-                    //        window.location.href = '#/Dashboard'; // Fallback
-                    //        window.location.reload(); // Ensure refresh
-                    //    }
-                    //}, 0);
+                    //$state.go('Dashboard');
+                    $state.go('Dashboard', {}, { reload: true });
 
 
                 }
@@ -485,61 +471,61 @@
         }
 
 
-        $scope.validatecaptcha = function () {
+        //$scope.validatecaptcha = function () {
 
 
-            if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
-                $scope.UserNamemessage = "* Enter user name";
-                alert("Enter UserName");
-                $scope.Loginbutton = false;
-                return;
-            }
-            else if ($scope.Password == "" || $scope.Password == undefined || $scope.Password == null) {
-                $scope.UserPasswordmessage = "* Enter Password";
-                alert("Enter Password");
-                $scope.Loginbutton = false;
-                return;
-            }
-            else if ($scope.CaptchaText == "" || $scope.CaptchaText == undefined || $scope.CaptchaText == null) {
-                $scope.UserNamemessage = "* Enter Captcha";
-                alert("Enter Captcha");
-                $scope.Loginbutton = false;
-                return;
-            }
+        //    if ($scope.UserName == "" || $scope.UserName == undefined || $scope.UserName == null) {
+        //        $scope.UserNamemessage = "* Enter user name";
+        //        alert("Enter UserName");
+        //        $scope.Loginbutton = false;
+        //        return;
+        //    }
+        //    else if ($scope.Password == "" || $scope.Password == undefined || $scope.Password == null) {
+        //        $scope.UserPasswordmessage = "* Enter Password";
+        //        alert("Enter Password");
+        //        $scope.Loginbutton = false;
+        //        return;
+        //    }
+        //    else if ($scope.CaptchaText == "" || $scope.CaptchaText == undefined || $scope.CaptchaText == null) {
+        //        $scope.UserNamemessage = "* Enter Captcha";
+        //        alert("Enter Captcha");
+        //        $scope.Loginbutton = false;
+        //        return;
+        //    }
 
-            $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt($scope.SessionCaptcha, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
-            var EncriptedCaptchaText = $crypto.encrypt($crypto.encrypt($scope.CaptchaText.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+        //    $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt($scope.SessionCaptcha, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+        //    var EncriptedCaptchaText = $crypto.encrypt($crypto.encrypt($scope.CaptchaText.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
 
-            var captcha = AdminService.ValidateCaptcha($scope.EncriptedSession, EncriptedCaptchaText);
-            captcha.then(function (res) {
-                var response = JSON.parse(res)
-                if (response[0].ResponceCode == '200') {
-                    //alert(response[0].ResponceDescription)
-                    $scope.CaptchaText = "";
-                    $scope.GetCatcha = response[0].Captcha
-                    var captcha = JSON.parse(response[0].Captcha)
-                    $scope.CaptchaImage = captcha[0].Image;
-                    $scope.CaptchaText = "";
-                    $scope.Login()
+        //    var captcha = AdminService.ValidateCaptcha($scope.EncriptedSession, EncriptedCaptchaText);
+        //    captcha.then(function (res) {
+        //        var response = JSON.parse(res)
+        //        if (response[0].ResponceCode == '200') {
+        //            //alert(response[0].ResponceDescription)
+        //            $scope.CaptchaText = "";
+        //            $scope.GetCatcha = response[0].Captcha
+        //            var captcha = JSON.parse(response[0].Captcha)
+        //            $scope.CaptchaImage = captcha[0].Image;
+        //            $scope.CaptchaText = "";
+        //            $scope.Login()
 
 
-                } else {
-                    alert(response[0].ResponceDescription)
-                    $scope.CaptchaText = "";
-                    $scope.GetCatcha = response[0].Captcha
-                    var captcha = JSON.parse(response[0].Captcha)
+        //        } else {
+        //            alert(response[0].ResponceDescription)
+        //            $scope.CaptchaText = "";
+        //            $scope.GetCatcha = response[0].Captcha
+        //            var captcha = JSON.parse(response[0].Captcha)
 
-                    $scope.CaptchaImage = captcha[0].Image;
-                    $scope.CaptchaText = "";
-                    $scope.Loginbutton = false;
+        //            $scope.CaptchaImage = captcha[0].Image;
+        //            $scope.CaptchaText = "";
+        //            $scope.Loginbutton = false;
 
-                }
+        //        }
 
-            }, function (error) {
-                $scope.GetCatcha = ''
-                alert('Unable to load Captcha')
-            });
-        }
+        //    }, function (error) {
+        //        $scope.GetCatcha = ''
+        //        alert('Unable to load Captcha')
+        //    });
+        //}
 
         $scope.addAccountStatus = function () {
             $scope.loading = true;
@@ -607,136 +593,136 @@
 
         $scope.loginFailed = false;
         $scope.loginAttempts = 0;
-        $scope.Login = function () {
-            delete $localStorage.authorizationData;
+        //$scope.Login = function () {
+        //    delete $localStorage.authorizationData;
 
 
-            if ($scope.UserName == undefined) {
-                $scope.UserName = ""
-            };
-            if ($scope.Password == undefined) {
-                $scope.Password = ""
-            };
+        //    if ($scope.UserName == undefined) {
+        //        $scope.UserName = ""
+        //    };
+        //    if ($scope.Password == undefined) {
+        //        $scope.Password = ""
+        //    };
 
-            if ($scope.UserName == "" && $scope.Password == "") {
-                $scope.UserNamemessage = "* Enter user name";
-                $scope.Passwordmessage = "* Enter Password";
-                alert("Enter UserName And Password");
-                return;
-            }
-            if ($scope.UserName == "") {
-                $scope.UserNamemessage = "* Enter user name";
-                alert("Enter UserName");
-                return;
-            }
-            else if ($scope.Password == "") {
-                $scope.Passwordmessage = "* Enter Password";
-                alert("Enter Password");
-                return;
-            }
-            else {
+        //    if ($scope.UserName == "" && $scope.Password == "") {
+        //        $scope.UserNamemessage = "* Enter user name";
+        //        $scope.Passwordmessage = "* Enter Password";
+        //        alert("Enter UserName And Password");
+        //        return;
+        //    }
+        //    if ($scope.UserName == "") {
+        //        $scope.UserNamemessage = "* Enter user name";
+        //        alert("Enter UserName");
+        //        return;
+        //    }
+        //    else if ($scope.Password == "") {
+        //        $scope.Passwordmessage = "* Enter Password";
+        //        alert("Enter Password");
+        //        return;
+        //    }
+        //    else {
 
-                if ($scope.Password !== null && $scope.UserName !== null) {
+        //        if ($scope.Password !== null && $scope.UserName !== null) {
 
-                    var data = $crypto.encrypt($scope.Password, $scope.LoginEKey) + "$$@@$$" + $crypto.encrypt($scope.UserName, $scope.LoginEKey) + "$$@@$$" + $scope.LoginEKey;
-                    $http.post(AppSettings.WebApiUrl + 'api/SystemUser/GetUserLogin', data, {}).then(function (response) {
-                        var UserRights = [];
-                        sessionStorage.loggedIn = "yes";
-                        var token = response.data.token + "$$@@$$" + $scope.LoginEKey;
-                        sessionStorage.setItem('authToken', token);
-                        $localStorage.authToken = response.data.token + "$$@@$$" + $scope.LoginEKey;
-                        var status = response.data.data.UserAuth[0].ResponceCode;
-                        if (status != "200" && $scope.loginAttempts <= 2) {
-                            alert(response.data.data.UserAuth[0].RespoceDescription);
-                            $scope.loginFailed = true;
-                            $scope.Loginbutton = false;
-                            $scope.loginAttempts++;
-                        }
-                        else if ((status != "200" || status == "200") && $scope.loginAttempts >= 2) {
-                            alert('Account Locked');
-                            $scope.addAccountStatus();
-                            $timeout(function () {
-                                $scope.loginAttempts = 0;
-                                $scope.Loginbutton = false;
-                            }, 1 * 60 * 1000);
-                            return;
-                        }
-                        else {
-                            var DataType = 2;
-                            var Encripteddatatype = $crypto.encrypt($crypto.encrypt(DataType.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
-                            var EncriptedUserName = $crypto.encrypt($crypto.encrypt($scope.UserName.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
-                            var addaccount = AdminService.GetAccountStatus(Encripteddatatype, EncriptedUserName);
-                            addaccount.then(function (resp) {
-                                try {
-                                    var res = JSON.parse(resp);
-                                }
-                                catch (err) { }
-                                if (res.Table.length > 0) {
-                                    $scope.AccountStatusData = res.Table;
-                                    $scope.loading = false;
-                                    if ($scope.AccountStatusData[0].AccountLocked == false || $scope.AccountStatusData[0].AccountLocked == null) {
-                                        $scope.Loginbutton = true;
+        //            var data = $crypto.encrypt($scope.Password, $scope.LoginEKey) + "$$@@$$" + $crypto.encrypt($scope.UserName, $scope.LoginEKey) + "$$@@$$" + $scope.LoginEKey;
+        //            $http.post(AppSettings.WebApiUrl + 'api/SystemUser/GetUserLogin', data, {}).then(function (response) {
+        //                var UserRights = [];
+        //                sessionStorage.loggedIn = "yes";
+        //                var token = response.data.token + "$$@@$$" + $scope.LoginEKey;
+        //                sessionStorage.setItem('authToken', token);
+        //                $localStorage.authToken = response.data.token + "$$@@$$" + $scope.LoginEKey;
+        //                var status = response.data.data.UserAuth[0].ResponceCode;
+        //                if (status != "200" && $scope.loginAttempts <= 2) {
+        //                    alert(response.data.data.UserAuth[0].RespoceDescription);
+        //                    $scope.loginFailed = true;
+        //                    $scope.Loginbutton = false;
+        //                    $scope.loginAttempts++;
+        //                }
+        //                else if ((status != "200" || status == "200") && $scope.loginAttempts >= 2) {
+        //                    alert('Account Locked');
+        //                    $scope.addAccountStatus();
+        //                    $timeout(function () {
+        //                        $scope.loginAttempts = 0;
+        //                        $scope.Loginbutton = false;
+        //                    }, 1 * 60 * 1000);
+        //                    return;
+        //                }
+        //                else {
+        //                    var DataType = 2;
+        //                    var Encripteddatatype = $crypto.encrypt($crypto.encrypt(DataType.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+        //                    var EncriptedUserName = $crypto.encrypt($crypto.encrypt($scope.UserName.toString(), 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+        //                    var addaccount = AdminService.GetAccountStatus(Encripteddatatype, EncriptedUserName);
+        //                    addaccount.then(function (resp) {
+        //                        try {
+        //                            var res = JSON.parse(resp);
+        //                        }
+        //                        catch (err) { }
+        //                        if (res.Table.length > 0) {
+        //                            $scope.AccountStatusData = res.Table;
+        //                            $scope.loading = false;
+        //                            if ($scope.AccountStatusData[0].AccountLocked == false || $scope.AccountStatusData[0].AccountLocked == null) {
+        //                                $scope.Loginbutton = true;
 
-                                        sessionStorage.setItem('SessionID', $scope.LoginEKey);
-                                        response.data = response.data.data.SystemUser[0];
-                                        try {
-                                            authorizationData = {
-                                                token: sessionStorage.getItem("authToken"),
-                                                SessionID: $scope.LoginEKey,
-                                                SysUserID: response.data.UserId,
-                                                College_Code: response.data.CollegeCode,
-                                                College_Name: response.data.CollegeName,
-                                                SystemUserTypeId: response.data.UserTypeId,
-                                                UserName: $scope.UserName.toUpperCase(),
-                                                CollegeID: response.data.CollegeId,
-                                                BranchCode: response.data.BranchCode,
-                                                BranchId: response.data.BranchId,
+        //                                sessionStorage.setItem('SessionID', $scope.LoginEKey);
+        //                                response.data = response.data.data.SystemUser[0];
+        //                                try {
+        //                                    authorizationData = {
+        //                                        token: sessionStorage.getItem("authToken"),
+        //                                        SessionID: $scope.LoginEKey,
+        //                                        SysUserID: response.data.UserId,
+        //                                        College_Code: response.data.CollegeCode,
+        //                                        College_Name: response.data.CollegeName,
+        //                                        SystemUserTypeId: response.data.UserTypeId,
+        //                                        UserName: $scope.UserName.toUpperCase(),
+        //                                        CollegeID: response.data.CollegeId,
+        //                                        BranchCode: response.data.BranchCode,
+        //                                        BranchId: response.data.BranchId,
 
-                                                CollegeCatName: "",
-                                                Clg_Type: "",
-                                                SectionId: "",
-                                                SchemeId: "",
-                                                SemesterId: "",
-                                                AcademicId: "",
-                                                percentage: "",
-                                                TypeFlag: response.data.TypeFlag,
-                                                MngtTypID: response.data.MngtTypID,
-                                                SysUsrGrpID: response.data.SysUsrGrpID,
-                                                SeqNo: response.data.SeqNo
-                                            };
+        //                                        CollegeCatName: "",
+        //                                        Clg_Type: "",
+        //                                        SectionId: "",
+        //                                        SchemeId: "",
+        //                                        SemesterId: "",
+        //                                        AcademicId: "",
+        //                                        percentage: "",
+        //                                        TypeFlag: response.data.TypeFlag,
+        //                                        MngtTypID: response.data.MngtTypID,
+        //                                        SysUsrGrpID: response.data.SysUsrGrpID,
+        //                                        SeqNo: response.data.SeqNo
+        //                                    };
 
-                                            sessionStorage.setItem('user', JSON.stringify(authorizationData));
-                                            setTimeout(function () {
-                                                $state.go('Dashboard');
-                                                $scope.gotoLogin();
-                                            }, 200);
+        //                                    sessionStorage.setItem('user', JSON.stringify(authorizationData));
+        //                                    setTimeout(function () {
+        //                                        $state.go('Dashboard');
+        //                                        $scope.gotoLogin();
+        //                                    }, 200);
 
-                                            $scope.Loginbutton = false;
-                                        }
+        //                                    $scope.Loginbutton = false;
+        //                                }
 
-                                        catch (err) {
+        //                                catch (err) {
 
-                                        }
-                                        $state.go('Dashboard');
-                                    }
-                                    else {
-                                        alert('Account is Locked');
-                                        $scope.loading = false;
-                                        $scope.Loginbutton = false;
-                                        return;
-                                    }
-                                }
-                            },
-                                function (error) {
-                                    //alert("data is not loaded");
-                                    //    var err = JSON.parse(error);
-                                });
-                        }
-                    });
-                };
-            }
+        //                                }
+        //                                $state.go('Dashboard');
+        //                            }
+        //                            else {
+        //                                alert('Account is Locked');
+        //                                $scope.loading = false;
+        //                                $scope.Loginbutton = false;
+        //                                return;
+        //                            }
+        //                        }
+        //                    },
+        //                        function (error) {
+        //                            //alert("data is not loaded");
+        //                            //    var err = JSON.parse(error);
+        //                        });
+        //                }
+        //            });
+        //        };
+        //    }
 
-        }
+        //}
         $scope.ForgetPasswordChange = function () {
             $state.go('ForgetPassword');
         }
