@@ -146,8 +146,8 @@ define(['app'], function (app) {
             $scope.error = false;
             $scope.data = false;
             var getcircular = AdminService.getCircularsList();
-            getcircular.then(function (response) {
-                //var response = JSON.parse(res)
+            getcircular.then(function (res) {
+                var response = JSON.parse(res)
                 if (response.Table.length > 0) {
                     $scope.Circulars = response.Table;
 

@@ -210,7 +210,7 @@
         }
 
         this.getCircularsList = function () {
-            var promise = DataAccessService.getDataWithPara('AdminServiceBase/getCirculars');
+            var promise = DataAccessService.getDataWithPara('api/AdminService/getCirculars');
             return promise;
         }
         

@@ -4455,6 +4455,11 @@
     <Content Include="contents\css\syncfusion\themes\samplecontent\wpfcontent.html" />
     <Content Include="contents\css\toaster.min.css" />
     <Content Include="contents\css\twshStyles.css" />
+    <Content Include="contents\Errors\400.html" />
+    <Content Include="contents\Errors\401.html" />
+    <Content Include="contents\Errors\404.html" />
+    <Content Include="contents\Errors\405.png" />
+    <Content Include="contents\Errors\500.html" />
     <Content Include="contents\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="contents\img\academic.png" />
     <Content Include="contents\img\Academics.png" />
