@@ -78,18 +78,38 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                 var parsedToken = t[0];
                 token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
                 if (token.ExpiryDate < DateTime.Now)
                 {
                     actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-                    // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
                 }
             }
             catch (Exception ex)
             {
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-                // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Authentication Token");
             }
             base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
         }
 
 

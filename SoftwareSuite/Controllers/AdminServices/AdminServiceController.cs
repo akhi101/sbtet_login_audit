@@ -36,7 +36,6 @@ using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Text;
 using System.Security.Cryptography;
-
 namespace SoftwareSuite.Controllers.AdminServices
 {
     public class AuthorizationFilter : AuthorizationFilterAttribute
@@ -51,20 +50,42 @@ namespace SoftwareSuite.Controllers.AdminServices
                 var tkn = tokenStr.Value.FirstOrDefault();
                 var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                 var parsedToken = t[0];
-                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
                 if (token.ExpiryDate < DateTime.Now)
                 {
                     actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-                    // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
                 }
             }
             catch (Exception ex)
             {
                 actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-                // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Authentication Token");
             }
             base.OnAuthorization(actionContext);
         }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
 
 
     }
@@ -72,7 +93,7 @@ namespace SoftwareSuite.Controllers.AdminServices
     public class AdminServiceController : ApiController
     {
 
-        [HttpPost, ActionName("PostMarksEntryDates")]
+        [AuthorizationFilter][HttpPost, ActionName("PostMarksEntryDates")]
         public string PostMarksEntryDates([FromBody] SetDatesMarksEntryreqdata ReqData)
         {
             try
@@ -105,7 +126,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("GetAllCourses")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAllCourses")]
         public HttpResponseMessage GetAllCourses()
         {
             try
@@ -185,7 +206,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost, ActionName("ValidateCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateCaptcha")]
         public string ValidateCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -250,7 +271,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             public string LoginName { get; set; }
             public string CellNo { get; set; }
         }
-        [HttpPost, ActionName("ValidateForgetPasswordCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateForgetPasswordCaptcha")]
         public string ValidateForgetPasswordCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -389,7 +410,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("UpdatePassword")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdatePassword")]
         public void UpdatePassword(string UserName, string Password, string Salt)
         {
             var dbHandler = new dbHandler();
@@ -818,7 +839,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getUserLogout")]
+        [AuthorizationFilter][HttpGet, ActionName("getUserLogout")]
         public void getUserLogout()
         {
             try
@@ -843,7 +864,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
         //[AuthorizationFilter()]
-        [HttpPost, ActionName("AddorGetAccountStatus")]
+        [AuthorizationFilter][HttpPost, ActionName("AddorGetAccountStatus")]
         public string AddorGetAccountStatus(string DataType,string UserName)
         {
             try
@@ -873,7 +894,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetCaptchaString10")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCaptchaString10")]
         public string GetCaptchaString10()
         {
             var dbHandler = new dbHandler();
@@ -914,7 +935,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("SetSessionId")]
+        [AuthorizationFilter][HttpGet, ActionName("SetSessionId")]
         public string SetSessionId(string SessionId, string Captcha)
         {
             var dbHandler = new dbHandler();
@@ -959,7 +980,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("GetDecryptedData")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDecryptedData")]
         public string GetDecryptedData(string DataType)
         {
             try
@@ -981,7 +1002,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpPost, ActionName("ValidateAttendenceCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateAttendenceCaptcha")]
         public string ValidateAttendenceCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1049,7 +1070,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost, ActionName("ValidateHallTicketCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateHallTicketCaptcha")]
         public string ValidateHallTicketCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1128,7 +1149,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost, ActionName("ValidateStudentFeePaymentforAdminCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateStudentFeePaymentforAdminCaptcha")]
         public string ValidateStudentFeePaymentforAdminCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1199,7 +1220,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost, ActionName("ValidateStudentFeePaymentDetailsCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateStudentFeePaymentDetailsCaptcha")]
         public string ValidateStudentFeePaymentDetailsCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1269,7 +1290,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateC09ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC09ConsolidatedResultCaptcha")]
         public string ValidateC09ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1335,7 +1356,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateC14ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC14ConsolidatedResultCaptcha")]
         public string ValidateC14ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1401,7 +1422,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateC16ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC16ConsolidatedResultCaptcha")]
         public string ValidateC16ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1467,7 +1488,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateC16SConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC16SConsolidatedResultCaptcha")]
         public string ValidateC16SConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1533,7 +1554,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateER91ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateER91ConsolidatedResultCaptcha")]
         public string ValidateER91ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1600,7 +1621,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpPost, ActionName("ValidateC05ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC05ConsolidatedResultCaptcha")]
         public string ValidateC05ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1666,7 +1687,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateC08ConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateC08ConsolidatedResultCaptcha")]
         public string ValidateC08ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1732,7 +1753,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateConsolidatedResultCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateConsolidatedResultCaptcha")]
         public string ValidateConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1800,7 +1821,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpPost, ActionName("ValidateDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateDetailsByPinCaptcha")]
         public string ValidateDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1866,7 +1887,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateMigrationDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateMigrationDetailsByPinCaptcha")]
         public string ValidateMigrationDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1932,7 +1953,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateTranscriptDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateTranscriptDetailsByPinCaptcha")]
         public string ValidateTranscriptDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1998,7 +2019,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateTcDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateTcDetailsByPinCaptcha")]
         public string ValidateTcDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2064,7 +2085,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateNcDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateNcDetailsByPinCaptcha")]
         public string ValidateNcDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2130,7 +2151,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateODCDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateODCDetailsByPinCaptcha")]
         public string ValidateODCDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2196,7 +2217,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateMarksMemoDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateMarksMemoDetailsByPinCaptcha")]
         public string ValidateMarksMemoDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2262,7 +2283,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateStudyDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateStudyDetailsByPinCaptcha")]
         public string ValidateStudyDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2328,7 +2349,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateBonafiedDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateBonafiedDetailsByPinCaptcha")]
         public string ValidateBonafiedDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2394,7 +2415,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateFeePaymentStatusCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateFeePaymentStatusCaptcha")]
         public string ValidateFeePaymentStatusCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2460,7 +2481,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("ValidatePinDetailsCaptcha")]
+        [AuthorizationFilter][HttpGet, ActionName("ValidatePinDetailsCaptcha")]
         public string ValidatePinDetailsCaptcha(string pin)
         {
             try
@@ -2484,7 +2505,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpPost, ActionName("ValidateTwoYearsFeePaymentStatusCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateTwoYearsFeePaymentStatusCaptcha")]
         public string ValidateTwoYearsFeePaymentStatusCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2550,7 +2571,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateGenuinenessCheckDetailsByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateGenuinenessCheckDetailsByPinCaptcha")]
         public string ValidateGenuinenessCheckDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2616,7 +2637,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("ValidateDataByPinCaptcha")]
+        [AuthorizationFilter][HttpPost, ActionName("ValidateDataByPinCaptcha")]
         public string ValidateDataByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2685,7 +2706,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("ValidatePin")]
+        [AuthorizationFilter][HttpGet, ActionName("ValidatePin")]
         public string ValidatePin(string Pin)
         {
             string ResponceCode = "";
@@ -2725,7 +2746,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             public string Data { get; internal set; }
         }
 
-        [HttpGet, ActionName("GetStaffTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStaffTypes")]
         public HttpResponseMessage GetStaffTypes()
         {
             try
@@ -2742,7 +2763,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("GetDownloadsList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDownloadsList")]
         public HttpResponseMessage GetDownloadsList()
         {
             try
@@ -2759,7 +2780,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("GetActiveDownloadsList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetActiveDownloadsList")]
         public HttpResponseMessage GetActiveDownloadsList()
         {
             try
@@ -2777,7 +2798,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("getUserTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("getUserTypes")]
         public HttpResponseMessage getUserTypes()
         {
             try
@@ -2794,7 +2815,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("GetUsers")]
+        [AuthorizationFilter][HttpGet, ActionName("GetUsers")]
         public HttpResponseMessage GetUsers()
         {
             try
@@ -2812,7 +2833,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetAllUsers")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAllUsers")]
         public HttpResponseMessage GetAllUsers()
         {
             try
@@ -2836,7 +2857,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("AddUserPasswords")]
+        [AuthorizationFilter][HttpGet, ActionName("AddUserPasswords")]
         public string AddUserPasswords(string UserName, string Password)
         {
             var dbHandler = new dbHandler();
@@ -2877,7 +2898,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("getCircularTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("getCircularTypes")]
         public HttpResponseMessage getCircularTypes()
         {
             try
@@ -2895,7 +2916,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("GetProjects")]
+        [AuthorizationFilter][HttpGet, ActionName("GetProjects")]
         public HttpResponseMessage GetProjects()
         {
             try
@@ -2914,7 +2935,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetTaskTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTaskTypes")]
         public HttpResponseMessage GetTaskTypes()
         {
             try
@@ -2934,7 +2955,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("getStaffList")]
+        [AuthorizationFilter][HttpGet, ActionName("getStaffList")]
         public HttpResponseMessage getStaffList()
         {
             try
@@ -2954,7 +2975,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("getStaffActive")]
+        [AuthorizationFilter][HttpGet, ActionName("getStaffActive")]
         public HttpResponseMessage getStaffActive()
         {
             try
@@ -2972,7 +2993,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetCollegesList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegesList")]
         public HttpResponseMessage GetCollegesList()
         {
             try
@@ -2990,7 +3011,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetModulesbyRole")]
+        [AuthorizationFilter][HttpGet, ActionName("GetModulesbyRole")]
         public HttpResponseMessage GetModulesbyRole(int usertypeid)
         {
             try
@@ -3009,7 +3030,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("DeleteStaff")]
+        [AuthorizationFilter][HttpGet, ActionName("DeleteStaff")]
         public HttpResponseMessage DeleteStaff(int id)
         {
             try
@@ -3029,7 +3050,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("DeleteCircular")]
+        [AuthorizationFilter][HttpGet, ActionName("DeleteCircular")]
         public HttpResponseMessage DeleteCircular(int id)
         {
             try
@@ -3049,7 +3070,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("DeleteDownloads")]
+        [AuthorizationFilter][HttpGet, ActionName("DeleteDownloads")]
         public HttpResponseMessage DeleteDownloads(int id)
         {
             try
@@ -3070,7 +3091,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("DeleteTender")]
+        [AuthorizationFilter][HttpGet, ActionName("DeleteTender")]
         public HttpResponseMessage DeleteTender(int id)
         {
             try
@@ -3090,7 +3111,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("SwitchCircular")]
+        [AuthorizationFilter][HttpGet, ActionName("SwitchCircular")]
         public HttpResponseMessage SwitchCircular(int id, int IsActive)
         {
             try
@@ -3111,7 +3132,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("SwitchDownloads")]
+        [AuthorizationFilter][HttpGet, ActionName("SwitchDownloads")]
         public HttpResponseMessage SwitchDownloads(int id, int IsActive)
         {
             try
@@ -3133,7 +3154,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("SwitchStaff")]
+        [AuthorizationFilter][HttpGet, ActionName("SwitchStaff")]
         public HttpResponseMessage SwitchStaff(int id, int IsActive)
         {
             try
@@ -3155,7 +3176,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("SwitchTender")]
+        [AuthorizationFilter][HttpGet, ActionName("SwitchTender")]
         public HttpResponseMessage SwitchTender(int id, int IsActive)
         {
             try
@@ -3178,7 +3199,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("GetAllModulesbyRole")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAllModulesbyRole")]
         public HttpResponseMessage GetAllModulesbyRole(int usertypeid)
         {
             try
@@ -3198,7 +3219,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("GetSubModulesbyRole")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSubModulesbyRole")]
         public HttpResponseMessage GetSubModulesbyRole(int usertypeid, int moduleid)
         {
             try
@@ -3220,7 +3241,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("SetSubModuleInactive")]
+        [AuthorizationFilter][HttpGet, ActionName("SetSubModuleInactive")]
         public HttpResponseMessage SetSubModuleInactive(int usertypeid, int moduleId, int SubModuleId, int IsActive)
         {
             try
@@ -3244,7 +3265,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("SetModuleInactive")]
+        [AuthorizationFilter][HttpGet, ActionName("SetModuleInactive")]
         public HttpResponseMessage SetModuleInactive(int usertypeid, int moduleId, int IsActive)
         {
             try
@@ -3267,7 +3288,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("NotificationInactive")]
+        [AuthorizationFilter][HttpGet, ActionName("NotificationInactive")]
         public HttpResponseMessage NotificationInactive(int Id)
         {
             try
@@ -3301,7 +3322,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("getUserType")]
+        [AuthorizationFilter][HttpGet, ActionName("getUserType")]
         public HttpResponseMessage getUserType()
         {
             try
@@ -3318,7 +3339,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getActiveBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveBranches")]
         public HttpResponseMessage getActiveBranches()
         {
             try
@@ -3337,7 +3358,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("SwitchUserStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("SwitchUserStatus")]
         public HttpResponseMessage SwitchUserStatus(string UserId)
         {
             try
@@ -3379,7 +3400,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetNotificationsActiveByUser")]
+        [AuthorizationFilter][HttpGet, ActionName("GetNotificationsActiveByUser")]
         public HttpResponseMessage GetNotificationsActiveByUser(int UserTypeId)
         {
             try
@@ -3399,7 +3420,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetCircularByUser")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCircularByUser")]
         public HttpResponseMessage GetCircularByUser(int UserTypeId)
         {
             try
@@ -3420,7 +3441,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("GetBranchList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetBranchList")]
         public HttpResponseMessage GetBranchList(string @CollegeCode)
         {
             try
@@ -3440,7 +3461,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getActiveSchemes")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveSchemes")]
         public string getActiveSchemes()
         {
             try
@@ -3458,9 +3479,25 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        [AuthorizationFilter][HttpGet, ActionName("getCirculars")]
+        public string getCirculars()
+        {
+            try
+            {
+                var dbHandler = new dbHandler();
+                string StrQuery = "";
+                StrQuery = "exec ADM_GET_Circular";
+                var res = dbHandler.ReturnDataSet(StrQuery);
+                return JsonConvert.SerializeObject(res);
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("ADM_GET_Circular", 0, ex.Message);
+                return ex.Message;
+            }
+        }
 
-
-        [HttpGet, ActionName("getTenders")]
+        [AuthorizationFilter][HttpGet, ActionName("getTenders")]
         public string getTenders()
         {
             try
@@ -3478,7 +3515,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getCircularsActive")]
+        [AuthorizationFilter][HttpGet, ActionName("getCircularsActive")]
         public string getCircularsActive()
         {
             try
@@ -3496,7 +3533,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getTendersActive")]
+        [AuthorizationFilter][HttpGet, ActionName("getTendersActive")]
         public string getTendersActive()
         {
             try
@@ -3516,7 +3553,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpGet, ActionName("GetUserIdStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("GetUserIdStatus")]
         public HttpResponseMessage GetUserIdStatus(string UserName)
         {
             try
@@ -3554,7 +3591,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpPost, ActionName("createUser")]
+        [AuthorizationFilter][HttpPost, ActionName("createUser")]
         public HttpResponseMessage createUser([FromBody] userDetails request)
         {
             try
@@ -3582,7 +3619,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 throw ex;
             }
         }
-        //[HttpPost, ActionName("PostNotification")]
+        //[AuthorizationFilter][HttpPost, ActionName("PostNotification")]
         //public HttpResponseMessage PostNotification([FromBody]notification request)
         //{
         //    try
@@ -3616,7 +3653,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpPost, ActionName("PostNotification")]
+        [AuthorizationFilter][HttpPost, ActionName("PostNotification")]
         public string PostNotification([FromBody] JsonObject NotificationData)
         {
             try
@@ -3634,7 +3671,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("GetSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSemester")]
         public HttpResponseMessage GetSemester(int UserType)
         {
             try
@@ -3654,7 +3691,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("GetTicketsCount")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTicketsCount")]
         public string GetTicketsCount(string UserName)
         {
             try
@@ -3682,7 +3719,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetStatusWiseTickets")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStatusWiseTickets")]
         public string GetStatusWiseTickets(int DataType, string UserName)
         {
             try
@@ -3761,7 +3798,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [HttpGet, ActionName("GetorEditorDeleteTicketsData")]
+        [AuthorizationFilter][HttpGet, ActionName("GetorEditorDeleteTicketsData")]
         public string GetorEditorDeleteTicketsData(int DataType, string UserName, int TaskID)
         {
             var dbHandler = new dbHandler();
@@ -3784,7 +3821,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpGet, ActionName("GetTicketsCountData")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTicketsCountData")]
         public string GetTicketsCountData(int DataType, string UserName, string User, int ProjectID)
         {
             var dbHandler = new dbHandler();
@@ -3835,7 +3872,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [HttpPost, ActionName("AddorUpdateorDeleteTickets")]
+        [AuthorizationFilter][HttpPost, ActionName("AddorUpdateorDeleteTickets")]
         public HttpResponseMessage AddorUpdateorDeleteTickets([FromBody] TicketsData TicketsData)
         {
             try
@@ -3902,7 +3939,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("UpdateCountsData")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateCountsData")]
         public HttpResponseMessage UpdateCountsData([FromBody] TicketsData TicketsData)
         {
             try
@@ -3925,7 +3962,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("UpdateWorkStatus")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateWorkStatus")]
         public HttpResponseMessage UpdateWorkStatus([FromBody] TicketsData TicketsData)
         {
             try
@@ -3986,7 +4023,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpPost, ActionName("UpdateWorkAssigned")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateWorkAssigned")]
         public HttpResponseMessage UpdateWorkAssigned([FromBody] TicketsData TicketsData)
         {
             try
@@ -4014,7 +4051,7 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [HttpPost, ActionName("SaveScheamdata")]
+        [AuthorizationFilter][HttpPost, ActionName("SaveScheamdata")]
         public HttpResponseMessage SaveScheamdata([FromBody] JsonObject request)
         {
             try
@@ -4036,7 +4073,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 throw ex;
             }
         }
-        [HttpGet, ActionName("GetStatuswiseReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStatuswiseReport")]
         public string GetStatuswiseReport(int DataType, string UserName)
         {
             var dbHandler = new dbHandler();
@@ -4066,7 +4103,7 @@ namespace SoftwareSuite.Controllers.AdminServices
     public class AdminServiceBaseController : BaseController
     {
 
-        [HttpPost, ActionName("uploadFile")]
+        [AuthorizationFilter][HttpPost, ActionName("uploadFile")]
         public string uploadFile([FromBody] HttpPostedFileBase file, string Title, string Description, string Ids)
         {
             var path = string.Empty;
@@ -4105,29 +4142,6 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
             return "0";
         }
-
-        [AuthorizationFilter]
-        [HttpGet, ActionName("getCirculars")]
-        public string getCirculars()
-        {
-            try
-            {
-                var dbHandler = new dbHandler();
-                string StrQuery = "";
-                StrQuery = "exec ADM_GET_Circular";
-                var res = dbHandler.ReturnDataSet(StrQuery);
-                return JsonConvert.SerializeObject(res);
-            }
-            catch (Exception ex)
-            {
-                dbHandler.SaveErorr("ADM_GET_Circular", 0, ex.Message);
-                return ex.Message;
-            }
-        }
-
-
-
-
 
 
 
