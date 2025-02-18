@@ -99,7 +99,13 @@ define(['app'], function (app) {
                 return;
             }
             var NotificationDate = moment(data.NotificationDate).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UpdateCircular($scope.updatepdffile, file.value.split("\\").pop(), data.Title, data.CircularTypeId, NotificationDate, data.ID);
+            if ($scope.updatepdffile == 'Empty') {
+                $scope.FileNmae = data.FileNmae;
+            }
+            else {
+                $scope.FileNmae = $scope.CircularFileName;
+            }
+            var uploadexcl = AdminService.UpdateCircular($scope.updatepdffile, $scope.FileNmae, data.Title, data.CircularTypeId, NotificationDate, data.ID);
             uploadexcl.then(function (res) {
                 const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
                 if (res.hasOwnProperty(keyToExclude)) {
@@ -140,8 +146,8 @@ define(['app'], function (app) {
             $scope.error = false;
             $scope.data = false;
             var getcircular = AdminService.getCircularsList();
-            getcircular.then(function (res) {
-                var response = JSON.parse(res)
+            getcircular.then(function (response) {
+                //var response = JSON.parse(res)
                 if (response.Table.length > 0) {
                     $scope.Circulars = response.Table;
 
@@ -250,6 +256,7 @@ define(['app'], function (app) {
 
             var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
             var file = input.files[0];
+            $scope.CircularFileName = file.name;
 
             if (file) {
                 if (allowedTypes.indexOf(file.type) === -1) {

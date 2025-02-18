@@ -77,7 +77,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var tkn = tokenStr.Value.FirstOrDefault();
                 var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                 var parsedToken = t[0];
-                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
                 if (token.ExpiryDate < DateTime.Now)
                 {
                     actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
@@ -10368,7 +10368,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string Url { get; set; }
             public string DownloadFileName { get; set; }
             public int DownloadTypeId { get; set; }
-            public DateTime NotificationDate { get; set; }
+            public DateTime DownloadDate { get; set; }
 
         }
 
@@ -10995,7 +10995,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("SetTender")]
+        [HttpPost, ActionName("SetTender")]
         public HttpResponseMessage SetTender([FromBody] TenderData TenderData)
         {
             try
@@ -11236,7 +11236,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()]
+  
         [HttpPost, ActionName("uploadFile")]
         public HttpResponseMessage uploadFile([FromBody] CircularData CircularData)
         {
@@ -11474,7 +11474,6 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()]
         [HttpPost, ActionName("UploadDownload")]
         public HttpResponseMessage UploadDownload([FromBody] DownloadData DownloadData)
         {
@@ -11702,7 +11701,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Url", DownloadUrl);
                 param[1] = new SqlParameter("@CircularTypeId", DownloadData.DownloadTypeId);
-                param[2] = new SqlParameter("@NotificationDate", DownloadData.NotificationDate);
+                param[2] = new SqlParameter("@NotificationDate", DownloadData.DownloadDate);
                 param[3] = new SqlParameter("@Title", DownloadData.Title);
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_DownloadsForAdmin", param);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
@@ -11810,7 +11809,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpPost, ActionName("UpdateTender")]
+        [HttpPost, ActionName("UpdateTender")]
         public HttpResponseMessage UpdateTender([FromBody] TenderData TenderData)
 
         {
@@ -12252,7 +12251,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("UpdateCircular")]
+        [HttpPost, ActionName("UpdateCircular")]
         public HttpResponseMessage UpdateCircular([FromBody] CircularData CircularData)
         {
             var CircularUrl = string.Empty;
@@ -12698,7 +12697,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpPost, ActionName("UpdateDownloads")]
+        [HttpPost, ActionName("UpdateDownloads")]
         public HttpResponseMessage UpdateDownloads([FromBody] DownloadData DownloadData)
         {
             var CircularUrl = string.Empty;
@@ -13124,7 +13123,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 param[0] = new SqlParameter("@Title", DownloadData.Title);
                 param[1] = new SqlParameter("@Url", CircularUrl);
                 param[2] = new SqlParameter("@CircularTypeId", DownloadData.DownloadTypeId);
-                param[3] = new SqlParameter("@NotificationDate", DownloadData.NotificationDate);
+                param[3] = new SqlParameter("@NotificationDate", DownloadData.DownloadDate);
                 param[4] = new SqlParameter("@Id", DownloadData.Id);
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_UpdateDownloadsForAdmin", param);
                 //return JsonConvert.SerializeObject(dt);
