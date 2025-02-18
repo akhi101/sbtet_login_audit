@@ -493,6 +493,7 @@
     <Compile Include="BLL\StudentRegBLL.cs" />
     <Compile Include="BLL\SystemUserBLL.cs" />
     <Compile Include="Controllers\Academic\AcademicController.cs" />
+    <Compile Include="Controllers\AdminServices\AdminServiceBaseController.cs" />
     <Compile Include="Controllers\AdminServices\AdminServiceController.cs" />
     <Compile Include="Controllers\Admission\AdmissionController.cs" />
     <Compile Include="Controllers\Admission\AttendanceController.cs" />

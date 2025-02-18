@@ -3458,23 +3458,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [HttpGet, ActionName("getCirculars")]
-        public string getCirculars()
-        {
-            try
-            {
-                var dbHandler = new dbHandler();
-                string StrQuery = "";
-                StrQuery = "exec ADM_GET_Circular";
-                var res = dbHandler.ReturnDataSet(StrQuery);
-                return JsonConvert.SerializeObject(res);
-            }
-            catch (Exception ex)
-            {
-                dbHandler.SaveErorr("ADM_GET_Circular", 0, ex.Message);
-                return ex.Message;
-            }
-        }
+
 
         [HttpGet, ActionName("getTenders")]
         public string getTenders()
@@ -4121,6 +4105,29 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
             return "0";
         }
+
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getCirculars")]
+        public string getCirculars()
+        {
+            try
+            {
+                var dbHandler = new dbHandler();
+                string StrQuery = "";
+                StrQuery = "exec ADM_GET_Circular";
+                var res = dbHandler.ReturnDataSet(StrQuery);
+                return JsonConvert.SerializeObject(res);
+            }
+            catch (Exception ex)
+            {
+                dbHandler.SaveErorr("ADM_GET_Circular", 0, ex.Message);
+                return ex.Message;
+            }
+        }
+
+
+
+
 
 
 

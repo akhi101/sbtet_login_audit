@@ -93,6 +93,8 @@
             var input = document.getElementById("studentFile" + value);
 
             var file = input.files[0];
+            $scope.CreatDownloadsFileName = file.name;
+
 
             var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
@@ -316,7 +318,13 @@
                 return;
             }
             var NotificationDate = moment(data.NotificationDate).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UpdateDownloads($scope.updatepdffile, file.value.split("\\").pop(), data.Title, data.CircularTypeId, NotificationDate, data.ID);
+            if ($scope.updatepdffile == 'Empty') {
+                $scope.FileNmae = data.FileNmae;
+            }
+            else {
+                $scope.FileNmae = $scope.CreatDownloadsFileName;
+            }
+            var uploadexcl = AdminService.UpdateDownloads($scope.updatepdffile, $scope.FileNmae, data.Title, data.CircularTypeId, NotificationDate, data.ID);
             uploadexcl.then(function (res) {
 
                 const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';

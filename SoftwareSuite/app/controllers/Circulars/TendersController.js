@@ -97,9 +97,15 @@
                 alert('please select End Date')
                 return;
             }
+            if ($scope.updatepdffile == 'Empty') {
+                $scope.FileNmae = data.FileNmae;
+            }
+            else {
+                $scope.FileNmae = $scope.TenderFileName;
+            }
             var TenderDate = moment(data.TenderDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var EndDate = moment(data.EndDate).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UpdateTender($scope.updatepdffile, file.value.split("\\").pop(), data.Title, TenderDate,EndDate, data.Id);
+            var uploadexcl = AdminService.UpdateTender($scope.updatepdffile, $scope.FileNmae, data.Title, TenderDate,EndDate, data.Id);
             uploadexcl.then(function (res) {
                 const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
                 if (res.hasOwnProperty(keyToExclude)) {

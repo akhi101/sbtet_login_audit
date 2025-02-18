@@ -210,7 +210,7 @@
         }
 
         this.getCircularsList = function () {
-            var promise = DataAccessService.getDataWithPara('api/AdminService/getCirculars');
+            var promise = DataAccessService.getDataWithPara('AdminServiceBase/getCirculars');
             return promise;
         }
         
@@ -332,10 +332,10 @@
             return promise;
         }
 
-        this.UploadDownload = function (ExcelData, CircularFileName, Title, CircularTypeId, NotificationDate) {
+        this.UploadDownload = function (ExcelData, DownloadFileName, Title, DownloadTypeId, DownloadDate) {
             var paramObject = {
-                 "Url": ExcelData, "CircularFileName": CircularFileName, "CircularTypeId": CircularTypeId,
-                "NotificationDate": NotificationDate,"Title": Title
+                "Url": ExcelData, "DownloadFileName": DownloadFileName, "DownloadTypeId": DownloadTypeId,
+                "DownloadDate": DownloadDate,"Title": Title
             };
 
             var promise = DataAccessService.postData('api/PreExamination/UploadDownload', paramObject);
@@ -479,22 +479,22 @@
         }
  
 
-        this.UpdateDownloads = function (ExcelData, CircularFileName, Title, CircularTypeId, NotificationDate, Id) {
+        this.UpdateDownloads = function (ExcelData, DownloadFileName, Title, DownloadTypeId, DownloadDate, Id) {
             var paramObject = {
-                "Title": Title, "Url": ExcelData, "CircularFileName": CircularFileName, "CircularTypeId": CircularTypeId,
-                "NotificationDate": NotificationDate,"Id":Id
+                "Title": Title, "Url": ExcelData, "DownloadFileName": DownloadFileName, "DownloadTypeId": DownloadTypeId,
+                "DownloadDate": DownloadDate,"Id":Id
             };
 
             var promise = DataAccessService.postData('api/PreExamination/UpdateDownloads', paramObject);
             return promise;
         }
 
-        this.UpdateCircular = function (ExcelData, CircularFileName, Title, CircularTypeId, NotificationDate, ID) {
+        this.UpdateCircular = function (ExcelData, CircularFileName,Title, CircularTypeId, NotificationDate, ID) {
             var paramObject = {
                 "Title": Title, "Url": ExcelData, "CircularFileName": CircularFileName, "CircularTypeId": CircularTypeId,
                 "NotificationDate": NotificationDate, "ID": ID
             };
-            console.log(paramObject)
+            //console.log(paramObject)
             var promise = DataAccessService.postData('api/PreExamination/UpdateCircular', paramObject);
             return promise;
         }
