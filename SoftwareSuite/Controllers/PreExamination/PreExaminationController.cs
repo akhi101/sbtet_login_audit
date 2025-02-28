@@ -194,7 +194,6 @@ namespace SoftwareSuite.Controllers.PreExamination
             return host + "/";
         }
 
-        [AuthorizationFilter()]
         [AuthorizationFilter()][HttpGet, ActionName("GetNrData")]
         public HttpResponseMessage GetNrData(HttpRequestMessage request)    //int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
         {
@@ -10270,10 +10269,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                 {
                     return ExamMonthYearId1;
                 }
-                if (Date1 != "YES")
-                {
-                    return Date1;
-                }
+                //if (Date1 != "YES")
+                //{
+                //    return Date1;
+                //}
 
 
 
@@ -18927,6 +18926,30 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+
+
+        [AuthorizationFilter()]
+        [HttpPost, ActionName("GetSemorCollegeorBranchWiseStatistics")]
+        public string GetSemorCollegeorBranchWiseStatistics([FromBody] JsonObject request)
+        {
+            try
+            {
+                var dbHandler = new dbHandler();
+                var param = new SqlParameter[5];
+                param[0] = new SqlParameter("@DataType", request["DataType"]);
+                param[1] = new SqlParameter("@AcademicYearId", request["AcademicYearId"]);
+                param[2] = new SqlParameter("@Exammonthyearid", request["Exammonthyearid"]);
+                param[3] = new SqlParameter("@CollegeCode", request["CollegeCode"]);
+                param[4] = new SqlParameter("@BranchCode", request["BranchCode"]);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_ResultStatistics", param);
+                return JsonConvert.SerializeObject(dt);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+        }
 
 
 

@@ -89,7 +89,7 @@ namespace SoftwareSuite.Controllers.Admission
         }
 
         #region Post Methods
-        [HttpPost, ActionName("SendAttendance")]
+        [AuthorizationFilter][HttpPost, ActionName("SendAttendance")]
         public HttpResponseMessage SendAttendance(HttpRequestMessage request)
         {
             try
@@ -201,7 +201,7 @@ namespace SoftwareSuite.Controllers.Admission
 
 
 
-        [HttpPost, ActionName("PostAttendance")]
+        [AuthorizationFilter][HttpPost, ActionName("PostAttendance")]
         public HttpResponseMessage PostAttendance(HttpRequestMessage request)
         {
             try
@@ -348,7 +348,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         }
 
-        [HttpPost, ActionName("UpdateStudentAttendance")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateStudentAttendance")]
         public string UpdateStudentAttendance([FromBody] PostAttUpdateData UpDAttData)
         {
             try
@@ -389,7 +389,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         #region Get Methods
 
-        [HttpGet, ActionName("GetAttendenceDataByCollege")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByCollege")]
         public HttpResponseMessage GetAttendenceDataByCollege(string CollegeId, int AcademicId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -412,7 +412,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         }
 
-        [HttpGet, ActionName("GetAttendenceDataByCollegeExams")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByCollegeExams")]
         public HttpResponseMessage GetAttendenceDataByCollegeExams(string CollegeId, int AcademicId)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -435,7 +435,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         }
 
-        [HttpGet, ActionName("GetAttendenceDataByBranch")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByBranch")]
         public HttpResponseMessage GetAttendenceDataByBranch(string CollegeId, int AcademicId, string branch)
         {
 
@@ -460,7 +460,7 @@ namespace SoftwareSuite.Controllers.Admission
         }
 
 
-        [HttpGet, ActionName("GetAttendenceDataByBranchExams")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByBranchExams")]
         public HttpResponseMessage GetAttendenceDataByBranchExams(string CollegeId, int AcademicId, string branch)
         {
 
@@ -484,7 +484,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         }
 
-        [HttpGet, ActionName("GetAttendenceDataByBranchWise")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByBranchWise")]
         public HttpResponseMessage GetAttendenceDataByBranchWise(string CollegeId, string Scheme, int semester, string Branch, int percentage, int AcademicId)
         {
             try
@@ -509,7 +509,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-        [HttpGet, ActionName("GetAttendenceDataByBranchWiseExams")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataByBranchWiseExams")]
         public HttpResponseMessage GetAttendenceDataByBranchWiseExams(string CollegeId, string Scheme, int semester, string Branch, int percentage, int AcademicId)
         {
             try
@@ -534,7 +534,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-        [HttpGet, ActionName("GetAttendenceDataPinWise")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendenceDataPinWise")]
         public HttpResponseMessage GetAttendenceDataPinWise(string Pin)
         {
             try
@@ -553,7 +553,7 @@ namespace SoftwareSuite.Controllers.Admission
                 return response;
             }
         }
-        [HttpGet, ActionName("getAdminAttendanceReports")]
+        [AuthorizationFilter][HttpGet, ActionName("getAdminAttendanceReports")]
         public HttpResponseMessage getAdminAttendanceReports()
 
         {
@@ -572,7 +572,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-        [HttpGet, ActionName("getAdminAttendanceReportsExams")]
+        [AuthorizationFilter][HttpGet, ActionName("getAdminAttendanceReportsExams")]
         public HttpResponseMessage getAdminAttendanceReportsExams()
 
         {
@@ -594,7 +594,7 @@ namespace SoftwareSuite.Controllers.Admission
         #endregion
 
 
-        [HttpGet, ActionName("UpdateWorkingDays")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateWorkingDays")]
         public void UpdateWorkingDays(string optype)
         {
 
@@ -738,7 +738,7 @@ namespace SoftwareSuite.Controllers.Admission
         }
 
 
-        [HttpGet, ActionName("ProcessAttendanceDisplay")]
+        [AuthorizationFilter][HttpGet, ActionName("ProcessAttendanceDisplay")]
         public void ProcessAttendanceDisplay()
         {
             try
@@ -755,7 +755,7 @@ namespace SoftwareSuite.Controllers.Admission
         }
 
 
-        [HttpGet, ActionName("GetAttendeeStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendeeStatus")]
         public string GetAttendeeStatus(string attendeeId)
         {
             try
@@ -776,7 +776,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-        [HttpGet, ActionName("GetAttendanceDataByDate")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendanceDataByDate")]
         public string GetAttendanceDataByDateAsync(string date)
         {
             try
@@ -798,7 +798,7 @@ namespace SoftwareSuite.Controllers.Admission
         }
 
 
-        [HttpGet, ActionName("ActivateAttendeeStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("ActivateAttendeeStatus")]
         public string ActivateAttendeeStatus(string attendeeId)
         {
             try

@@ -8,10 +8,14 @@
         // response=reply.substring(reply.indexOf("?>") + 2).trim();
         // console.log(response);
         //   console.log(XmlString)
-        //var authData = $localStorage.authorizationData;
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-
+        var authData = $localStorage.authorizationData;
         // console.log(authData)
+        //var authData = JSON.parse(sessionStorage.getItem('user'));
+        //$scope.SystemUserTypeId = authData.SystemUserTypeId;
+        //if ($scope.SystemUserTypeId == 2 || $scope.SystemUserTypeId == 3) {
+        //    alert("UnAuthorized Access")
+        //    $state.go('Dashboard')
+        //}
         AppSettings.College_Code = authData.College_Code;
         AppSettings.College_Name = authData.College_Name;
         AppSettings.Schemeid = authData.SchemeId;
@@ -534,13 +538,13 @@
                                 $scope.modalInstance.close();
                                 $scope.$emit('hideLoading', data);
                                 alert(attendee.respdesc + " with AtendeeId: " + attendee.attdid);
-                               
+
                             } else {
                                 $scope.GetStudentDetailsForAdmission()
                                 $scope.modalInstance.close();
                                 $scope.$emit('hideLoading', data);
                                 alert(attendee.respdesc);
-                           
+
                                 $state.go('Dashboard.AdmissionDashboard.Admission.StudentRegList');
                             }
                         },

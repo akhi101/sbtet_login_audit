@@ -15,6 +15,12 @@ using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 //using System.Threading;
 using System.Timers;
+using SoftwareSuite.Models.Security;
+using System.Net.Http;
+using System.Net;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using System.Linq;
 
 
 
@@ -22,11 +28,64 @@ using System.Timers;
 
 namespace SoftwareSuite.Controllers.Assessment
 {
+
     public class AssessmentController : BaseController
     {
+        public class AuthorizationFilter : AuthorizationFilterAttribute
+        {
+            protected AuthToken token = null;
+            public override void OnAuthorization(HttpActionContext actionContext)
+            {
+
+                try
+                {
+                    var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                    var tkn = tokenStr.Value.FirstOrDefault();
+                    var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                    var parsedToken = t[0];
+                    token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                    if (!validatetoken(token.AuthTokenId))
+                    {
+                        actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    }
+                    if (token.ExpiryDate < DateTime.Now)
+                    {
+                        actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                base.OnAuthorization(actionContext);
+            }
+
+            public bool validatetoken(string token)
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+                bool istokenvalid = false;
+
+                string content;
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    content = reader.ReadToEnd(); // Read entire file
+                }
+                if (content.Contains(token))
+                {
+                    istokenvalid = true;
+                }
+
+                return istokenvalid;
+            }
+
+
+
+
+        }
+
         #region Get Methods
 
-        [HttpGet, ActionName("getActiveSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveSemester")]
         public string getActiveSemester()
         {
             try
@@ -45,7 +104,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpGet, ActionName("getAllSemesters")]
+        [AuthorizationFilter][HttpGet, ActionName("getAllSemesters")]
         public string getAllSemesters()
         {
             try
@@ -64,7 +123,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpGet, ActionName("getSubjectsFaculty")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubjectsFaculty")]
         public string getSubjectsFaculty()
         {
             try
@@ -84,7 +143,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        [HttpGet, ActionName("getStudentType")]
+        [AuthorizationFilter][HttpGet, ActionName("getStudentType")]
         public string GetStudentType()
         {
             try
@@ -102,7 +161,7 @@ namespace SoftwareSuite.Controllers.Assessment
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("getExamtypeR")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamtypeR")]
         public string getExamtypeR()
         {
             try
@@ -120,7 +179,7 @@ namespace SoftwareSuite.Controllers.Assessment
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("getPresentStudentType")]
+        [AuthorizationFilter][HttpGet, ActionName("getPresentStudentType")]
         public string GetPresentStudentType()
         {
             try
@@ -139,7 +198,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpGet, ActionName("getSemistersSetData")]
+        [AuthorizationFilter][HttpGet, ActionName("getSemistersSetData")]
         public string getSemistersSetData()
         {
             try
@@ -162,7 +221,7 @@ namespace SoftwareSuite.Controllers.Assessment
             
 
 
-        [HttpGet, ActionName("getSemByScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("getSemByScheme")]
         public string getSemByScheme(int StudentTypeId, int SchemeId)
         {
             try
@@ -183,7 +242,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getSchemeWiseExams")]
+        [AuthorizationFilter][HttpGet, ActionName("getSchemeWiseExams")]
         public string getSchemeWiseExams(int StudentTypeId, int SchemeId, int SemId,int SubjectTypeId,int ExamMonthYearId)
         {
             try
@@ -207,7 +266,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("GetStatisticalReports")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStatisticalReports")]
         public string GetStatisticalReports(int semid)
         {
             try
@@ -230,7 +289,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("getBranchName")]
+        [AuthorizationFilter][HttpGet, ActionName("getBranchName")]
         public string getBranchName(string branchcode)
         {
             try
@@ -250,7 +309,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getExamTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamTypes")]
         public string getExamTypes(int schemeid)
         {
             try
@@ -272,7 +331,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("getSchemes")]
+        [AuthorizationFilter][HttpGet, ActionName("getSchemes")]
         public string getSchemes(int StudentTypeId)
         {
             try
@@ -294,7 +353,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         
 
-        [HttpGet, ActionName("getExamTypesBySem")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamTypesBySem")]
         public string getExamTypesBySem(int StudentTypeId,int Schemeid)
         {
          
@@ -318,7 +377,7 @@ namespace SoftwareSuite.Controllers.Assessment
         
 
 
-        [HttpGet, ActionName("getMarksEntryDates")]
+        [AuthorizationFilter][HttpGet, ActionName("getMarksEntryDates")]
         public string getMarksEntryDates(int AcademicId)
         {
             try
@@ -338,7 +397,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("GetFeeAcademicYearsActive")]
+        [AuthorizationFilter][HttpGet, ActionName("GetFeeAcademicYearsActive")]
         public string GetFeeAcademicYearsActive(string CollegeId)
         {
             try
@@ -356,7 +415,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpGet, ActionName("getAcademicYearsActive")]
+        [AuthorizationFilter][HttpGet, ActionName("getAcademicYearsActive")]
         public string getAcademicYearsActive()
         {
             try
@@ -376,7 +435,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getSchemeStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("getSchemeStatus")]
         public string getSchemeStatus()
         {
             try
@@ -397,7 +456,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        [HttpGet, ActionName("getExamType")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamType")]
         public string getExamType(int schemeid)
         {
             try
@@ -417,7 +476,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getActiveExamTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveExamTypes")]
         public string getActiveExamTypes()
         {
             try
@@ -492,7 +551,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getSemSubjects")]
+        [AuthorizationFilter][HttpGet, ActionName("getSemSubjects")]
         public string getSemSubjects(int semid, string branchCode, int loadedScheme, int subType, int examTypeid, string collegecode,int studenttypeid,int AcademicYearId,int ExamMonthYearId)
         {
             try
@@ -521,7 +580,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        [HttpGet, ActionName("getSubjectsReport")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubjectsReport")]
         public string getSubjectsReport(int CollegeId, int SchemeId, string SemId, int ExamTypeId, int BranchId, int ExamMonthYearId,int DataType)
         {
             try
@@ -548,7 +607,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        //[HttpGet, ActionName("getSemSubjects1")]
+        //[AuthorizationFilter][HttpGet, ActionName("getSemSubjects1")]
         //public string getSemSubjects1(int AcademicyearId,int ExamMonthYearId,string collegecode,int branchId,int schemeid,int semid,int ExamType)
         //{
 
@@ -574,7 +633,7 @@ namespace SoftwareSuite.Controllers.Assessment
         //}
 
 
-        [HttpGet, ActionName("getSchemeWiseExamTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("getSchemeWiseExamTypes")]
         public string getSchemeWiseExamTypes(int AcademicYearId,int StudentTypeId, int SchemeId, int SemId,int ExamMonthYearId)
         {
             try
@@ -627,7 +686,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("SetDatesMarksEntryreqdata")]
+        [AuthorizationFilter][HttpGet, ActionName("SetDatesMarksEntryreqdata")]
         public string SetDatesMarksEntryreqdata(int AcademicYearID, DateTime AcademicYearStartDate, DateTime AcademicYearEndDate, bool CurrentAcademicYear, string UserName)
         {
             try
@@ -653,7 +712,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpPost, ActionName("updateStudentDetails")]
+        [AuthorizationFilter][HttpPost, ActionName("updateStudentDetails")]
         public string updateStudentDetails([FromBody]studentDetails request)
         {
             try
@@ -737,7 +796,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("GetAbsenteesDates")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAbsenteesDates")]
         public string GetAbsenteesDates(int AcademicYearid,int semid)
         {
             try
@@ -764,7 +823,7 @@ namespace SoftwareSuite.Controllers.Assessment
             ((Timer)sender).Dispose();
         }
 
-        [HttpPost, ActionName("GetAbsenteesListExcel")]
+        [AuthorizationFilter][HttpPost, ActionName("GetAbsenteesListExcel")]
         public string GetAbsenteesListExcel([FromBody] AbsenteesData request)
         {
 

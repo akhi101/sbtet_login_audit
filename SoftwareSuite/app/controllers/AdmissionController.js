@@ -31,13 +31,18 @@ define(['app'], function (app) {
         $scope.college = null;
         $scope.AcademicId = 0;
         $scope.Admission = {};
-        //var authData = $localStorage.authorizationData;
-        var authData = JSON.parse(sessionStorage.getItem('user'));
+         authData = $localStorage.authorizationData;
+        //var authData = JSON.parse(sessionStorage.getItem('user'));
+        //$scope.SystemUserTypeId = authData.SystemUserTypeId;
+        //if ($scope.SystemUserTypeId == 2 || $scope.SystemUserTypeId == 3) {
+        //    alert("UnAuthorized Access")
+        //    $state.go('Dashboard')
+        //}
         // console.log(authData);
         var data = {};
         $scope.$emit('showLoading', data);
         $scope.College_Code = authData.College_Code;
-    
+
         AppSettings.College_Name = authData.College_Name;
         $scope.College_Name = authData.College_Name;
         $scope.SystemUserTypeId = authData.SystemUserTypeId;
@@ -46,7 +51,7 @@ define(['app'], function (app) {
         if ($scope.userType != 1) {
             $scope.college = authData.College_Code;
         }
-        
+
         $scope.IsPrinciple = false;
 
 
@@ -61,13 +66,6 @@ define(['app'], function (app) {
             $state.go("Dadshboard.AdmissionDashboard.ReAdmission");
         }
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType == 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
-
 
         $scope.OpenStudentWise = function () {
             $state.go("StudentResult");
@@ -79,7 +77,7 @@ define(['app'], function (app) {
         },
 
             $scope.GetAttendanceReport = function () {
-            if ($scope.userType == '1' || $scope.userType == '5' || $scope.userType == '1002' || $scope.userType == '1007' || $scope.userType == '1009' || $scope.userType == '1000' || $scope.userType == '1013' || $scope.userType == '1011' || $scope.userType == '1012') {
+                if ($scope.userType == '1' || $scope.userType == '5' || $scope.userType == '1002' || $scope.userType == '1007' || $scope.userType == '1009' || $scope.userType == '1000' || $scope.userType == '1013' || $scope.userType == '1011' || $scope.userType == '1012') {
 
                     $state.go("Dadshboard.AdmissionDashboard.AdminAttendanceReport");
                 } else if ($scope.userType != '1') {
@@ -185,11 +183,16 @@ define(['app'], function (app) {
             //}
             $scope.logOut = function () {
                 sessionStorage.loggedIn = "no";
-                var GetUserLogout = SystemUserService.getUserLogout();
-                alert('Logout Successfully');
-                $state.go('index.WebsiteLogin');
+                delete $localStorage.authorizationData;
 
-            }
+                $scope.authentication = {
+                    isAuth: false,
+                    UserId: 0,
+                    userName: ""
+                };
+                $state.go('login')
+            },
+
             //$scope.$on('onBeforeUnload', function (e, confirmation) {
             //    confirmation.message = "If you refresh or close browser, your session will expire and all data will be lost";
             //    e.preventDefault();
@@ -734,10 +737,3 @@ define(['app'], function (app) {
         }
     });
 });
-
-
-
-
-
-
-

@@ -21,10 +21,66 @@ using SoftwareSuite.Models.Academic;
 using SoftwareSuite.Controllers.Common;
 using RestSharp;
 using System.Web.Http.Results;
+using SoftwareSuite.Models.Security;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 //using System.Web.Mvc;
 
 namespace SoftwareSuite.Controllers.Academic
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
+
     public class ElectiveStudentList
     {
         public int studentid { get; set; }
@@ -48,7 +104,7 @@ namespace SoftwareSuite.Controllers.Academic
     {
         private string countryCode;
         #region Get Methods
-        [HttpGet, ActionName("GetElectiveSubjects")]
+        [AuthorizationFilter][HttpGet, ActionName("GetElectiveSubjects")]
         public string GetElectiveSubjects(int semId, int schemeId, int branchId, string collegeCode, int AcademicYearID, int SessionID)
         {
             try
@@ -71,7 +127,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("getAlphaStudentsList")]
+        [AuthorizationFilter][HttpGet, ActionName("getAlphaStudentsList")]
         public string getAlphaStudentsList(int SchemeId, int SemId, string CollegeCode, string BranchCode)
         {
             try
@@ -92,7 +148,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("getSchemes")]
+        [AuthorizationFilter][HttpGet, ActionName("getSchemes")]
         public string getSchemes()
         {
             try
@@ -110,7 +166,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("GetAttendance")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendance")]
         public string GetAttendance(string attandance, int isAdmin)
         {
             try
@@ -179,7 +235,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("getAttendanceReport")]
+        [AuthorizationFilter][HttpGet, ActionName("getAttendanceReport")]
         public string getAttendanceReport(string Pin)
         {
             try
@@ -196,7 +252,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("getAcademicSemByScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("getAcademicSemByScheme")]
         public string getAcademicSemByScheme(int SchemeId)
         {
             try
@@ -218,7 +274,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("GetElectiveSubjectPinList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetElectiveSubjectPinList")]
         public string GetElectiveSubjectPinList(int subId, int semId, string CollegeCode, string branchCode)
         {
             try
@@ -241,7 +297,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("GetCollegeList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegeList")]
         public async Task<string> GetCollegeList()
         {
             var url = ConfigurationManager.AppSettings["AFF_CollegesList"].ToString();
@@ -279,7 +335,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("GetCollegeInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegeInfo")]
         public async Task<string> GetCollegeInfo()
         {
             var url = ConfigurationManager.AppSettings["AFF_College_Branch_Info"].ToString();
@@ -315,7 +371,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetBranchList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetBranchList")]
         public string GetBranchList(string @CollegeCode)
         {
             try
@@ -334,7 +390,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("AFFCollegeTecHStaffInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("AFFCollegeTecHStaffInfo")]
         public async Task<string> AFFCollegeTecHStaffInfo()
         {
             var url = ConfigurationManager.AppSettings["AFF_College_TecH_Staff_Info"].ToString();
@@ -369,7 +425,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("AttendenceDisplay")]
+        [AuthorizationFilter][HttpGet, ActionName("AttendenceDisplay")]
         public string AttendenceDisplay()
         {
             Debug.WriteLine("Job hits to AttendenceDisplay");
@@ -387,7 +443,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("PresemptiveAttendence")]
+        [AuthorizationFilter][HttpGet, ActionName("PresemptiveAttendence")]
         public string PresemptiveAttendence()
         {
             Debug.WriteLine("Job hits to PresemptiveAttendence");
@@ -414,7 +470,7 @@ namespace SoftwareSuite.Controllers.Academic
             public string Reason { get; set; }
         }
 
-        [HttpPost, ActionName("AttendanceUpdate")]
+        [AuthorizationFilter][HttpPost, ActionName("AttendanceUpdate")]
         public String AttendanceUpdate([FromBody] List<Attendance> attendance)
         {
             try
@@ -444,7 +500,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("GetHoursForAttendence")]
+        [AuthorizationFilter][HttpGet, ActionName("GetHoursForAttendence")]
         public int GetHoursForAttendence()
         {
             try
@@ -463,7 +519,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetMinuteForAttendence")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMinuteForAttendence")]
         public int GetMinuteForAttendence()
         {
             try
@@ -485,7 +541,7 @@ namespace SoftwareSuite.Controllers.Academic
 
         #endregion
         #region POST Methods
-        [HttpPost, ActionName("PostElectiveStudentList")]
+        [AuthorizationFilter][HttpPost, ActionName("PostElectiveStudentList")]
         public string PostElectiveStudentList([FromBody] List<ElectiveStudentList> Studentlist)
         {
             try
@@ -513,7 +569,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpPost, ActionName("PostSubjectsAllotedFaculty")]
+        [AuthorizationFilter][HttpPost, ActionName("PostSubjectsAllotedFaculty")]
         public string PostSubjectsAllotedFaculty([FromBody] facultySubjectMappingData facultySubjectMappingData)
         {
             try
@@ -546,7 +602,7 @@ namespace SoftwareSuite.Controllers.Academic
         #endregion
 
 
-        [HttpGet, ActionName("GetHodTransferReports")]
+        [AuthorizationFilter][HttpGet, ActionName("GetHodTransferReports")]
         public string GetHodTransferReports(string CollegeCode, string BranchCode, string Scheme, string semester)
         {
             try
@@ -569,7 +625,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("getActiveSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveSemester")]
         public string getActiveSemester()
         {
             try
@@ -589,7 +645,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("GetStudentsList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStudentsList")]
         public string GetStudentsList(int schemeId, string collegeCode, int branchId, int semId)
         {
 
@@ -611,7 +667,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetSyllabusReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSyllabusReport")]
         public string GetSyllabusReport(int UserTypeId, int ShiftId, string CollegeCode)
         {
             try
@@ -634,7 +690,7 @@ namespace SoftwareSuite.Controllers.Academic
 
 
 
-        [HttpGet, ActionName("GetSchemeSems")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSchemeSems")]
         public string GetSchemeSems(int Scheme)
         {
             try
@@ -653,7 +709,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetFeedbackReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetFeedbackReport")]
         public string GetFeedbackReport(int FeedbackId, string CollegeCode, int branchid, int SchemeId, int SemId)
         {
             try
@@ -674,7 +730,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("GetAdminFeedbackReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAdminFeedbackReport")]
         public string GetAdminFeedbackReport(int FeedbackId, int branchid, int SchemeId, int SemId)
         {
             try
@@ -695,7 +751,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetFacultyMappingList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetFacultyMappingList")]
         public string GetFacultyMappingList(string CollegeCode, int CourseBranchId, int SchemeId, int SemId, int ShiftId)
         {
             try
@@ -717,7 +773,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("SetFacultyMappingList")]
+        [AuthorizationFilter][HttpGet, ActionName("SetFacultyMappingList")]
         public string SetFacultyMappingList(string CollegeCode, int CourseBranchId, int ShiftId, string data)
         {
             try
@@ -747,7 +803,7 @@ namespace SoftwareSuite.Controllers.Academic
 
         
 
-        [HttpPost, ActionName("PostSetDates")]
+        [AuthorizationFilter][HttpPost, ActionName("PostSetDates")]
         public string PostSetDates([FromBody]SetSemesterDatereqdata ReqData)
         {
             try
@@ -773,7 +829,7 @@ namespace SoftwareSuite.Controllers.Academic
 
         }
 
-        [HttpPost, ActionName("SaveAlphaStudentList")]
+        [AuthorizationFilter][HttpPost, ActionName("SaveAlphaStudentList")]
         public string SaveAlphaStudentList([FromBody]SetAlphaData ReqData)
         {
             try
@@ -799,7 +855,7 @@ namespace SoftwareSuite.Controllers.Academic
 
         }
 
-        [HttpGet, ActionName("getHodSubjectList")]
+        [AuthorizationFilter][HttpGet, ActionName("getHodSubjectList")]
         public string getHodSubjectList(string CollegeCode, int CourseBranchId, int SchemeId,int SemId,int ShiftId)
         {
             try
@@ -822,7 +878,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetSetSemesterData")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSetSemesterData")]
         public string GetSetSemesterData()
         {
             try
@@ -840,7 +896,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("GetAdminTransferedReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAdminTransferedReport")]
         public string GetAdminTransferedReport(int AcademicYearId)
         {
             try
@@ -859,7 +915,7 @@ namespace SoftwareSuite.Controllers.Academic
             }
         }
 
-        [HttpGet, ActionName("getAcademicYears")]
+        [AuthorizationFilter][HttpGet, ActionName("getAcademicYears")]
         public string getAcademicYears()
         {
             try
@@ -880,7 +936,7 @@ namespace SoftwareSuite.Controllers.Academic
       
 
 
-        [HttpGet, ActionName("GetAvailableFeedbacks")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAvailableFeedbacks")]
         public string GetAvailableFeedbacks()
         {
             try
@@ -899,7 +955,7 @@ namespace SoftwareSuite.Controllers.Academic
         }
 
 
-        [HttpGet, ActionName("GetPrincipalTransferReport")]
+        [AuthorizationFilter][HttpGet, ActionName("GetPrincipalTransferReport")]
         public string GetPrincipalTransferReport(string CollegeCode)
         {
             try
@@ -950,7 +1006,7 @@ namespace SoftwareSuite.Controllers.Academic
         //{
         //    throw new NotImplementedException();
         //}
-        [HttpGet, ActionName("getScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("getScheme")]
         public string getScheme()
         {
             try
@@ -970,7 +1026,7 @@ namespace SoftwareSuite.Controllers.Academic
 
         }
 
-        [HttpGet, ActionName("addorUpdateFeeSettings")]
+        [AuthorizationFilter][HttpGet, ActionName("addorUpdateFeeSettings")]
         public string addorUpdateFeeSettings(int DataType, int ID, string Name, bool Is_Active, int Price, int ServiceType, string ChallanPrefix, string UserName)
         {
             try

@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Security.Cryptography;
 using System.IO;
 using SoftwareSuite.Models.Database;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace SoftwareSuite.Services
 {
@@ -53,7 +54,7 @@ namespace SoftwareSuite.Services
 
         //}
 
-        public DataSet GetUserLogin(dbHandler dbHandler, string UserName, string Ipaddress)
+        public DataSet GetUserLogin(dbHandler dbHandler, string username, string password, string Ipaddress)
         {
 
             DataSet ds = new DataSet();
@@ -64,7 +65,8 @@ namespace SoftwareSuite.Services
                     using (var cmd = new SqlCommand("USP_GET_UserLoginPermission", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.Add(new SqlParameter("@UserName", UserName));
+                        cmd.Parameters.Add(new SqlParameter("@username", username));
+                        cmd.Parameters.Add(new SqlParameter("@password", password));
                         cmd.Parameters.Add(new SqlParameter("@ipaddress", Ipaddress));
                         conn.Open();
                         var da = new SqlDataAdapter(cmd);

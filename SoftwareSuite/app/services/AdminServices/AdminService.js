@@ -597,6 +597,13 @@
             return DataAccessService.postData('api/AdminService/ValidateForgetPasswordCaptcha', paramObject);
         };
 
+        this.GetUserData = function (UserName) {
+            var paramObject = {
+                UserName: UserName
+            };
+            return DataAccessService.getDataWithPara('api/AdminService/GetUserData', paramObject);
+        };
+
         this.ValidateUserLoginCaptcha = function (requestData) {
             return DataAccessService.postData('api/AdminService/ValidateUserLoginCaptcha', requestData);
         };

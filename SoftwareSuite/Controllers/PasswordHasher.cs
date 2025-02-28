@@ -55,4 +55,22 @@ public class PasswordHasher
         return true;
     }
 
+
+
+    public static string ComputeHash(string password, string salt)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] combinedBytes = Encoding.UTF8.GetBytes(password + salt);
+            byte[] hashBytes = sha256.ComputeHash(combinedBytes);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        }
+    }
+
+    public static bool NewValidatePassword(string inputPassword, string storedSalt, string storedHash)
+    {
+        string computedHash = ComputeHash(inputPassword, storedSalt);
+        return computedHash == storedHash;
+    }
+
 }

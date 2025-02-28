@@ -1,11 +1,17 @@
 ﻿define(['app'], function (app) {
     app.controller("AdmissionReportPinListController", function ($scope, $state, $stateParams, $localStorage, AppSettings, PreExaminationService,StudentRegService, Excel,StudentRegService, RegisterAdmittedStudentService, $uibModal, $timeout) {
-        var authData = $localStorage.authorizationData;
-        $scope.UserTypeId = authData.SystemUserTypeId;
+        //var authData = $localStorage.authorizationData;
+        //$scope.UserTypeId = authData.SystemUserTypeId;
             //$scope.DataFormatTypeId =$localStorage.AdmSublistData.DataFormatTypeId;
-            //$scope.semid =$localStorage.AdmSublistData.semid;   
+            //$scope.semid =$localStorage.AdmSublistData.semid;
             //$scope.branchid =$localStorage.AdmSublistData.branchid;
-            //console.log(authData)
+        //console.log(authData)
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.UserTypeId = authData.SystemUserTypeId;
+        if ($scope.UserTypeId == 2 || $scope.UserTypeId == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         if (authData == undefined) {
             $state.go('login');
         } else {
@@ -132,7 +138,7 @@
 
         var data = {};
         $scope.$emit('showLoading', data);
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
         AppSettings.College_Code = authData.College_Code;
         AppSettings.College_Name = authData.College_Name;
         AppSettings.Schemeid = authData.SchemeId;

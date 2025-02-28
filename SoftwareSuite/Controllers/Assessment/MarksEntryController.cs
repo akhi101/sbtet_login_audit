@@ -21,7 +21,7 @@ namespace SoftwareSuite.Controllers.Assessment
     {
         #region Get Methods
         
-        [HttpGet, ActionName("GetDetailedReportExcel")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDetailedReportExcel")]
         public string GetDetailedReportExcel(int examtypeid, int studentType, int AcademicYearId, string Semester, int ExamMonthYear)
         {
             try
@@ -53,7 +53,7 @@ namespace SoftwareSuite.Controllers.Assessment
                 return "Error Occured. Please Try Again";
             }
         }
-        [HttpGet, ActionName("getSubjectPinList")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubjectPinList")]
         public string getSubjectPinList(int AcadamicYearid, int SchemeId, string collegecode, int semid, int branchId, int subId, int examtype,int studenttypeId,int ExamMonthYearId)
         {
             try
@@ -83,7 +83,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("getBacklogSubjectPinList")]
+        [AuthorizationFilter][HttpGet, ActionName("getBacklogSubjectPinList")]
         public string getBacklogSubjectPinList(int AcadamicYearid, int SchemeId)
         {
             try
@@ -103,7 +103,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
 
         }
-        [HttpGet, ActionName("RubricsgetSubjectPinList")]
+        [AuthorizationFilter][HttpGet, ActionName("RubricsgetSubjectPinList")]
         public string RubricsgetSubjectPinList(int SubjectTypeId, string collegecode,  int SemId, int BranchId, int SchemeId, int AcademicYearId)
         {
             try
@@ -130,7 +130,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getReportSubjectPinList")]
+        [AuthorizationFilter][HttpGet, ActionName("getReportSubjectPinList")]
         public string getReportSubjectPinList(int Academicid, int SchemeId, string collegecode, int semid, int branchId, int subId, int examtype,int studenttypeId,int ExamMonthYearId)
         {
             try
@@ -158,7 +158,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getSubmitStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubmitStatus")]
         public string getSubmitStatus(string collegeCode, string branchCode, int AcademicId, int semId, int examtypeId,int ExamMonthYearId)
         {
             try
@@ -185,7 +185,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("getDatesFineAmount")]
+        [AuthorizationFilter][HttpGet, ActionName("getDatesFineAmount")]
         public string getDatesFineAmount(int examid, int semid, int Academicid, int ExamMonthYearId)
         {
             try
@@ -208,7 +208,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("editMarksEntry")]
+        [AuthorizationFilter][HttpGet, ActionName("editMarksEntry")]
         public string editMarksEntry(string collegecode, string branchcode, int semid, int examtypeid, int subid, string pin,int ExamMonthYearId)
         {
             try
@@ -246,7 +246,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("GetDetailedAssessmentReportExcel")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDetailedAssessmentReportExcel")]
         public string GetDetailedAssessmentReportExcel(int examtypeid, int studentType,int AcademicYearId,string Semester,int ExamMonthYear)
         {
             try
@@ -279,7 +279,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        //[HttpPost, ActionName("GetDetailedReportExcel")]
+        //[AuthorizationFilter][HttpPost, ActionName("GetDetailedReportExcel")]
         //public string GetDetailedReportExcel(int examtypeid, int studentType,int AcademicYearId,string Semester,int ExamMonthYear)
         //{
         //    try
@@ -312,7 +312,7 @@ namespace SoftwareSuite.Controllers.Assessment
         //    }
         //}
 
-        [HttpPost, ActionName("PostSemExamMarks")]
+        [AuthorizationFilter][HttpPost, ActionName("PostSemExamMarks")]
         public string PostSemExamMarks([FromBody]PostExamMarks ExamMarks)
         {
             try
@@ -346,7 +346,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpPost, ActionName("PostBacklogSemExamMarks")]
+        [AuthorizationFilter][HttpPost, ActionName("PostBacklogSemExamMarks")]
         public string PostBacklogSemExamMarks([FromBody]PostBacklogExamMarks BacklogExamMarks)
         {
             try
@@ -377,7 +377,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        [HttpPost, ActionName("SubmitAllMarksEntered")]
+        [AuthorizationFilter][HttpPost, ActionName("SubmitAllMarksEntered")]
         public string SubmitAllMarksEntered([FromBody]submitMarks request)
         {
             try
@@ -400,7 +400,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpPost, ActionName("SubmitMarksEntered")]
+        [AuthorizationFilter][HttpPost, ActionName("SubmitMarksEntered")]
         public string SubmitMarksEntered([FromBody]submitMarks request)
         {
             try
@@ -428,7 +428,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
 
         }
-        [HttpPost, ActionName("StudentReadmissiondata")]
+        [AuthorizationFilter][HttpPost, ActionName("StudentReadmissiondata")]
         public string StudentReadmissiondata(string pinNumber)
         {
             try

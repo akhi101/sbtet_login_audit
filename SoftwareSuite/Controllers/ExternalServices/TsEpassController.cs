@@ -116,7 +116,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
 
     public class TsEpassController : ApiController
     {
-        [HttpGet, ActionName("GetStudentEpassData")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStudentEpassData")]
         public HttpResponseMessage GetStudentEpassData(HttpRequestMessage request)
         {
 
@@ -157,7 +157,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("GetCollegeDetails")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegeDetails")]
         public HttpResponseMessage GetCollegeDetails(HttpRequestMessage request)
         {
 

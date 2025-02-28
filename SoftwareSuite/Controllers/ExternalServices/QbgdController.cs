@@ -16,7 +16,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
 {
     public class QbgdController : ApiController
     {
-        [HttpGet, ActionName("GetTimetale")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTimetale")]
         public HttpResponseMessage GetTimetale(HttpRequestMessage request)
         {
 
@@ -61,7 +61,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("getSubjectList")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubjectList")]
         public HttpResponseMessage getSubjectList(HttpRequestMessage request)
         {
 
@@ -103,7 +103,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("getBranchInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("getBranchInfo")]
         public HttpResponseMessage getBranchInfo(HttpRequestMessage request)
         {
 

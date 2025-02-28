@@ -62,7 +62,7 @@ namespace SoftwareSuite.Controllers.StudentServices
 
     public class StudentCertificateController : ApiController
     {
-        [HttpPost, ActionName("StoreSignedCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("StoreSignedCertificate")]
         public string StoreSignedCertificate()
         {
             try {
@@ -135,7 +135,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             public string RegistrationNo { get; internal set; }
         }
 
-        [HttpPost, ActionName("GetInterimCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetInterimCertificate")]
         public async Task<object> GetInterimCertificate([FromBody] JsonObject request)
         {
            try
@@ -163,7 +163,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        [HttpPost, ActionName("GetPaySlip")]
+        [AuthorizationFilter][HttpPost, ActionName("GetPaySlip")]
         public async Task<object> GetPaySlip([FromBody] JsonObject request)
         {
             try
@@ -192,7 +192,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        [HttpGet, ActionName("GetTypeWritingCertificate")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTypeWritingCertificate")]
         public async Task<object> GetTypeWritingCertificate(string RegNo)
         {
             try
@@ -217,7 +217,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
 
-        [HttpPost, ActionName("GetGenuinenessCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetGenuinenessCertificate")]
         public async Task<object> GetGenuinenessCertificate([FromBody] JsonObject request)
         {
             try
@@ -245,7 +245,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        [HttpPost, ActionName("GetDuplicateDiplomaCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetDuplicateDiplomaCertificate")]
         public async Task<object> GetDuplicateDiplomaCertificate([FromBody] JsonObject request)
         {
             try
@@ -274,7 +274,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
 
-        [HttpPost, ActionName("GetTwshCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetTwshCertificate")]
         public async Task<object> GetTwshCertificate([FromBody] JsonObject request)
         {
             try
@@ -303,7 +303,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
         
 
-        [HttpPost, ActionName("GetMigrationCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetMigrationCertificate")]
         public async Task<object> GetMigrationCertificate([FromBody] JsonObject request)
         {
             try
@@ -332,7 +332,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
 
-        [HttpPost, ActionName("GetTransferCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetTransferCertificate")]
         public async Task<object> GetTransferCertificate([FromBody] JsonObject request)
         {
             try
@@ -361,7 +361,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
 
-        [HttpPost, ActionName("GetBonafideCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetBonafideCertificate")]
         public async Task<object> GetBonafideCertificate([FromBody] JsonObject request)
         {
             try
@@ -390,7 +390,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        [HttpPost, ActionName("GetStudyCertificate")]
+        [AuthorizationFilter][HttpPost, ActionName("GetStudyCertificate")]
         public async Task<object> GetStudyCertificate([FromBody] JsonObject request)
         {
             try
@@ -419,7 +419,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        //[HttpGet, ActionName("GetTransferCertificate")]
+        //[AuthorizationFilter][HttpGet, ActionName("GetTransferCertificate")]
         //public string GetTransferCertificate(String pin)
         //{
         //    try
@@ -438,7 +438,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         //    }
         //}
 
-        [HttpPost, ActionName("GetTrSheetsData")]
+        [AuthorizationFilter][HttpPost, ActionName("GetTrSheetsData")]
         public string GetTrSheetsData([FromBody] JsonObject request)
         {
             try
@@ -463,7 +463,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
         [AuthorizationFilter()]
-        [HttpGet, ActionName("CheckFee")]
+        [AuthorizationFilter][HttpGet, ActionName("CheckFee")]
         public string CheckFee(int DataType)
         {
             try
@@ -509,7 +509,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
         [AuthorizationFilter()]
-        [HttpGet, ActionName("PinCheck")]
+        [AuthorizationFilter][HttpGet, ActionName("PinCheck")]
         public string PinCheck(string DataType)
 
         {
@@ -570,10 +570,10 @@ namespace SoftwareSuite.Controllers.StudentServices
                 {
                     return ExamMonthYearId1;
                 }
-                if (CollegeCodesList1 != "YES")
-                {
-                    return CollegeCodesList1;
-                }
+                //if (CollegeCodesList1 != "YES")
+                //{
+                //    return CollegeCodesList1;
+                //}
                 
 
 
@@ -594,7 +594,7 @@ namespace SoftwareSuite.Controllers.StudentServices
             }
         }
 
-        [HttpGet, ActionName("GetC18ODCTrsheets")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC18ODCTrsheets")]
         public async Task<string> GetC18ODCTrsheetsAsync(int ExamMonthYearId,string CollegeCodesList)
         {
             try
@@ -616,7 +616,7 @@ namespace SoftwareSuite.Controllers.StudentServices
         }
 
 
-        [HttpGet, ActionName("GetMigrationCertificate")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMigrationCertificate")]
         public string GetMigrationCertificate()
         {
 
@@ -809,7 +809,7 @@ bearing Permanent Identification Number(PIN) <b class='border_btm' ng-if='!pin'>
         }
 
 
-        [HttpGet, ActionName("GetTrCertificate")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTrCertificate")]
         public string GetTrCertificate()
         {
 

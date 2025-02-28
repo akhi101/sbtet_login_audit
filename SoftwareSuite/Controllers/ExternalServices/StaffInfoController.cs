@@ -49,7 +49,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
     public class StaffInfoController : ApiController
     {
 
-        [HttpGet, ActionName("GetTeachingStaff")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTeachingStaff")]
         public HttpResponseMessage GetTeachingStaff(HttpRequestMessage request)
         {
 
@@ -93,7 +93,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("GetFacultyInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("GetFacultyInfo")]
         public HttpResponseMessage GetFacultyInfo(HttpRequestMessage request)
         {
 

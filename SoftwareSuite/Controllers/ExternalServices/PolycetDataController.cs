@@ -19,7 +19,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         //USP_SS_GET_InteriamCertificateDetails
 
         #region Post Methods
-        [HttpPost, ActionName("PostStudentData")]
+        [AuthorizationFilter][HttpPost, ActionName("PostStudentData")]
         public HttpResponseMessage PostStudentData(HttpRequestMessage request)
         {
             try {
