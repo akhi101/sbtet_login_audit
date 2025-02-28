@@ -9,13 +9,72 @@ using System.Diagnostics;
 using SoftwareSuite.BLL;
 using SoftwareSuite.Models.Database;
 using RestSharp;
+using SoftwareSuite.Models.Security;
+using System.IO;
+using System.Net;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
+using System.Linq;
 namespace SoftwareSuite.Controllers.Assessment
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class AssessmentReportsController : BaseController
     {
+
         #region Get Methods
-        //[HttpGet, ActionName("getReports")]
+        //[AuthorizationFilter][HttpGet, ActionName("getReports")]
         //public HttpResponseMessage getReports()
         //{
         //    try
@@ -32,7 +91,7 @@ namespace SoftwareSuite.Controllers.Assessment
         //        throw ex;
         //    }
         //}
-        [HttpGet, ActionName("getAdminReport")]
+        [AuthorizationFilter][HttpGet, ActionName("getAdminReport")]
         public string getAdminReport(int examtypeid,int studentType, int AcademicYearId,string Semester,string ExamMonthYear)
         {
             try
@@ -70,7 +129,7 @@ namespace SoftwareSuite.Controllers.Assessment
         }
 
 
-        [HttpGet, ActionName("getAdminReportsCollege")]
+        [AuthorizationFilter][HttpGet, ActionName("getAdminReportsCollege")]
         public string getAdminReportsCollege(int examtypeid, string collegecode,int studentType,int AcademicYearId,string Semester,string ExamMonthYear)
         {
             try
@@ -111,7 +170,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getAdminBranchReports")]
+        [AuthorizationFilter][HttpGet, ActionName("getAdminBranchReports")]
         public string getAdminBranchReports(int examtypeid, string collegecode, int branchid, int subid, int semid,int studentType,int AcademicYearId,string ExamMonthYear)
         {
             try
@@ -158,7 +217,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpGet, ActionName("getBranchReports")]
+        [AuthorizationFilter][HttpGet, ActionName("getBranchReports")]
         public string getBranchReports(string collegecode, int examtypeid, int studentType, int semid, int branchId, int subjectid)
         {
             try
@@ -205,7 +264,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpGet, ActionName("getStudentReport")]
+        [AuthorizationFilter][HttpGet, ActionName("getStudentReport")]
         public string getStudentReport(string pin)
         {
             try
@@ -236,7 +295,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
         }
 
-        [HttpPost, ActionName("UpdateStudentMarks")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateStudentMarks")]
         public string UpdateStudentMarks([FromBody]List<TotalmarksList> MarksList)
         {
             try
@@ -266,7 +325,7 @@ namespace SoftwareSuite.Controllers.Assessment
 
 
 
-        [HttpPost, ActionName("SETRubricsMarks")]
+        [AuthorizationFilter][HttpPost, ActionName("SETRubricsMarks")]
         public string SETRubricsMarks(int SubjectTypeId, string stringRubricsData)
         {
             try
@@ -286,7 +345,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        [HttpPost, ActionName("UpdateStudentBacklogMarks")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateStudentBacklogMarks")]
         public string UpdateStudentBacklogMarks([FromBody]List<TotalmarksList> MarksList)
         {
             try

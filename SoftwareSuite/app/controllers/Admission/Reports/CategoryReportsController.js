@@ -1,14 +1,12 @@
 ﻿define(['app'], function (app) {
-    app.controller("CategoryReportsController", function ($scope, $http, $localStorage, $state, AppSettings, AdmissionService, AcademicService , Excel, $timeout) {
+    app.controller("CategoryReportsController", function ($scope, $http, $localStorage, $state, AppSettings, AdmissionService, AcademicService, Excel, $timeout) {
         $scope.loading = false;
 
         const $ctrl = this;
         $ctrl.$onInit = () => {
             $scope.academicYear = 14;
-            //var authData = $localStorage.authorizationData;
-            var authData = JSON.parse(sessionStorage.getItem('user'));
-
-            $scope.UserName = authData.UserName;
+            var authData = $localStorage.authorizationData;
+            $scope.UserName = authData.userName;
             $scope.getadmincategory()
         }
 
@@ -27,12 +25,10 @@
 
 
 
-        //var authdata = $localStorage.authorizationData;
-        var authdata = JSON.parse(sessionStorage.getItem('user'));
-
+        var authdata = $localStorage.authorizationData;
         $scope.userType = authdata.SystemUserTypeId
-        $scope.UserName = authdata.UserName;
-       
+        $scope.UserName = authdata.userName;
+
         if ($scope.userType == 1) {
             $scope.ClgCode = localStorage.getItem('collegeCode')
 
@@ -40,14 +36,14 @@
             $scope.ClgCode = $scope.UserName
             var userId = authdata.SysUserID;
         } else if ($scope.userType == 3) {
-            $scope.ClgCode = authdata.UserName
+            $scope.ClgCode = authdata.userName
             var userId = authdata.SysUserID;
         } else {
             $scope.ClgCode = localStorage.getItem('collegeCode')
             // var ClgCode = '99999';
 
         }
-        
+
         //var data = {};
         //$scope.$emit('showLoading', data);
 
@@ -62,14 +58,14 @@
         //        $scope.Noresult = false;
         //        $scope.result = true;
 
-        $scope.openOnroll = function (data,M) {
+        $scope.openOnroll = function (data, M) {
             $localStorage.categoryData = {
                 CollegeCode: data.CollegeCode,
                 SemId: data.SemID,
                 BranchId: data.branchid,
                 SchemeId: data.SchemeId,
                 DataFormatTypeId: 1,
-               
+
                 Gender: M
 
 
@@ -78,24 +74,6 @@
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
-        if ($scope.userType == 1) {
-            alert("UnAuthorized Access")
-            $state.go('Dashboard')
-        }
-
-
-        $scope.logOut = function () {
-            sessionStorage.loggedIn = "no";
-            var GetUserLogout = SystemUserService.getUserLogout();
-            alert('Logout Successfully');
-            $state.go('index.WebsiteLogin');
-
-        }
-
-
         $scope.getadmincategory = function () {
 
             var data = {};
@@ -238,9 +216,9 @@
                 });
         }
 
-      
+
         $scope.openOcM = function (data, M) {
-         
+
             $localStorage.categoryData = {
                 CollegeCode: data.CollegeCode,
                 SemId: data.SemID,
@@ -264,20 +242,20 @@
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-        $scope.openScM = function (data,M) {
-                $localStorage.categoryData = {
-                    CollegeCode: data.CollegeCode,
-                    SemId: data.SemID,
-                    BranchId: data.branchid,
-                    SchemeId: data.SchemeId,
-                    DataFormatTypeId: 3,
-                    Gender: M
-                }
-                $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openScM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 3,
+                Gender: M
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
 
-        $scope.openScF= function (data,F) {
+        $scope.openScF = function (data, F) {
             $localStorage.categoryData = {
                 CollegeCode: data.CollegeCode,
                 SemId: data.SemID,
@@ -289,19 +267,19 @@
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-        $scope.openStM = function (data,M) {
-                    $localStorage.categoryData = {
-                        CollegeCode: data.CollegeCode,
-                        SemId: data.SemID,
-                        BranchId: data.branchid,
-                        SchemeId: data.SchemeId,
-                        DataFormatTypeId: 4,
-                        Gender: M
-                    }
-                    $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openStM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 4,
+                Gender: M
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-        $scope.openStF = function (data,F) {
+        $scope.openStF = function (data, F) {
             $localStorage.categoryData = {
                 CollegeCode: data.CollegeCode,
                 SemId: data.SemID,
@@ -313,161 +291,161 @@
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-        $scope.openBCAM = function (data,M) {
-                        $localStorage.categoryData = {
-                            CollegeCode: data.CollegeCode,
-                            SemId: data.SemID,
-                            BranchId: data.branchid,
-                            SchemeId: data.SchemeId,
-                            DataFormatTypeId: 5,
-                            Gender:M
-                        }
-                        $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
-
-        }
-        $scope.openBCAF = function (data,F) {
+        $scope.openBCAM = function (data, M) {
             $localStorage.categoryData = {
                 CollegeCode: data.CollegeCode,
                 SemId: data.SemID,
                 BranchId: data.branchid,
                 SchemeId: data.SchemeId,
                 DataFormatTypeId: 5,
-                Gender:F
+                Gender: M
             }
             $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
         }
-       
-                        $scope.openBCBM = function (data,M) {
-                                $localStorage.categoryData = {
-                                    CollegeCode: data.CollegeCode,
-                                    SemId: data.SemID,
-                                    BranchId: data.branchid,
-                                    SchemeId: data.SchemeId,
-                                    DataFormatTypeId: 6,
-                                    Gender:M
-                                }
-                                $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openBCAF = function (data, F) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 5,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
-                        $scope.openBCBF = function (data,F) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 6,
-                                Gender:F
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        }
 
-                        }
-                        $scope.openBCCM = function (data,M) {
-                                    $localStorage.categoryData = {
-                                        CollegeCode: data.CollegeCode,
-                                        SemId: data.SemID,
-                                        BranchId: data.branchid,
-                                        SchemeId: data.SchemeId,
-                                        DataFormatTypeId: 7,
-                                        Gender:M
+        $scope.openBCBM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 6,
+                Gender: M
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                                    }
-                                    $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        }
+        $scope.openBCBF = function (data, F) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 6,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
-                        $scope.openBCCF = function (data) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 7,
-                                Gender:F
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        }
+        $scope.openBCCM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 7,
+                Gender: M
 
-                        }
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        $scope.openBCDM = function (data,M) {
-                                        $localStorage.categoryData = {
-                                            CollegeCode: data.CollegeCode,
-                                            SemId: data.SemID,
-                                            BranchId: data.branchid,
-                                            SchemeId: data.SchemeId,
-                                            DataFormatTypeId: 8,
-                                            Gender:M
+        }
+        $scope.openBCCF = function (data) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 7,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                                        }
-                                        $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        }
 
-                        }
+        $scope.openBCDM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 8,
+                Gender: M
 
-                        $scope.openBCDF = function (data,F) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 8,
-                                Gender:F
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
+        }
 
-                        $scope.openBCEM = function (data,M) {
-                                            $localStorage.categoryData = {
-                                                CollegeCode: data.CollegeCode,
-                                                SemId: data.SemID,
-                                                BranchId: data.branchid,
-                                                SchemeId: data.SchemeId,
-                                                DataFormatTypeId: 9,
-                                                Gender:M
-                                            }
-                                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openBCDF = function (data, F) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 8,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
+        }
 
-                        $scope.openBCEF= function (data,F) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 9,
-                                Gender:F
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openBCEM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 9,
+                Gender: M
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
-                        $scope.openNaM = function (data,M) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 10,
-                                Gender:M
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        }
 
-                        }
-                        $scope.openNaF = function (data,F) {
-                            $localStorage.categoryData = {
-                                CollegeCode: data.CollegeCode,
-                                SemId: data.SemID,
-                                BranchId: data.branchid,
-                                SchemeId: data.SchemeId,
-                                DataFormatTypeId: 10,
-                                Gender:F
-                            }
-                            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+        $scope.openBCEF = function (data, F) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 9,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
 
-                        }
-         
+        }
+        $scope.openNaM = function (data, M) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 10,
+                Gender: M
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+
+        }
+        $scope.openNaF = function (data, F) {
+            $localStorage.categoryData = {
+                CollegeCode: data.CollegeCode,
+                SemId: data.SemID,
+                BranchId: data.branchid,
+                SchemeId: data.SchemeId,
+                DataFormatTypeId: 10,
+                Gender: F
+            }
+            $state.go('Dashboard.AdmissionDashboard.CategoryDetails')
+
+        }
+
 
         $scope.DownloadtoExcel = function (tableid) {
-         
+
             var exportHref = Excel.tableToExcel(tableid, 'stdentDetails');
             $timeout(function () {
                 var a = document.createElement('a');

@@ -25,7 +25,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
     }
         public class BranchInfoController : ApiController
     {
-        [HttpGet, ActionName("GetBranchesBycollege")]
+        [AuthorizationFilter][HttpGet, ActionName("GetBranchesBycollege")]
         public HttpResponseMessage 
             GetBranchesBycollege(HttpRequestMessage request)
         {

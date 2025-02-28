@@ -162,7 +162,7 @@ namespace SoftwareSuite.Controllers.Admission
 
         #region GetMethod
 
-        [HttpGet, ActionName("GetDistricts")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDistricts")]
         public HttpResponseMessage getDistricts()
         {
             try
@@ -180,7 +180,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-        [HttpGet, ActionName("GetMandalsForDistrict")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMandalsForDistrict")]
         public HttpResponseMessage GetMandalsForDistrict(int DistrictID)
         {
             try
@@ -916,7 +916,7 @@ namespace SoftwareSuite.Controllers.Admission
 
 
 
-        [HttpPost, ActionName("AddorUpdateFeeSettings")]
+        [AuthorizationFilter][HttpPost, ActionName("AddorUpdateFeeSettings")]
         public string AddorUpdateFeeSettings(int DataType, int ID, string Name, bool Is_Active, int Price, int ServiceType, string ChallanPrefix, string UserName)
         {
             try

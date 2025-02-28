@@ -1,8 +1,8 @@
 ﻿define(['app'], function (app) {
     app.controller("AttendanceReportController", function ($scope, $state, $stateParams, $localStorage, AppSettings,AdmissionService, AttendanceService, Excel, $timeout) {
-        //var authData = $localStorage.authorizationData;
+        var authData = $localStorage.authorizationData;
 
-        var authData = JSON.parse(sessionStorage.getItem('user'));
+        //var authData = JSON.parse(sessionStorage.getItem('user'));
 
         $scope.userType = authData.SystemUserTypeId;
        // console.log(authData);

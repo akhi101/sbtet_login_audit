@@ -55,7 +55,7 @@ namespace SoftwareSuite.Controllers
         }
 
 
-        [HttpPost, ActionName("SendRelayMail")]
+        [AuthorizationFilter][HttpPost, ActionName("SendRelayMail")]
         public async Task<object> SendRelayMail([FromBody] List<MailReq> data)
         {
 
@@ -68,7 +68,7 @@ namespace SoftwareSuite.Controllers
             return resList;
         }
 
-        [HttpPost, ActionName("SendEmails")]
+        [AuthorizationFilter][HttpPost, ActionName("SendEmails")]
         public async Task<string> SendEmails([FromBody] MailReq request)
         {
             try
@@ -142,7 +142,7 @@ namespace SoftwareSuite.Controllers
             }
         }
 
-        [HttpPost, ActionName("SendMails")]
+        [AuthorizationFilter][HttpPost, ActionName("SendMails")]
         public async Task<string> SendMails([FromBody] MailReq request)
         {
             try { 
@@ -196,7 +196,7 @@ namespace SoftwareSuite.Controllers
 
 
         }
-        [HttpPost, ActionName("SendGenuinenessOTP")]
+        [AuthorizationFilter][HttpPost, ActionName("SendGenuinenessOTP")]
         public async Task<string> SendGenuinenessOTP([FromBody] OtpReq request)
         {
             try
@@ -241,7 +241,7 @@ namespace SoftwareSuite.Controllers
         }
     }
 
-    //[HttpGet, ActionName("Set_GenuinenessEmailLog")]
+    //[AuthorizationFilter][HttpGet, ActionName("Set_GenuinenessEmailLog")]
     //public HttpResponseMessage Set_GenuinenessEmailLog(string Pin, string Email, string OTP)
     //{
     //    try

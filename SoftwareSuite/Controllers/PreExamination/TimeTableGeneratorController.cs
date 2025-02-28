@@ -440,7 +440,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [HttpGet, ActionName("getBranchTimeTable")]
+        [AuthorizationFilter][HttpGet, ActionName("getBranchTimeTable")]
         public string getBranchTimeTable([FromBody] JsonObject request)
         {
             try
@@ -463,7 +463,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [HttpGet, ActionName("UpdateBranchTimeTable")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateBranchTimeTable")]
         public string UpdateBranchTimeTable([FromBody] JsonObject request)
         {
             try

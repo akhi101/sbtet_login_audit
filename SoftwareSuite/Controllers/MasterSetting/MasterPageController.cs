@@ -1,19 +1,75 @@
 ﻿using Newtonsoft.Json;
 using SoftwareSuite.Models.Database;
+using SoftwareSuite.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
 namespace SoftwareSuite.Controllers.MasterSetting
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class MasterPageController : BaseController
     {
-        [HttpGet, ActionName("setBranch")]
+        [AuthorizationFilter][HttpGet, ActionName("setBranch")]
         public string setBranch(string BranchName, string BranchCode)
         {
             try
@@ -33,7 +89,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("GetBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("GetBranches")]
         public string GetBranches()
         {
             try
@@ -52,7 +108,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("SetSchemeStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("SetSchemeStatus")]
         public string SetSchemeStatus(int Id, int IsActive)
         {
 
@@ -71,7 +127,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("UpdateScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateScheme")]
         public string UpdateScheme(int Id, string Scheme)
         {
             try
@@ -89,7 +145,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("EditScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("EditScheme")]
         public string EditScheme(int Id)
         {
             try
@@ -106,7 +162,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("DeleteScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("DeleteScheme")]
         public string DeleteScheme(int Id)
         {
             try
@@ -123,7 +179,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("GetMobileAppUpdates")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMobileAppUpdates")]
         public string GetMobileAppUpdates()
         {
             try
@@ -143,7 +199,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("GetSubjectTypes")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSubjectTypes")]
         public string GetSubjectTypes()
         {
             try
@@ -161,7 +217,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 throw ex;
             }
         }
-        [HttpGet, ActionName("GetMasterSubjects")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMasterSubjects")]
         public string GetMasterSubjects(int SchemeId,int BranchId,int SemId)
         {
              
@@ -182,7 +238,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("SetMobileApp")]
+        [AuthorizationFilter][HttpGet, ActionName("SetMobileApp")]
         public string SetMobileApp(int IsUpdateReleased,string UpdateDescription,string UpdateVersion,int IsInMaintainance,string ManitainanceDescription,int DataType)
         {
             try
@@ -205,7 +261,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("UpdateMobileApp")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateMobileApp")]
         public string UpdateMobileApp(int IsUpdateReleased, string UpdateDescription, string UpdateVersion, int IsInMaintainance, string ManitainanceDescription, int DataType,int Id)
         {
             try
@@ -230,7 +286,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("ChangeSchemeBranchStatus")]
+        [AuthorizationFilter][HttpGet, ActionName("ChangeSchemeBranchStatus")]
         public string ChangeSchemeBranchStatus(int Id, int IsActive)
         {
 
@@ -252,7 +308,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("GetSchemeBranchs")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSchemeBranchs")]
         public string GetSchemeBranchs()
         {
             try
@@ -272,7 +328,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("EditBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("EditBranches")]
         public string EditBranches(int id)
         {
 
@@ -292,7 +348,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-              [HttpGet, ActionName("UpdatePresumptiveAttendance")]
+              [AuthorizationFilter][HttpGet, ActionName("UpdatePresumptiveAttendance")]
         public string UpdatePresumptiveAttendance(string PIN,int NumberOfDays,string username,int ExamMonthYearId)
         {
             try
@@ -315,7 +371,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("getAttendanceByPin")]
+        [AuthorizationFilter][HttpGet, ActionName("getAttendanceByPin")]
         public string getAttendanceByPin(string Pin,int ExamMonthYearId)
         {
             try
@@ -333,7 +389,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("EditSubject")]
+        [AuthorizationFilter][HttpGet, ActionName("EditSubject")]
         public string EditSubject(string Subject_Code,int subid)
         {      
             try
@@ -352,7 +408,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
         
-             [HttpGet, ActionName("ActiveBranchStatus")]
+             [AuthorizationFilter][HttpGet, ActionName("ActiveBranchStatus")]
         public string ActiveBranchStatus(int id,int ActiveFlag)
         {
 
@@ -371,7 +427,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("deleteBranch")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteBranch")]
         public string deleteBranch(int id)
         {
 
@@ -390,7 +446,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("UpdateBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateBranches")]
         public string UpdateBranches(int id, string BranchName, string BranchCode)
         {
 
@@ -411,7 +467,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("AddSchemeBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("AddSchemeBranches")]
         public string AddSchemeBranches(int DataTypeId, int schemeid, string SchemeCode,int BranchId,string BranchCode)
         {
 
@@ -434,7 +490,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("SetSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("SetSemester")]
         public string SetSemester(string Semester)
         {
             try
@@ -454,7 +510,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("GetSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("GetSemester")]
         public string GetSemester()
         {
             try
@@ -473,7 +529,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("GetExamMonthYear")]
+        [AuthorizationFilter][HttpGet, ActionName("GetExamMonthYear")]
         public string GetExamMonthYear()
         {
             try
@@ -492,7 +548,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
         // SBT_ADM_GET_SEMESTER
 
-        [HttpGet, ActionName("GetScheme")]
+        [AuthorizationFilter][HttpGet, ActionName("GetScheme")]
         public string GetScheme()
         {
             try
@@ -511,7 +567,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("EditSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("EditSemester")]
         public string EditSemester(int id)
         {
 
@@ -533,7 +589,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         
 
        
-        [HttpGet, ActionName("deleteSemester")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteSemester")]
         public string deleteSemester(int Id)
         {
 
@@ -551,7 +607,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("UpdateC09MarksData")]
+        [AuthorizationFilter][HttpGet, ActionName("UpdateC09MarksData")]
         public string UpdateC09MarksData(int DataTypeId, string Scheme,int SemId,int ExamMonthYearId,string pin,string SubjectCode,int Internal,int EndExam,int SubjectTotal,string Remarks)
         {
 
@@ -583,7 +639,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         
         //bank.Cs
 
-        [HttpGet, ActionName("setBanksNames")]
+        [AuthorizationFilter][HttpGet, ActionName("setBanksNames")]
         public string setBanksNames(string Bank)
         {
             try
@@ -607,7 +663,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpGet, ActionName("GetBank")]
+        [AuthorizationFilter][HttpGet, ActionName("GetBank")]
         public string GetBank()
         {
             try
@@ -625,7 +681,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 throw ex;
             }
         }
-        [HttpGet, ActionName("EditBank")]
+        [AuthorizationFilter][HttpGet, ActionName("EditBank")]
         public string EditBank(int id)
         {
 
@@ -643,7 +699,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("deleteBank")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteBank")]
         public string deleteBank(int Id)
         {
 
@@ -664,7 +720,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpGet, ActionName("updateBank")]
+        [AuthorizationFilter][HttpGet, ActionName("updateBank")]
         public string updateBank(int id, string Bank)
         {
 
@@ -684,7 +740,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
         //caste Masters
-        [HttpPost, ActionName("setCaste")]
+        [AuthorizationFilter][HttpPost, ActionName("setCaste")]
         public string setCaste(string Caste)
         {
             try
@@ -703,7 +759,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpPost, ActionName("DeleteSubject")]
+        [AuthorizationFilter][HttpPost, ActionName("DeleteSubject")]
         public string DeleteSubject(string subid)
         {
             try
@@ -724,7 +780,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         
 
-        [HttpPost, ActionName("AddModule")]
+        [AuthorizationFilter][HttpPost, ActionName("AddModule")]
         public string AddModule(string ModuleName, string Class, string ModuleRouteName)
         {
             try
@@ -746,7 +802,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpPost, ActionName("AddUserModule")]
+        [AuthorizationFilter][HttpPost, ActionName("AddUserModule")]
         public string AddUserModule(int UserTypeId, int ModuleId)
         {
             try
@@ -766,7 +822,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpPost, ActionName("AddSubModules")]
+        [AuthorizationFilter][HttpPost, ActionName("AddSubModules")]
         public string AddSubModules(int ModuleId, int ClassId, string SubModuleName, string SubModuleRouteName)
         {
             try
@@ -786,7 +842,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("UpdateSubjects")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateSubjects")]
         public string UpdateSubjects(int DataTypeId, string Subject_Code, string SubjectName, float Mid1Max_Marks, float Mid2Max_Marks, float InternalMax_Marks,
        float Credits, int subtype, int semid, int end_exam_max_marks, int iselective, int schemeid, int branchid, string PCode, int BoardQuestionPaper, int ElectiveSet, float Mid3Max_Marks,
        int subid)
@@ -824,7 +880,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpPost, ActionName("AddSubjects")]
+        [AuthorizationFilter][HttpPost, ActionName("AddSubjects")]
         public string AddSubjects(int DataTypeId, string Subject_Code, string SubjectName,float Mid1Max_Marks, float Mid2Max_Marks, float InternalMax_Marks,
          float Credits, int subtype, int semid,int end_exam_max_marks,int iselective,int schemeid, int branchid, string PCode,int BoardQuestionPaper, int ElectiveSet, float Mid3Max_Marks)
         {
@@ -859,7 +915,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("AddUserSubModule")]
+        [AuthorizationFilter][HttpPost, ActionName("AddUserSubModule")]
         public string AddUserSubModule(int UserTypeId, int ModuleId, int SubModuleId)
         {
             try
@@ -878,7 +934,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("UserModuleInactive")]
+        [AuthorizationFilter][HttpPost, ActionName("UserModuleInactive")]
         public string UserModuleInactive(int Id, int IsActive, int UserTypeId)
         {
             try
@@ -897,7 +953,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("UserSubModuleInactive")]
+        [AuthorizationFilter][HttpPost, ActionName("UserSubModuleInactive")]
         public string UserSubModuleInactive(int Id, int IsActive, int UserTypeId)
         {
             try
@@ -916,7 +972,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("GetSubmodulesByModule")]
+        [AuthorizationFilter][HttpPost, ActionName("GetSubmodulesByModule")]
         public string GetSubmodulesByModule(int ModuleId)
         {
             try
@@ -936,7 +992,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpGet, ActionName("GetCastes")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCastes")]
         public string GetCastes()
         {
             try
@@ -956,7 +1012,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("GetModules")]
+        [AuthorizationFilter][HttpGet, ActionName("GetModules")]
         public string GetModules()
         {
             try
@@ -975,7 +1031,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getSubModules")]
+        [AuthorizationFilter][HttpGet, ActionName("getSubModules")]
         public string getSubModules()
         {
             try
@@ -994,7 +1050,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getAllModules")]
+        [AuthorizationFilter][HttpGet, ActionName("getAllModules")]
         public string getAllModules()
         {
             try
@@ -1013,7 +1069,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getAllUserModules")]
+        [AuthorizationFilter][HttpGet, ActionName("getAllUserModules")]
         public string getAllUserModules()
         {
             try
@@ -1032,7 +1088,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getAllSubModules")]
+        [AuthorizationFilter][HttpGet, ActionName("getAllSubModules")]
         public string getAllSubModules()
         {
             try
@@ -1051,7 +1107,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getAllUserSubModules")]
+        [AuthorizationFilter][HttpGet, ActionName("getAllUserSubModules")]
         public string getAllUserSubModules()
         {
             try
@@ -1070,7 +1126,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("EditCaste")]
+        [AuthorizationFilter][HttpGet, ActionName("EditCaste")]
         public string EditCaste(int id)
         {
 
@@ -1090,7 +1146,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("deleteCaste")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteCaste")]
         public string deleteCaste(int Id)
         {
 
@@ -1109,7 +1165,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("updatecaste")]
+        [AuthorizationFilter][HttpGet, ActionName("updatecaste")]
         public string updatecaste(int id, string CasteName)
         {
 
@@ -1129,7 +1185,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
         //dist
-        [HttpPost, ActionName("setDist")]
+        [AuthorizationFilter][HttpPost, ActionName("setDist")]
         public string setDist(string Disteict)
         {
             try
@@ -1149,7 +1205,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("GetDistrictes")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDistrictes")]
         public string GetDistrictes()
         {
             try
@@ -1167,7 +1223,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("EditDist")]
+        [AuthorizationFilter][HttpGet, ActionName("EditDist")]
         public string EditDist(int id)
         {
 
@@ -1188,7 +1244,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("GetAttendeeidbyPin")]
+        [AuthorizationFilter][HttpGet, ActionName("GetAttendeeidbyPin")]
         public string GetAttendeeidbyPin(string Pin)
         {
             try
@@ -1209,7 +1265,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpGet, ActionName("deleteDist")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteDist")]
         public string deleteDist(int Id)
         {
 
@@ -1229,7 +1285,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("updateDist")]
+        [AuthorizationFilter][HttpGet, ActionName("updateDist")]
         public string updateDist(int Id, string District)
         {
 
@@ -1252,7 +1308,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
         //set Mandal
-        [HttpPost, ActionName("setMandal")]
+        [AuthorizationFilter][HttpPost, ActionName("setMandal")]
         public string setMandal(string Mandal)
         {
             try
@@ -1273,7 +1329,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("GetMandal")]
+        [AuthorizationFilter][HttpGet, ActionName("GetMandal")]
         public string GetMandal()
         {
             try
@@ -1290,7 +1346,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpGet, ActionName("EditMandal")]
+        [AuthorizationFilter][HttpGet, ActionName("EditMandal")]
         public string EditMandal(int id)
         {
 
@@ -1310,7 +1366,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
 
         }
-        [HttpGet, ActionName("deleteMandal")]
+        [AuthorizationFilter][HttpGet, ActionName("deleteMandal")]
         public string deleteMandal(int Id)
         {
 
@@ -1329,7 +1385,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpPost, ActionName("updateMandal")]
+        [AuthorizationFilter][HttpPost, ActionName("updateMandal")]
         public string updateMandal(int Id, string Mandal)
         {
 
@@ -1351,7 +1407,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
         //RolesType
 
-        [HttpGet, ActionName("GetRoleDatas")]
+        [AuthorizationFilter][HttpGet, ActionName("GetRoleDatas")]
         public string GetRoleDatas()
         {
             try
@@ -1369,7 +1425,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 throw ex;
             }
         }
-        [HttpPost, ActionName("SetRollType")]
+        [AuthorizationFilter][HttpPost, ActionName("SetRollType")]
         public string SetRollType(string RoleName, string Puropse)
         {
             try
@@ -1392,7 +1448,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
        
-        [HttpGet, ActionName("GetColleges")]
+        [AuthorizationFilter][HttpGet, ActionName("GetColleges")]
         public string GetColleges()
         {
             try
@@ -1411,7 +1467,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getActiveBranches")]
+        [AuthorizationFilter][HttpGet, ActionName("getActiveBranches")]
         public string getActiveBranches()
         {
             try
@@ -1430,7 +1486,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("EditData")]
+        [AuthorizationFilter][HttpGet, ActionName("EditData")]
         public string EditData(int Id)
         {
 
@@ -1450,7 +1506,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
 
         }
-        [HttpGet, ActionName("Deletedata")]
+        [AuthorizationFilter][HttpGet, ActionName("Deletedata")]
         public string Deletedata(int Id)
         {
 
@@ -1469,7 +1525,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 return ex.Message;
             }
         }
-        [HttpPost, ActionName("UpdateRolltype")]
+        [AuthorizationFilter][HttpPost, ActionName("UpdateRolltype")]
         public string UpdateRolltype(int Id, string RoleName, string Puropse)
         {
 
@@ -1491,7 +1547,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpPost, ActionName("AddUser")]
+        [AuthorizationFilter][HttpPost, ActionName("AddUser")]
         public string AddUser(int datatypeId, string UserName,int UserTypeId, string UserPassword,string FirstName,string LastName,
             string Address,string EmailId, string CellNo,int CollegeId,int BranchId)
         {
@@ -1557,7 +1613,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
        
 
-        [HttpGet, ActionName("GetRolltype")]
+        [AuthorizationFilter][HttpGet, ActionName("GetRolltype")]
         public string GetRolltype()
         {
             try
@@ -1575,7 +1631,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 throw ex;
             }
         }
-        [HttpPost, ActionName("SetUserType")]
+        [AuthorizationFilter][HttpPost, ActionName("SetUserType")]
         public string SetUserType(int RoleId, string UserName)
         {
             try
@@ -1597,7 +1653,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpPost, ActionName("getUserById")]
+        [AuthorizationFilter][HttpPost, ActionName("getUserById")]
         public string getUserById(int id)
         {
             try
@@ -1618,7 +1674,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpGet, ActionName("GetUserNames")]
+        [AuthorizationFilter][HttpGet, ActionName("GetUserNames")]
         public string GetUserNames()
         {
             try
@@ -1638,7 +1694,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("getExamYearMonths")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamYearMonths")]
         public string getExamYearMonths()
         {
             try
@@ -1658,7 +1714,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpGet, ActionName("PinCheck")]
+        [AuthorizationFilter][HttpGet, ActionName("PinCheck")]
         public string PinCheck(string DataType)
 
         {
@@ -1705,7 +1761,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("CheckFee")]
+        [AuthorizationFilter][HttpGet, ActionName("CheckFee")]
         public string CheckFee(int DataType)
         {
             try
@@ -1750,7 +1806,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [HttpGet, ActionName("SetExamMonthYear")]
+        [AuthorizationFilter][HttpGet, ActionName("SetExamMonthYear")]
         public string SetExamMonthYear(int DataTypeId, string ExamMonthYear, int ExamMonthYearId, int SequenceId)
         {
             try
@@ -1805,7 +1861,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
             public string Purpose { get; set; }
         }
 
-        [HttpPost, ActionName("GetorEditorActiveUserTypes")]
+        [AuthorizationFilter][HttpPost, ActionName("GetorEditorActiveUserTypes")]
         public string GetorEditorActiveUserTypes([FromBody] UserTypesInfo data)
         {
             try
@@ -1829,7 +1885,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
 
-        [HttpPost, ActionName("AddorUpdateUserTypes")]
+        [AuthorizationFilter][HttpPost, ActionName("AddorUpdateUserTypes")]
         public string AddorUpdateUserTypes([FromBody] UserTypesInfo data)
         {
             try
@@ -1881,7 +1937,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         }
 
-        [HttpPost, ActionName("GetorEditorActiveUsers")]
+        [AuthorizationFilter][HttpPost, ActionName("GetorEditorActiveUsers")]
         public string GetorEditorActiveUsers([FromBody] UsersInfo data)
         {
             try
@@ -1905,7 +1961,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
 
-        [HttpPost, ActionName("AddorUpdateUsers")]
+        [AuthorizationFilter][HttpPost, ActionName("AddorUpdateUsers")]
         public string AddorUpdateUsers([FromBody] UsersInfo data)
         {
             try

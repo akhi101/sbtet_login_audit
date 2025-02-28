@@ -1,5 +1,11 @@
 ﻿define(['app'], function (app) {
     app.controller("StudentRegController", function ($filter, $http, $scope, $state, $localStorage, $stateParams, AppSettings, StudentRegService, $rootScope) {
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 2 || $scope.userType == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard')
+        }
         $scope.CompanyName = AppSettings.CompanyName;
         $scope.LoginYear = AppSettings.SelectedYear;
         var PageNm = $state.current.name.split(".")[1];
@@ -8,8 +14,8 @@
         $scope.Form = true;
         $scope.details = false;
         var submitted = false;
-        var authData = $localStorage.authorizationData;
-        $scope.userType = authData.SystemUserTypeId;
+        //var authData = $localStorage.authorizationData;
+        //$scope.userType = authData.SystemUserTypeId;
         $scope.categorydisable = true;
         $scope.DOBDisable = true;
         $scope.Religiondisable = true;

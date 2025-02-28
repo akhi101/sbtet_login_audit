@@ -1,8 +1,8 @@
 define(['app'], function (app) {
     app.controller("EnableFeepaymentController", function ($scope, $http, $localStorage, $state, $stateParams, AppSettings, $uibModal, PreExaminationService) {
         //var authdata = $localStorage.authorizationData;
-        var authData = JSON.parse(sessionStorage.getItem('user'));
-        $scope.userType = authData.SystemUserTypeId;
+        var authdata = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authdata.SystemUserTypeId;
         if ($scope.userType == 2 || $scope.userType == 3) {
             alert("UnAuthorized Access");
             $state.go('Dashboard');

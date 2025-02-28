@@ -31,7 +31,7 @@ namespace SoftwareSuite.Controllers.TWSH
 {
     public class TwshAdminController : ApiController
     {
-        [HttpGet, ActionName("GetTwshMonthYear")]
+        [AuthorizationFilter][HttpGet, ActionName("GetTwshMonthYear")]
         public object GetTwshMonthYear()
         {
             try
@@ -46,7 +46,7 @@ namespace SoftwareSuite.Controllers.TWSH
             }
         }
 
-        [HttpGet, ActionName("SetTwshAcademicYear")]
+        [AuthorizationFilter][HttpGet, ActionName("SetTwshAcademicYear")]
         public string SetTwshAcademicYear(int DataTypeId, string AcademicYear, int AcademicStartYear, DateTime StartDate, DateTime EndDate, string UserName, bool IsCurrentAcademicYear, int AcademicID, int ActiveFlag)
         {
             try

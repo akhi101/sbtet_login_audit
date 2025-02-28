@@ -26,7 +26,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         }
 
 
-        [HttpGet, ActionName("MaintainanceInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("MaintainanceInfo")]
         public HttpResponseMessage MaintainanceInfo()
         {         
 

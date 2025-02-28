@@ -15,7 +15,7 @@ namespace SoftwareSuite.Controllers.Assessment
     public class MarksEntryFinePaymentController : BaseController
     {
         #region Get Methods
-        [HttpGet, ActionName("getPaymentDetails")]
+        [AuthorizationFilter][HttpGet, ActionName("getPaymentDetails")]
         public string getPaymentDetails(int Amount, string CollegeCode, string BranchCode, int SemId, int SchemeId, int Academicid, int examtypeid, int ExamMonthYearId)
         {
             try

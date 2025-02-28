@@ -3,22 +3,77 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SoftwareSuite.Models.Database;
+using SoftwareSuite.Models.Security;
 
 namespace SoftwareSuite.Controllers.ExternalServices
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
 
     public class DiplomaController : ApiController
     {
         //USP_SS_GET_InteriamCertificateDetails
-        [HttpGet, ActionName("GetDiplomaStudentDetails")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDiplomaStudentDetails")]
         public HttpResponseMessage GetDiplomaStudentDetails(HttpRequestMessage request)    //int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
         {
 
@@ -60,7 +115,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("GetDiplomaAllStudentDetails")]
+        [AuthorizationFilter][HttpGet, ActionName("GetDiplomaAllStudentDetails")]
         public HttpResponseMessage GetDiplomaAllStudentDetails(HttpRequestMessage request)    //int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
         {
 

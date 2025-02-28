@@ -60,14 +60,14 @@ namespace SoftwareSuite.BLL
         //    }
         //}
 
-        public SystemUserAuth GetUserLogin(string UserName, string Ipaddress)
+        public SystemUserAuth GetUserLogin(string username,string password, string Ipaddress)
         {
             try
             {
                 SystemUserService SystemUserService = new SystemUserService();
                 dbHandler dbHandler = new dbHandler();
                 DataSet tblUsersList = new DataSet();
-                tblUsersList = SystemUserService.GetUserLogin(dbHandler, UserName, Ipaddress);
+                tblUsersList = SystemUserService.GetUserLogin(dbHandler, username, password, Ipaddress);
                 var ds = JsonConvert.SerializeObject(tblUsersList);
                 List<SystemUser> User = tblUsersList.Tables[1].DataTableToList<SystemUser>();
                 List<UserAuth> Userstat = tblUsersList.Tables[0].DataTableToList<UserAuth>();

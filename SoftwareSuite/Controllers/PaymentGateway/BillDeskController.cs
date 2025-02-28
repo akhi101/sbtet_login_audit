@@ -25,7 +25,7 @@ namespace SoftwareSuite.Controllers.PaymentGateway
     {
 
 
-        [HttpGet, ActionName("getSomeValue")]
+        [AuthorizationFilter][HttpGet, ActionName("getSomeValue")]
         public HttpResponseMessage getSomeValue(string url, string challanaNo)
         {
 
@@ -85,7 +85,7 @@ namespace SoftwareSuite.Controllers.PaymentGateway
 
 
         #region GetMethod
-        [HttpGet, ActionName("getHashValue")]
+        [AuthorizationFilter][HttpGet, ActionName("getHashValue")]
         public HttpResponseMessage getHashValue(string redirecturl, string marchantid, string subMarchantid, string addInfo1, string addInfo3, string addInfo4, string addInfo5, string addInfo6, string addinfo7, string chalanaNo, string amount)
         {
 
@@ -106,7 +106,7 @@ namespace SoftwareSuite.Controllers.PaymentGateway
         #endregion
         #region PostMethod
 
-        [HttpPost, ActionName("getPaymentResponse")]
+        [AuthorizationFilter][HttpPost, ActionName("getPaymentResponse")]
         public async Task<HttpResponseMessage> getPaymentResponse()
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -246,7 +246,7 @@ namespace SoftwareSuite.Controllers.PaymentGateway
 
         }
 
-        [HttpPost, ActionName("getPaymentQueryStatus")]
+        [AuthorizationFilter][HttpPost, ActionName("getPaymentQueryStatus")]
         public async Task<string> getPaymentQueryStatus([FromBody]JsonObject request)
         {
             HttpResponseMessage response = new HttpResponseMessage();
@@ -386,7 +386,7 @@ namespace SoftwareSuite.Controllers.PaymentGateway
         }
 
 
-        [HttpPost, ActionName("getPaymentS2SQueryStatus")]
+        [AuthorizationFilter][HttpPost, ActionName("getPaymentS2SQueryStatus")]
         public async Task<string> getPaymentS2SQueryStatus([FromBody]JsonObject request)
         {
             HttpResponseMessage response = new HttpResponseMessage();

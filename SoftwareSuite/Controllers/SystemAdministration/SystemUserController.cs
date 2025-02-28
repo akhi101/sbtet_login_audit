@@ -61,7 +61,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             public string EncriptedPassword { get; set; }
         }
 
-        //[HttpPost, ActionName("GetUserLogin")]
+        //[AuthorizationFilter][HttpPost, ActionName("GetUserLogin")]
         //public async Task<HttpResponseMessage> GetUserLogin()
         //{
         //    string token = "";
@@ -312,17 +312,37 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             }
         }
 
-        private static byte[] HashWithSalt(string data, byte[] salt)
+        // Generate a secure salt
+        public static byte[] GenerateSalt(int size = 16)
+        {
+            var salt = new byte[size];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(salt);
+            }
+            return salt;
+        }
+
+        // Method to hash data with salt using SHA256
+        public static byte[] HashWithSalt(string data, byte[] salt)
         {
             using (var sha256 = SHA256.Create())
             {
+                // Combine data and salt
                 var dataBytes = Encoding.UTF8.GetBytes(data);
                 var dataWithSalt = new byte[dataBytes.Length + salt.Length];
                 Buffer.BlockCopy(dataBytes, 0, dataWithSalt, 0, dataBytes.Length);
                 Buffer.BlockCopy(salt, 0, dataWithSalt, dataBytes.Length, salt.Length);
+
+                // Compute hash
                 return sha256.ComputeHash(dataWithSalt);
             }
         }
+
+
+
+
+
 
         [HttpPost]
         public async Task<HttpResponseMessage> GetChangePassword()
@@ -336,20 +356,45 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             var passcrypt = new HbCrypt();
             SystemUserBLL SystemUserBLL = new SystemUserBLL();
             SystemRes SystemRes = new SystemRes();
-            //var encOldpass = passcrypt.Encrypt(oldPassword);
-            //var encNewpass = passcrypt.Encrypt(NewPassword);
-            byte[] salt = GenerateSalt(); // Generate salt
-            byte[] hashedPassword = HashWithSalt(NewPassword, salt); // Hash password with salt
 
-            string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
-            string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
-            SystemRes = SystemUserBLL.GetChangePassword(UserID, oldPassword, hashBase64, saltBase64);
+            string password = NewPassword;
+
+            // 2️⃣ Generate a unique salt
+            byte[] salt = GenerateSalt();
+
+            // 3️⃣ Hash the password with the salt
+            byte[] hashedPassword = HashWithSalt(password, salt);
+
+            SystemRes = SystemUserBLL.GetChangePassword(UserID, oldPassword, Convert.ToBase64String(hashedPassword), Convert.ToBase64String(salt));
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, SystemRes);
             return response;
         }
 
 
-        [HttpGet, ActionName("GetLoginAccess")]
+        // Generate a unique salt
+        private static string GenerateUniqueSalt()
+        {
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] saltBytes = new byte[16];
+                rng.GetBytes(saltBytes);
+                return BitConverter.ToString(saltBytes).Replace("-", "").ToLower();
+            }
+        }
+
+        // Compute SHA-256 Hash
+        private static string ComputeSHA256Hash(string input)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(input);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            }
+        }
+
+
+        [AuthorizationFilter][HttpGet, ActionName("GetLoginAccess")]
         public HttpResponseMessage GetLoginAccess(string UserName)
         {
             try
@@ -372,7 +417,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
 
         #endregion
         #region PostMethod
-        [HttpPost, ActionName("PostLoginLog")]
+        [AuthorizationFilter][HttpPost, ActionName("PostLoginLog")]
         public HttpResponseMessage PostLoginLog([FromBody]LogSystemUser reqdata)
         {
             try
@@ -394,7 +439,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             }
         }
 
-        [HttpPost, ActionName("PostLogoutLog")]
+        [AuthorizationFilter][HttpPost, ActionName("PostLogoutLog")]
         public HttpResponseMessage PostLogoutLog([FromBody]LogSystemUser reqdata)
         {
             try

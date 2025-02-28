@@ -2,17 +2,73 @@
 using SoftwareSuite.BLL;
 using SoftwareSuite.Models.Database;
 using SoftwareSuite.Models.Results;
+using SoftwareSuite.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 
 namespace SoftwareSuite.Controllers.Results
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class ResultsController : ApiController
     {
         public HttpResponseMessage GetCollegeSemWiseReport(int SchemeId, int SemYearId)
@@ -178,7 +234,7 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ReportResultBLL.GetTypeWritingShorthandReport(HallTicketno));
             return response;
         }
-        [HttpGet, ActionName("GetStudentByPin")]
+        [AuthorizationFilter][HttpGet, ActionName("GetStudentByPin")]
         public string GetStudentByPin(string Pin)
         {
             try
@@ -196,7 +252,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetConsolidatedResult")]
         public string GetConsolidatedResult(string Pin)
         {
             try
@@ -214,7 +270,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetConsolidatedResults")]
+        [AuthorizationFilter][HttpGet, ActionName("GetConsolidatedResults")]
         public string GetConsolidatedResults(string Pin)
         {
             try
@@ -232,7 +288,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetConsolidatedPreviewResults")]
+        [AuthorizationFilter][HttpGet, ActionName("GetConsolidatedPreviewResults")]
         public string GetConsolidatedPreviewResults(int StudentTypeId,string scheme, string Pin)
         {
             try
@@ -253,7 +309,7 @@ namespace SoftwareSuite.Controllers.Results
         }
 
 
-        [HttpGet, ActionName("GetConsolidatedRVRCPreviewResults")]
+        [AuthorizationFilter][HttpGet, ActionName("GetConsolidatedRVRCPreviewResults")]
         public string GetConsolidatedRVRCPreviewResults(int ExamMonthYearId,int StudentTypeId,string Scheme, string Pin,int ExamTypeId =0)
         {
             try
@@ -276,7 +332,7 @@ namespace SoftwareSuite.Controllers.Results
         }
 
 
-        [HttpGet, ActionName("GetC14ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC14ConsolidatedResult")]
         public string GetC14ConsolidatedResult(string Pin)
         {
             try
@@ -294,7 +350,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetC09ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC09ConsolidatedResult")]
         public string GetC09ConsolidatedResult(string Pin)
         {
             try
@@ -312,7 +368,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetC05ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC05ConsolidatedResult")]
         public string GetC05ConsolidatedResult(string Pin)
         {
             try
@@ -330,7 +386,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetC08ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC08ConsolidatedResult")]
         public string GetC08ConsolidatedResult(string Pin)
         {
             try
@@ -348,7 +404,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetC16ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC16ConsolidatedResult")]
         public string GetC16ConsolidatedResult(string Pin)
         {
             try
@@ -366,7 +422,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetC16SConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetC16SConsolidatedResult")]
         public string GetC16SConsolidatedResult(string Pin)
         {
             try
@@ -384,7 +440,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("GetER91ConsolidatedResult")]
+        [AuthorizationFilter][HttpGet, ActionName("GetER91ConsolidatedResult")]
         public string GetER91ConsolidatedResult(string Pin)
         {
             try
@@ -406,7 +462,7 @@ namespace SoftwareSuite.Controllers.Results
 
 
 
-        [HttpGet, ActionName("GetExamMonthYear")]
+        [AuthorizationFilter][HttpGet, ActionName("GetExamMonthYear")]
         public string GetExamMonthYear()
         {
             try
@@ -424,7 +480,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("getExamAndMonthYear")]
+        [AuthorizationFilter][HttpGet, ActionName("getExamAndMonthYear")]
         public string getExamAndMonthYear()
         {
             try
@@ -444,7 +500,7 @@ namespace SoftwareSuite.Controllers.Results
 
 
 
-        [HttpGet, ActionName("GetResultsHistory")]
+        [AuthorizationFilter][HttpGet, ActionName("GetResultsHistory")]
         public string GetResultsHistory(string Pin)
         {
             try
@@ -462,7 +518,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("getStudentbacklogHistory")]
+        [AuthorizationFilter][HttpGet, ActionName("getStudentbacklogHistory")]
         public string getStudentbacklogHistory(string Pin,string subcode)
         {
             try
@@ -481,7 +537,7 @@ namespace SoftwareSuite.Controllers.Results
             }
         }
 
-        [HttpGet, ActionName("Getc09StudentWiseReport")]
+        [AuthorizationFilter][HttpGet, ActionName("Getc09StudentWiseReport")]
         public string Getc09StudentWiseReport(string Pin, int StudentTypeId,int ExamMonthYearId,int SchemeId,int semid,int ExamTypeId)
         {
             try

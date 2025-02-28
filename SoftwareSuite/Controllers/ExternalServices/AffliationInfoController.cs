@@ -18,7 +18,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
 {
     public class AffliationInfoController : ApiController
     {
-        [HttpGet, ActionName("AFFCollegeTecHStaffInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("AFFCollegeTecHStaffInfo")]
         public async Task<string> AFFCollegeTecHStaffInfo()
         {
             var url = ConfigurationManager.AppSettings["AFF_College_TecH_Staff_Info"].ToString();
@@ -53,7 +53,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("GetCollegeList")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegeList")]
         public async Task<string> GetCollegeList()
         {
             var url = ConfigurationManager.AppSettings["AFF_CollegesList"].ToString();
@@ -92,7 +92,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             }
         }
 
-        [HttpGet, ActionName("GetCollegeBranchInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("GetCollegeBranchInfo")]
         public async Task<string> GetCollegeBranchInfo()
         {
             var url = ConfigurationManager.AppSettings["AFF_College_Branch_Info"].ToString();
@@ -128,7 +128,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         }
 
 
-        [HttpGet, ActionName("GetPolycetExamCenterInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("GetPolycetExamCenterInfo")]
         public async Task<string> GetPolycetExamCenterInfo()
         {
             var url = ConfigurationManager.AppSettings["AFF_Polycet_Exam_Centers"].ToString();         

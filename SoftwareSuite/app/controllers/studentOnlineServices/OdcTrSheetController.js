@@ -80,7 +80,7 @@
             var toggleStatus = $scope.isAllSelectedCollegeTypes
             angular.forEach($scope.GetCollegeTypes, function (itm) { itm.selected = toggleStatus; });
             $scope.CollegeTypesArray = [];
-            angular.f888$scope.CollegeTypesArray.push({ "collegecode": value.CollegeCode })
+            $scope.CollegeTypesArray.push({ "collegecode": value.CollegeCode })
         }
 
 

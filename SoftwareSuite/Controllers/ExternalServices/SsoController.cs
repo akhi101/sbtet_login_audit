@@ -21,7 +21,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             _eps = new ExternalPortalService();
         }
 
-        [HttpPost, ActionName("Authenticate")]
+        [AuthorizationFilter][HttpPost, ActionName("Authenticate")]
         public string Authenticate(SsoAuthenticateObj data)
         {
             var ekey = _eps.GetEncryptionKeyByOrgId(data.OrgId);
@@ -29,7 +29,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
             string encrypassword = crypt.Encrypt(data.Password);
             string encrySalt = crypt.Encrypt(data.Salt);
             var userBll = new SystemUserBLL();
-            var User = userBll.GetUserLogin(data.Username.Replace("'", "''"), "");
+            var User = userBll.GetUserLogin(data.Username.Replace("'", "''"),"", "");
             if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
             {
                 return $"IsValidUser=true|SessionTimeOut={DateTime.Now.AddHours(3)}";

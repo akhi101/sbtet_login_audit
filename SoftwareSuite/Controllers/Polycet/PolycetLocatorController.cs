@@ -2,23 +2,78 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 using Newtonsoft.Json;
 using SoftwareSuite.Models;
 using SoftwareSuite.Models.Database;
+using SoftwareSuite.Models.Security;
 
 namespace SoftwareSuite.Controllers.Polycet
 {
     public class PolycetLocatorController : ApiController
     {
+        public class AuthorizationFilter : AuthorizationFilterAttribute
+        {
+            protected AuthToken token = null;
+            public override void OnAuthorization(HttpActionContext actionContext)
+            {
+
+                try
+                {
+                    var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                    var tkn = tokenStr.Value.FirstOrDefault();
+                    var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                    var parsedToken = t[0];
+                    token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                    if (!validatetoken(token.AuthTokenId))
+                    {
+                        actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    }
+                    if (token.ExpiryDate < DateTime.Now)
+                    {
+                        actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                base.OnAuthorization(actionContext);
+            }
+
+            public bool validatetoken(string token)
+            {
+                string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+                bool istokenvalid = false;
+
+                string content;
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    content = reader.ReadToEnd(); // Read entire file
+                }
+                if (content.Contains(token))
+                {
+                    istokenvalid = true;
+                }
+
+                return istokenvalid;
+            }
 
 
-        [HttpGet, ActionName("GetPolycetAcademicYear")]
+
+
+        }
+
+
+        [AuthorizationFilter][HttpGet, ActionName("GetPolycetAcademicYear")]
         public HttpResponseMessage GetPolycetAcademicYear()
         {
             try
@@ -37,7 +92,7 @@ namespace SoftwareSuite.Controllers.Polycet
             }
         }
 
-        [HttpGet, ActionName("GetExamcenterInfo")]
+        [AuthorizationFilter][HttpGet, ActionName("GetExamcenterInfo")]
         public HttpResponseMessage GetExamcenterInfo(string AcademicYear, int type, int Value)
         {
 

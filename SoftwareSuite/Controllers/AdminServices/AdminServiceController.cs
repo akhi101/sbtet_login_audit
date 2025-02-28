@@ -36,6 +36,8 @@ using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Text;
 using System.Security.Cryptography;
+using static AuthController;
+using System.Runtime.Caching;
 namespace SoftwareSuite.Controllers.AdminServices
 {
     public class AuthorizationFilter : AuthorizationFilterAttribute
@@ -93,7 +95,8 @@ namespace SoftwareSuite.Controllers.AdminServices
     public class AdminServiceController : ApiController
     {
 
-        [AuthorizationFilter][HttpPost, ActionName("PostMarksEntryDates")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("PostMarksEntryDates")]
         public string PostMarksEntryDates([FromBody] SetDatesMarksEntryreqdata ReqData)
         {
             try
@@ -126,7 +129,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetAllCourses")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetAllCourses")]
         public HttpResponseMessage GetAllCourses()
         {
             try
@@ -206,7 +210,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateCaptcha")]
         public string ValidateCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -271,7 +276,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             public string LoginName { get; set; }
             public string CellNo { get; set; }
         }
-        [AuthorizationFilter][HttpPost, ActionName("ValidateForgetPasswordCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateForgetPasswordCaptcha")]
         public string ValidateForgetPasswordCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -410,7 +416,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("UpdatePassword")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("UpdatePassword")]
         public void UpdatePassword(string UserName, string Password, string Salt)
         {
             var dbHandler = new dbHandler();
@@ -431,7 +438,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        public class LoginCaptchaDetails{
+        public class LoginCaptchaDetails
+        {
 
             public string Session { get; set; }
             public string DataType { get; set; }
@@ -481,8 +489,46 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        // Method to generate a secure salt
-        public static byte[] GenerateSalt(int size = 16)
+     
+        public class SecureRequest
+        {
+            public string Session { get; set; }
+            public string Salt { get; set; }
+            public string Nonce { get; set; }
+            public string Captcha { get; set; }
+            public string LoginName { get; set; }
+            public string Password { get; set; }
+            public string DataType { get; set; }
+            public string NameofUser { get; set; }
+
+            // Ensure this string format matches AngularJS exactly
+            public string GetDataString()
+            {
+                return $"Session={Session}&Captcha={Captcha}&LoginName={LoginName}&Password={Password}&DataType={DataType}&Salt={Salt}";
+            }
+        }
+      
+        private HttpResponseMessage EncryptedResponse(string message)
+        {
+            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA=";
+            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";
+            string encryptedMessage = Encryption.Encrypt(message, key, iv);
+            return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE = encryptedMessage });
+        }
+
+
+        private bool IsNonceUsed(string nonce)
+        {
+            return nonceCache.Contains(nonce);
+        }
+
+        private void MarkNonceAsUsed(string nonce)
+        {
+            nonceCache.Add(nonce, true, DateTimeOffset.UtcNow.Add(NonceExpiration));
+        }
+
+        
+        private static byte[] GenerateSalt(int size = 16)
         {
             var salt = new byte[size];
             using (var rng = new RNGCryptoServiceProvider())
@@ -493,66 +539,13 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        // Method to hash data with salt using SHA256
-        public static byte[] HashWithSalt(string data, byte[] salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                // Combine data and salt
-                var dataBytes = Encoding.UTF8.GetBytes(data);
-                var dataWithSalt = new byte[dataBytes.Length + salt.Length];
-                Buffer.BlockCopy(dataBytes, 0, dataWithSalt, 0, dataBytes.Length);
-                Buffer.BlockCopy(salt, 0, dataWithSalt, dataBytes.Length, salt.Length);
-
-                // Compute hash
-                return sha256.ComputeHash(dataWithSalt);
-            }
-        }
-
-        // Method to validate the password
-        public static bool ValidatePassword(string enteredPassword, byte[] storedSalt, byte[] storedHash)
-        {
-            byte[] enteredHash = HashWithSalt(enteredPassword, storedSalt);
-            return CompareByteArrays(enteredHash, storedHash);
-        }
 
 
-        // Helper method to compare byte arrays
-        private static bool CompareByteArrays(byte[] a, byte[] b)
-        {
-            if (a.Length != b.Length) return false;
+        private static readonly string SecretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64=";
 
-            for (int i = 0; i < a.Length; i++)
-            {
-                if (a[i] != b[i]) return false;
-            }
-            return true;
-        }
-
-        public static void StorePassword(string password, out byte[] salt, out byte[] hashedPassword)
-        {
-            salt = GenerateSalt(); // Generate salt only during password setup
-            hashedPassword = HashWithSalt(password, salt);
-        }
-
-
-
-        private static bool IsValidRequest(SecureRequest requestData)
-        {
-            if (requestData == null || string.IsNullOrEmpty(requestData.NameofUser))
-                return false;
-
-            // Generate expected HMAC on the server
-            string computedHMAC = GenerateHMAC(requestData.GetDataString());
-
-            // Compare received HMAC with expected HMAC (constant time comparison to prevent timing attacks)
-            return SlowEquals(Convert.FromBase64String(requestData.NameofUser), Convert.FromBase64String(computedHMAC));
-        }
-
-        // Secure HMAC Generation
         private static string GenerateHMAC(string data)
         {
-            byte[] key = Convert.FromBase64String(SecretKey); // Ensure SecretKey is Base64 decoded
+            byte[] key = Convert.FromBase64String(SecretKey);
             using (var hmac = new HMACSHA256(key))
             {
                 byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
@@ -560,7 +553,6 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        // Secure string comparison to prevent timing attacks
         private static bool SlowEquals(byte[] a, byte[] b)
         {
             int diff = a.Length ^ b.Length;
@@ -571,275 +563,248 @@ namespace SoftwareSuite.Controllers.AdminServices
             return diff == 0;
         }
 
-        public class SecureRequest
+        private static bool IsValidRequest(SecureRequest requestData)
         {
-            public string Session { get; set; }
-            public string Captcha { get; set; }
-            public string LoginName { get; set; }
-            public string Password { get; set; }
-            public string DataType { get; set; }
-            public string NameofUser { get; set; }
+            if (requestData == null || string.IsNullOrEmpty(requestData.NameofUser)) return false;
+            string computedHMAC = GenerateHMAC(requestData.GetDataString());
+            return SlowEquals(Convert.FromBase64String(requestData.NameofUser), Convert.FromBase64String(computedHMAC));
+        }
 
-            // Ensure this string format matches AngularJS exactly
-            public string GetDataString()
+        private string DecryptPassword(string encryptedText, byte[] key)
+        {
+            byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
+
+            using (Aes aes = Aes.Create())
             {
-                return $"Session={Session}&Captcha={Captcha}&LoginName={LoginName}&Password={Password}&DataType={DataType}";
+                aes.Key = key;
+                aes.Mode = CipherMode.ECB;
+                aes.Padding = PaddingMode.PKCS7;
+
+                using (ICryptoTransform decryptor = aes.CreateDecryptor())
+                {
+                    byte[] decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+                    return Encoding.UTF8.GetString(decryptedBytes);
+                }
             }
         }
 
-        private static string SecretKey = "bXUqvDhzD09JmTmAYbGq3h83flSAzWWldK5OdJjVh64=";
+        private static string HashWithSalt(string rawPassword, string base64Salt)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                // Convert raw password to bytes
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(rawPassword);
 
-        public string decryptsessionid { get; private set; }
+                // Decode Base64-encoded salt to byte array
+                byte[] saltBytes = Convert.FromBase64String(base64Salt);
+
+                // Combine password and salt
+                var dataWithSalt = new byte[passwordBytes.Length + saltBytes.Length];
+                Buffer.BlockCopy(passwordBytes, 0, dataWithSalt, 0, passwordBytes.Length);
+                Buffer.BlockCopy(saltBytes, 0, dataWithSalt, passwordBytes.Length, saltBytes.Length);
+
+                // Compute hash
+                return Convert.ToBase64String(sha256.ComputeHash(dataWithSalt));
+            }
+        }
+
+
+        [HttpPost, ActionName("GetNonceAndSalt")]
+        public string GetNonceAndSalt(string UserName)
+        {
+            try
+            {
+                // Ensure UserName exists in the request
+                if (UserName == null)
+                    return JsonConvert.SerializeObject(new { message = "Invalid request. UserName is required." });
+
+                string encryptedUserName = UserName.ToString();
+
+                // Step 1: Decrypt the username
+                string decryptedUserName = GetDecryptedData(encryptedUserName);
+
+                // Step 2: Generate a unique nonce
+                string Nonce = GenerateNonce();
+                // Step 3: Get Salt from Database
+                var users = AddorGetAccountStatus("sBH8FPW8yD6RcKYFqgS9M6CUL2pEt89mpwv6kUZ7nxjJaN49I2LbzlsdRBsmLBJlGrpxuiLo4DahFEQaTixYtmOJ/NXekjCaBtLSf+qogkFnmMTWScxEFf29XORE2CmX1i/6oSKPKc9uZ5qYuzqx5g==$$@@$$hvrotvfuno", encryptedUserName);
+                var userRecord = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(users);
+
+                if (userRecord == null || userRecord.Count == 0)
+                    return JsonConvert.SerializeObject(new { message = "User not found." });
+
+                string StoredPasswordHash = userRecord[0]["UserPassword"].ToString();
+                string StoredSalt = userRecord[0]["Salt"].ToString();
+                string AccountLocked = userRecord[0]["AccountLocked"].ToString();
+                Console.WriteLine(AccountLocked);
+
+                // Step 4: Return JSON response
+                var response = new { nonce = Nonce,password= StoredPasswordHash, salt = StoredSalt, accountLocked = AccountLocked };
+                return JsonConvert.SerializeObject(response);
+            }
+            catch (Exception ex)
+            {
+                return JsonConvert.SerializeObject(new { message = "Error retrieving nonce and salt.", error = ex.Message });
+            }
+        }
+
+        public class UserModel
+        {
+            public string Nonce { get; set; }
+            public string Password { get; set; }
+            public string Salt { get; set; }
+            public string AccountLocked { get; set; }
+        }
+
+        private static MemoryCache nonceCache = MemoryCache.Default;
+        private static readonly TimeSpan NonceExpiration = TimeSpan.FromMinutes(1);
+        private string json;
 
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] SecureRequest requestData)
         {
-            if (!IsValidRequest(requestData))
-            {
-                Request.CreateResponse(HttpStatusCode.BadRequest, "Tampered request detected!");
-
-                string message = "Tampered request detected!";
-                string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                string MESSAGE = Encryption.Encrypt(message, key, iv);
-                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
-            }
-            bool loginFailed = false;
-            var dbHandler = new dbHandler();
-            List<Output> p = new List<Output>();
-            Output p1 = new Output();
-            var captcha = string.Empty;
-
             try
             {
 
 
-                string loginLock = loginLocked ? "Yes" : "No";
-                string islock = "loginLock";
-                string lockkey = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                string lockiv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                string isLocked = Encryption.Encrypt(islock, lockkey, lockiv);
-
-                string DataType = "1482cS+YzslJtmNjRWaaRgEVGBuxXXnqhU5WaptbY14kryoQ6HfnRxJgnmKWzqRBfp9RORS/dwlutMR6IA+Qlaf0Io2Ao7cfL1UJ0/hja+jkZ6C5GyuzEy6ZDzxEGX4CBXn9taRmDr0JYogxBWJT8Q==$$@@$$zkdrgkjzna";
-
-                string UserAccountStatus = AddorGetAccountStatus(DataType, requestData.LoginName);
-
-                var users = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(UserAccountStatus);
-
-                string AccountLocked = users[0]["AccountLocked"].ToString();
-                if (loginLock == "Yes" && AccountLocked == "true")
-                {
-                    string message = "Account is temporarily locked. Try again later.";
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                    string MESSAGE = Encryption.Encrypt(message, key, iv);
-                    return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
-                }
-                string token = "";
-
-
-                string decryptsessionid = null;
-                //string decryptsession = GetDecryptedData(requestData.Session);
-                string decryptCaptcha = GetDecryptedData(requestData.Captcha);
-                string decryptLoginname = GetDecryptedData(requestData.LoginName);
-                string decryptpassword = GetDecryptedData(requestData.Password);
+                // Captcha verification
+                string decryptedCaptcha = GetDecryptedData(requestData.Captcha);
 
                 var res = requestData.Session.ToString().Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
                 var crypt = new HbCrypt(res[1]);
                 var encrypt = new HbCrypt();
-                string sessionid = crypt.AesDecrypt(res[0]);
-                decryptsessionid = encrypt.AesDecrypt(sessionid);
+                string sessionId = crypt.AesDecrypt(res[0]);
+                string decryptedSessionId = encrypt.AesDecrypt(sessionId);
 
                 var param = new SqlParameter[2];
-                param[0] = new SqlParameter("@SessionId", decryptsessionid);
-                param[1] = new SqlParameter("@Captcha", decryptCaptcha);
-                var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_TEST_GET_ExamsCaptchaSessionLog", param);
+                param[0] = new SqlParameter("@SessionId", decryptedSessionId);
+                param[1] = new SqlParameter("@Captcha", decryptedCaptcha);
+                var dt = new dbHandler().ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
 
-                if (dt.Rows[0]["ResponseCode"].ToString() == "200")
+                if (dt.Rows[0]["ResponseCode"].ToString() != "200")
                 {
+                    return EncryptedResponse("Invalid Captcha");
+                }
+
+                string decryptedLoginName = GetDecryptedData(requestData.LoginName);
+
+                byte[] saltBytes = Convert.FromBase64String(requestData.Salt);
+                string decryptedPassword = DecryptPassword(requestData.Password, saltBytes);
+
+
+                // Fetch user data from DB
+                var users = GetNonceAndSalt(requestData.LoginName);
+                UserModel newuser = JsonConvert.DeserializeObject<UserModel>(users);
+
+                string Nonce = newuser.Nonce;
+                string storedPasswordHash = newuser.Password;
+                string storedSalt = newuser.Salt;
+                string accountLocked = newuser.AccountLocked;
+
+
+                string ComputedHashPassword = HashWithSalt(decryptedPassword, storedSalt);
+
+                if (!IsValidRequest(requestData))
+                {
+                    return EncryptedResponse("Invalid username or password");
+                }
+
+                lock (lockObj)
+                {
+                    if (loginLocked && accountLocked == "true")
+                    {
+                        return EncryptedResponse("Account temporarily locked. Try again later.");
+                    }
+                }
+                string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
+                SystemUserBLL SystemUserBLL = new SystemUserBLL();
+                SystemUserAuth User;
+                User = SystemUserBLL.GetUserLogin(decryptedLoginName.Replace("'", "''"), ComputedHashPassword, clientIpAddress);
+
+                if ((User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200") && (ComputedHashPassword == storedPasswordHash))
+                {
+                    lock (lockObj)
+                    {
+                        loginAttempts = 0;
+                        loginLocked = false;
+                    }
+                    var u = User.SystemUser[0];
+                    string authTokenId = Guid.NewGuid().ToString("N"); // Secure random token
+                    AddTokenToStore(authTokenId);
+                    AuthToken t = new AuthToken
+                    {
+                        UserName = u.UserName ?? "",
+                        UserId = u.UserId ?? "",
+                        UserTypeId = u.UserTypeId ?? "",
+                        CollegeId = u.CollegeId ?? "",
+                        CollegeName = u.CollegeName ?? "",
+                        CollegeCode = u.CollegeCode ?? "",
+                        collegeType = u.collegeType ?? "",
+                        BranchCode = u.BranchCode ?? "",
+                        BranchId = u.BranchId ?? "",
+                        ResponceCode = u.ResponceCode ?? "",
+                        RespoceDescription = u.RespoceDescription ?? "",
+                        ExpiryDate = DateTime.Now.AddHours(1),
+                        AuthTokenId = authTokenId
+                    };
+                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA=";
+                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";
+
                     var hbcrypt = new HbCrypt();
-                    string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
-                    SystemUserBLL SystemUserBLL = new SystemUserBLL();
-                    SystemUserAuth User;
-                    User = SystemUserBLL.GetUserLogin(decryptLoginname.Replace("'", "''"), clientIpAddress);
-                    StringBuilder builder = new StringBuilder();
-                    Random random = new Random();
-                    char ch;
-                    for (int i = 0; i < 10; i++)
+                    string token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
+                    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new
                     {
-                        ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                        builder.Append(ch);
-
-                    }
-                    AddTokenToStore(builder.ToString().ToLower());
-                    //byte[] salt = GenerateSalt(); // Generate salt
-                    //byte[] hashedPassword = HashWithSalt(decryptpassword, salt); // Hash password with salt
-
-                    //string saltBase64 = Convert.ToBase64String(salt); // Convert salt to Base64
-                    //string hashBase64 = Convert.ToBase64String(hashedPassword); // Convert hash to Base64
-                    //UpdatePassword(decryptLoginname, hashBase64, saltBase64);
-                    if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "200")
-                    {
-
-                        var u = User.SystemUser[0];
-                        var v = User.UserAuth[0];
-                        string Salt = User.SystemUser[0].Salt.ToString();
-                        string HashedPassword = User.SystemUser[0].UserPassword.ToString();
-                        
-                        byte[] storedSalt = Convert.FromBase64String(Salt);
-                        byte[] storedHash = Convert.FromBase64String(HashedPassword);
-
-                        // Hash the entered password with the stored salt
-                        byte[] enteredHash = HashWithSalt(decryptpassword, storedSalt);
-
-                        // Compare stored and computed hashes
-                        bool isPasswordValid = CompareByteArrays(enteredHash, storedHash);
-                        if (!isPasswordValid)
+                        token,
+                        data = new
                         {
-                            lock (lockObj) // Ensure thread-safe increment
-                            {
-                                loginAttempts++;
-                            }
-                            if (loginAttempts > 2)
-                            {
-                                lock (lockObj) { loginLocked = true; }
-                                Task.Run(() => ResetLoginAttempts());
-                                string message1 = "Account locked for 1 minute.";
+                            USERTYPEID = Encryption.Encrypt(u.UserTypeId, key, iv),
+                            USERID = Encryption.Encrypt(u.UserId, key, iv),
+                            USERNAME = Encryption.Encrypt(u.UserName, key, iv),
+                            COLLEGEID = Encryption.Encrypt(u.CollegeId, key, iv),
+                            CCODE = Encryption.Encrypt(u.CollegeCode, key, iv),
+                            CTYPE = Encryption.Encrypt(u.collegeType, key, iv),
+                            CNAME = Encryption.Encrypt(u.CollegeName, key, iv),
+                            BID = Encryption.Encrypt(u.BranchId, key, iv),
+                            BCODE = Encryption.Encrypt(u.BranchCode, key, iv),
+                            RESPONSECODE = Encryption.Encrypt(u.ResponceCode, key, iv),
+                            RESDESCRIPTION = Encryption.Encrypt(u.RespoceDescription, key, iv),
+                            t.ExpiryDate,
+                            AuthTokenId = authTokenId
+                        },
+                        clientIpAddress
+                    });
 
-                                string key1 = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                                string iv1 = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                                string MESSAGE = Encryption.Encrypt(message1, key1, iv1);
-                                HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
-                                return response1;
-
-                            }
-                            else
-                            {
-                                string message = "No such username or password";
-                                string key1 = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                                string iv1 = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                                string MESSAGE = Encryption.Encrypt(message, key1, iv1);
-                                return Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
-                            }
-                        }
-                        else
-                        {
-                            lock (lockObj) { loginAttempts = 0; } // Reset login attempts on successful login
-                            AuthToken t = new AuthToken
-                            {
-                                UserName = u.UserName ?? "",
-                                UserId = u.UserId ?? "",
-                                UserTypeId = u.UserTypeId ?? "",
-                                CollegeId = u.CollegeId ?? "",
-                                CollegeName = u.CollegeName ?? "",
-                                CollegeCode = u.CollegeCode ?? "",
-                                collegeType = u.collegeType ?? "",
-                                BranchCode = u.BranchCode ?? "",
-                                BranchId = u.BranchId ?? "",
-                                ResponceCode = v.ResponceCode ?? "",
-                                RespoceDescription = v.RespoceDescription ?? "",
-                                ExpiryDate = DateTime.Now.AddHours(1),
-                                AuthTokenId = builder.ToString().ToLower()
-                            };
-
-                            var username = u.UserName;
-                            var userid = u.UserId;
-                            var collegeid = u.CollegeId;
-                            var collegename = u.CollegeName;
-                            var usertypeid = u.UserTypeId;
-                            var ccode = u.CollegeCode;
-                            var ctype = u.collegeType;
-                            var bcode = u.BranchCode;
-                            var bid = u.BranchId;
-                            var rescode = v.ResponceCode;
-                            var resdesc = v.RespoceDescription;
-                            var AuthTokenId = builder.ToString().ToLower();
-
-                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                            string USERNAME = Encryption.Encrypt(username, key, iv);
-                            string USERID = Encryption.Encrypt(userid, key, iv);
-                            string COLLEGEID = Encryption.Encrypt(collegeid, key, iv);
-                            string CNAME = Encryption.Encrypt(collegename, key, iv);
-                            string USERTYPEID = Encryption.Encrypt(usertypeid, key, iv);
-                            string CCODE = Encryption.Encrypt(ccode, key, iv);
-                            string CTYPE = Encryption.Encrypt(ctype, key, iv);
-                            string BCODE = Encryption.Encrypt(bcode, key, iv);
-                            string BID = Encryption.Encrypt(bid, key, iv);
-                            string RESPONSECODE = Encryption.Encrypt(rescode, key, iv);
-                            string RESDESCRIPTION = Encryption.Encrypt(resdesc, key, iv);
-
-                            token = hbcrypt.Encrypt(JsonConvert.SerializeObject(t));
-                            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { token, USERTYPEID, USERID, USERNAME, COLLEGEID, CCODE, CTYPE, CNAME, BID, BCODE, RESPONSECODE, RESDESCRIPTION, t.ExpiryDate, AuthTokenId });
-                            return response;
-                        }
-                    }
-                    //else if (User.SystemUser.Count > 0 && User.UserAuth[0].ResponceCode == "401")
-                    //{
-                    //    lock (lockObj) // Ensure thread-safe increment
-                    //    {
-                    //        loginAttempts++;
-                    //    }
-                    //    if (loginAttempts > 2)
-                    //    {
-                    //        lock (lockObj) { loginLocked = true; }
-                    //        UserAccountStatus = AddorGetAccountStatus(ReqData.DataType, ReqData.LoginName);
-                    //        Task.Run(() => ResetLoginAttempts());
-                    //        string message = "Account locked for 1 minute.";
-
-                    //        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    //        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                    //        string MESSAGE = Encryption.Encrypt(message, key, iv);
-                    //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE, isLocked });
-                    //        return response;
-                    //    }
-                    //    else
-                    //    {
-                    //        string message = "No such username or password";
-                    //        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    //        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                    //        string MESSAGE = Encryption.Encrypt(message, key, iv);
-                    //        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
-                    //        return response;
-                    //    }
-                    //}
-                    else
-                    {
-                        string message = "Login failed. Please try again.";
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                        string MESSAGE = Encryption.Encrypt(message, key, iv);
-                        HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
-                        return response;
-                    }
-
+                    return response;
                 }
                 else
                 {
-                    var message = "Invalid Captcha";
+                    lock (lockObj)
+                    {
+                        loginAttempts++;
 
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-                    string MESSAGE = Encryption.Encrypt(message, key, iv);
-                    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, new { MESSAGE });
-                    return response;
+                        if (loginAttempts >= 3)
+                        {
+                            loginLocked = true;
+                            Task.Run(() => ResetLoginAttempts());
+                            return EncryptedResponse("Account locked for 1 minute.");
+                        }
+                    }
+                    return EncryptedResponse("Invalid username or password");
+
                 }
-
+            }
+            catch (SqlException sqlEx)
+            {
+                return EncryptedResponse("Database error occurred.");
             }
             catch (Exception ex)
             {
-                dbHandler.SaveErorr("USP_GET_ExamsCaptchaSessionLog", 0, ex.Message);
-                //captcha = GetCaptchaString(data);
-                p1.ResponceCode = "400";
-                p1.ResponceDescription = ex.Message;
-                p1.Captcha = captcha;
-                p.Add(p1);
-                return null;
+                return EncryptedResponse("Invalid username or password");
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getUserLogout")]
+
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getUserLogout")]
         public void getUserLogout()
         {
             try
@@ -864,8 +829,9 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
         //[AuthorizationFilter()]
-        [AuthorizationFilter][HttpPost, ActionName("AddorGetAccountStatus")]
-        public string AddorGetAccountStatus(string DataType,string UserName)
+        [AuthorizationFilter]
+        [HttpPost, ActionName("AddorGetAccountStatus")]
+        public string AddorGetAccountStatus(string DataType, string UserName)
         {
             try
             {
@@ -893,8 +859,11 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+       
 
-        [AuthorizationFilter][HttpGet, ActionName("GetCaptchaString10")]
+
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetCaptchaString10")]
         public string GetCaptchaString10()
         {
             var dbHandler = new dbHandler();
@@ -935,7 +904,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("SetSessionId")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SetSessionId")]
         public string SetSessionId(string SessionId, string Captcha)
         {
             var dbHandler = new dbHandler();
@@ -945,7 +915,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@SessionId", SessionId);
                 param[1] = new SqlParameter("@Captcha", Captcha);
-                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_TEST_ExamsCaptchaSessionLog", param);
+                var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_ExamsCaptchaSessionLog", param);
                 return JsonConvert.SerializeObject(dt);
             }
             catch (Exception ex)
@@ -980,7 +950,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetDecryptedData")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetDecryptedData")]
         public string GetDecryptedData(string DataType)
         {
             try
@@ -1002,7 +973,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateAttendenceCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateAttendenceCaptcha")]
         public string ValidateAttendenceCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1070,7 +1042,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateHallTicketCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateHallTicketCaptcha")]
         public string ValidateHallTicketCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1149,7 +1122,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateStudentFeePaymentforAdminCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateStudentFeePaymentforAdminCaptcha")]
         public string ValidateStudentFeePaymentforAdminCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1220,7 +1194,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateStudentFeePaymentDetailsCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateStudentFeePaymentDetailsCaptcha")]
         public string ValidateStudentFeePaymentDetailsCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1290,7 +1265,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC09ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC09ConsolidatedResultCaptcha")]
         public string ValidateC09ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1356,7 +1332,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC14ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC14ConsolidatedResultCaptcha")]
         public string ValidateC14ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1422,7 +1399,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC16ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC16ConsolidatedResultCaptcha")]
         public string ValidateC16ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1488,7 +1466,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC16SConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC16SConsolidatedResultCaptcha")]
         public string ValidateC16SConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1554,7 +1533,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateER91ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateER91ConsolidatedResultCaptcha")]
         public string ValidateER91ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1621,7 +1601,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC05ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC05ConsolidatedResultCaptcha")]
         public string ValidateC05ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1687,7 +1668,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateC08ConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateC08ConsolidatedResultCaptcha")]
         public string ValidateC08ConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1753,7 +1735,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateConsolidatedResultCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateConsolidatedResultCaptcha")]
         public string ValidateConsolidatedResultCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1821,7 +1804,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateDetailsByPinCaptcha")]
         public string ValidateDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1887,7 +1871,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateMigrationDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateMigrationDetailsByPinCaptcha")]
         public string ValidateMigrationDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -1953,7 +1938,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateTranscriptDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateTranscriptDetailsByPinCaptcha")]
         public string ValidateTranscriptDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2019,7 +2005,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateTcDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateTcDetailsByPinCaptcha")]
         public string ValidateTcDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2085,7 +2072,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateNcDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateNcDetailsByPinCaptcha")]
         public string ValidateNcDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2151,7 +2139,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateODCDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateODCDetailsByPinCaptcha")]
         public string ValidateODCDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2217,7 +2206,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateMarksMemoDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateMarksMemoDetailsByPinCaptcha")]
         public string ValidateMarksMemoDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2283,7 +2273,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateStudyDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateStudyDetailsByPinCaptcha")]
         public string ValidateStudyDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2349,7 +2340,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateBonafiedDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateBonafiedDetailsByPinCaptcha")]
         public string ValidateBonafiedDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2415,7 +2407,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateFeePaymentStatusCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateFeePaymentStatusCaptcha")]
         public string ValidateFeePaymentStatusCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2481,7 +2474,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("ValidatePinDetailsCaptcha")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("ValidatePinDetailsCaptcha")]
         public string ValidatePinDetailsCaptcha(string pin)
         {
             try
@@ -2505,7 +2499,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateTwoYearsFeePaymentStatusCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateTwoYearsFeePaymentStatusCaptcha")]
         public string ValidateTwoYearsFeePaymentStatusCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2571,7 +2566,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateGenuinenessCheckDetailsByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateGenuinenessCheckDetailsByPinCaptcha")]
         public string ValidateGenuinenessCheckDetailsByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2637,7 +2633,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("ValidateDataByPinCaptcha")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("ValidateDataByPinCaptcha")]
         public string ValidateDataByPinCaptcha(JsonObject data)
         {
             var dbHandler = new dbHandler();
@@ -2706,7 +2703,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("ValidatePin")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("ValidatePin")]
         public string ValidatePin(string Pin)
         {
             string ResponceCode = "";
@@ -2746,7 +2744,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             public string Data { get; internal set; }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetStaffTypes")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetStaffTypes")]
         public HttpResponseMessage GetStaffTypes()
         {
             try
@@ -2763,7 +2762,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetDownloadsList")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetDownloadsList")]
         public HttpResponseMessage GetDownloadsList()
         {
             try
@@ -2780,7 +2780,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetActiveDownloadsList")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetActiveDownloadsList")]
         public HttpResponseMessage GetActiveDownloadsList()
         {
             try
@@ -2798,7 +2799,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("getUserTypes")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getUserTypes")]
         public HttpResponseMessage getUserTypes()
         {
             try
@@ -2815,7 +2817,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetUsers")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetUsers")]
         public HttpResponseMessage GetUsers()
         {
             try
@@ -2833,7 +2836,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetAllUsers")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetAllUsers")]
         public HttpResponseMessage GetAllUsers()
         {
             try
@@ -2857,7 +2861,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("AddUserPasswords")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("AddUserPasswords")]
         public string AddUserPasswords(string UserName, string Password)
         {
             var dbHandler = new dbHandler();
@@ -2898,7 +2903,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("getCircularTypes")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getCircularTypes")]
         public HttpResponseMessage getCircularTypes()
         {
             try
@@ -2916,7 +2922,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetProjects")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetProjects")]
         public HttpResponseMessage GetProjects()
         {
             try
@@ -2935,7 +2942,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetTaskTypes")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetTaskTypes")]
         public HttpResponseMessage GetTaskTypes()
         {
             try
@@ -2955,7 +2963,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("getStaffList")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getStaffList")]
         public HttpResponseMessage getStaffList()
         {
             try
@@ -2975,7 +2984,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("getStaffActive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getStaffActive")]
         public HttpResponseMessage getStaffActive()
         {
             try
@@ -2993,7 +3003,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetCollegesList")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetCollegesList")]
         public HttpResponseMessage GetCollegesList()
         {
             try
@@ -3011,7 +3022,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetModulesbyRole")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetModulesbyRole")]
         public HttpResponseMessage GetModulesbyRole(int usertypeid)
         {
             try
@@ -3030,7 +3042,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("DeleteStaff")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("DeleteStaff")]
         public HttpResponseMessage DeleteStaff(int id)
         {
             try
@@ -3050,7 +3063,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("DeleteCircular")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("DeleteCircular")]
         public HttpResponseMessage DeleteCircular(int id)
         {
             try
@@ -3070,7 +3084,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("DeleteDownloads")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("DeleteDownloads")]
         public HttpResponseMessage DeleteDownloads(int id)
         {
             try
@@ -3091,7 +3106,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("DeleteTender")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("DeleteTender")]
         public HttpResponseMessage DeleteTender(int id)
         {
             try
@@ -3111,7 +3127,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("SwitchCircular")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SwitchCircular")]
         public HttpResponseMessage SwitchCircular(int id, int IsActive)
         {
             try
@@ -3132,7 +3149,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("SwitchDownloads")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SwitchDownloads")]
         public HttpResponseMessage SwitchDownloads(int id, int IsActive)
         {
             try
@@ -3154,7 +3172,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("SwitchStaff")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SwitchStaff")]
         public HttpResponseMessage SwitchStaff(int id, int IsActive)
         {
             try
@@ -3176,7 +3195,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("SwitchTender")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SwitchTender")]
         public HttpResponseMessage SwitchTender(int id, int IsActive)
         {
             try
@@ -3199,7 +3219,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetAllModulesbyRole")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetAllModulesbyRole")]
         public HttpResponseMessage GetAllModulesbyRole(int usertypeid)
         {
             try
@@ -3219,7 +3240,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetSubModulesbyRole")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetSubModulesbyRole")]
         public HttpResponseMessage GetSubModulesbyRole(int usertypeid, int moduleid)
         {
             try
@@ -3241,7 +3263,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("SetSubModuleInactive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SetSubModuleInactive")]
         public HttpResponseMessage SetSubModuleInactive(int usertypeid, int moduleId, int SubModuleId, int IsActive)
         {
             try
@@ -3265,7 +3288,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("SetModuleInactive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SetModuleInactive")]
         public HttpResponseMessage SetModuleInactive(int usertypeid, int moduleId, int IsActive)
         {
             try
@@ -3288,7 +3312,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("NotificationInactive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("NotificationInactive")]
         public HttpResponseMessage NotificationInactive(int Id)
         {
             try
@@ -3322,7 +3347,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("getUserType")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getUserType")]
         public HttpResponseMessage getUserType()
         {
             try
@@ -3339,7 +3365,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getActiveBranches")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getActiveBranches")]
         public HttpResponseMessage getActiveBranches()
         {
             try
@@ -3358,7 +3385,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("SwitchUserStatus")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("SwitchUserStatus")]
         public HttpResponseMessage SwitchUserStatus(string UserId)
         {
             try
@@ -3400,7 +3428,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetNotificationsActiveByUser")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetNotificationsActiveByUser")]
         public HttpResponseMessage GetNotificationsActiveByUser(int UserTypeId)
         {
             try
@@ -3420,7 +3449,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetCircularByUser")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetCircularByUser")]
         public HttpResponseMessage GetCircularByUser(int UserTypeId)
         {
             try
@@ -3441,7 +3471,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetBranchList")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetBranchList")]
         public HttpResponseMessage GetBranchList(string @CollegeCode)
         {
             try
@@ -3461,7 +3492,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getActiveSchemes")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getActiveSchemes")]
         public string getActiveSchemes()
         {
             try
@@ -3479,7 +3511,29 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getCirculars")]
+        [HttpGet, ActionName("GetUserData")]
+        public string GetUserData(string UserName)
+        {
+            try
+            {
+
+
+                string decrptedUserName = GetDecryptedData(UserName.ToString());
+                var dbHandler = new dbHandler();
+                var param = new SqlParameter[1];
+                param[0] = new SqlParameter("@UserName", decrptedUserName);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Get_UserHash", param);
+                return JsonConvert.SerializeObject(dt);
+            }
+            catch (Exception ex)
+            {
+
+                dbHandler.SaveErorr("SP_Get_AccountStatus", 0, ex.Message);
+                return ex.Message;
+            }
+        }
+
+        [HttpGet, ActionName("getCirculars")]
         public string getCirculars()
         {
             try
@@ -3497,7 +3551,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getTenders")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getTenders")]
         public string getTenders()
         {
             try
@@ -3515,7 +3570,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getCircularsActive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getCircularsActive")]
         public string getCircularsActive()
         {
             try
@@ -3533,7 +3589,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("getTendersActive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("getTendersActive")]
         public string getTendersActive()
         {
             try
@@ -3553,7 +3610,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetUserIdStatus")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetUserIdStatus")]
         public HttpResponseMessage GetUserIdStatus(string UserName)
         {
             try
@@ -3591,7 +3649,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("createUser")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("createUser")]
         public HttpResponseMessage createUser([FromBody] userDetails request)
         {
             try
@@ -3653,7 +3712,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpPost, ActionName("PostNotification")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("PostNotification")]
         public string PostNotification([FromBody] JsonObject NotificationData)
         {
             try
@@ -3671,7 +3731,8 @@ namespace SoftwareSuite.Controllers.AdminServices
                 return ex.Message;
             }
         }
-        [AuthorizationFilter][HttpGet, ActionName("GetSemester")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetSemester")]
         public HttpResponseMessage GetSemester(int UserType)
         {
             try
@@ -3691,7 +3752,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetTicketsCount")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetTicketsCount")]
         public string GetTicketsCount(string UserName)
         {
             try
@@ -3719,7 +3781,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetStatusWiseTickets")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetStatusWiseTickets")]
         public string GetStatusWiseTickets(int DataType, string UserName)
         {
             try
@@ -3798,7 +3861,8 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter][HttpGet, ActionName("GetorEditorDeleteTicketsData")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetorEditorDeleteTicketsData")]
         public string GetorEditorDeleteTicketsData(int DataType, string UserName, int TaskID)
         {
             var dbHandler = new dbHandler();
@@ -3821,7 +3885,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("GetTicketsCountData")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetTicketsCountData")]
         public string GetTicketsCountData(int DataType, string UserName, string User, int ProjectID)
         {
             var dbHandler = new dbHandler();
@@ -3872,7 +3937,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("AddorUpdateorDeleteTickets")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("AddorUpdateorDeleteTickets")]
         public HttpResponseMessage AddorUpdateorDeleteTickets([FromBody] TicketsData TicketsData)
         {
             try
@@ -3939,7 +4005,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("UpdateCountsData")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("UpdateCountsData")]
         public HttpResponseMessage UpdateCountsData([FromBody] TicketsData TicketsData)
         {
             try
@@ -3962,7 +4029,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("UpdateWorkStatus")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("UpdateWorkStatus")]
         public HttpResponseMessage UpdateWorkStatus([FromBody] TicketsData TicketsData)
         {
             try
@@ -4023,7 +4091,8 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter][HttpPost, ActionName("UpdateWorkAssigned")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("UpdateWorkAssigned")]
         public HttpResponseMessage UpdateWorkAssigned([FromBody] TicketsData TicketsData)
         {
             try
@@ -4051,7 +4120,8 @@ namespace SoftwareSuite.Controllers.AdminServices
 
 
 
-        [AuthorizationFilter][HttpPost, ActionName("SaveScheamdata")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("SaveScheamdata")]
         public HttpResponseMessage SaveScheamdata([FromBody] JsonObject request)
         {
             try
@@ -4073,7 +4143,8 @@ namespace SoftwareSuite.Controllers.AdminServices
                 throw ex;
             }
         }
-        [AuthorizationFilter][HttpGet, ActionName("GetStatuswiseReport")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetStatuswiseReport")]
         public string GetStatuswiseReport(int DataType, string UserName)
         {
             var dbHandler = new dbHandler();
@@ -4103,7 +4174,8 @@ namespace SoftwareSuite.Controllers.AdminServices
     public class AdminServiceBaseController : BaseController
     {
 
-        [AuthorizationFilter][HttpPost, ActionName("uploadFile")]
+        [AuthorizationFilter]
+        [HttpPost, ActionName("uploadFile")]
         public string uploadFile([FromBody] HttpPostedFileBase file, string Title, string Description, string Ids)
         {
             var path = string.Empty;
