@@ -763,7 +763,12 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
+                string Pin = PinCheck(pin.ToString());
 
+                if (Pin != "YES")
+                {
+                    return Pin;
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@pin", pin);
@@ -1327,10 +1332,10 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-                string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
-                string Day1 = PinCheck(day);
-                string Month1 = PinCheck(month);
-                string Year1 = PinCheck(year);
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString());
+                string Day1 = OnlyTwoDigitCheck(day);
+                string Month1 = OnlyTwoDigitCheck(month);
+                string Year1 = OnlyFourDigitCheck(year);
                 
 
 
@@ -2194,6 +2199,29 @@ namespace SoftwareSuite.Controllers.PreExamination
             person p1 = new person();
             try
             {
+                var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
+                string Scheme = NumberCheck(data["Scheme"].ToString());
+                string semid = NumberCheck(js["semid"].ToString());
+                string branchid = NumberCheck(js["branchid"].ToString());
+                string collegecode = NumberCheck(js["collegecode"].ToString());
+
+
+                if (Scheme != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Scheme);
+                }
+                else if (semid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, semid);
+                }
+                else if (branchid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, branchid);
+                }
+                else if (collegecode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, collegecode);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Scheme", data["Scheme"]);
@@ -9371,6 +9399,50 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyTwoDigitCheck")]
+        public string OnlyTwoDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{2}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyFourDigitCheck")]
         public string OnlyFourDigitCheck(string DataType)
         {
@@ -10419,7 +10491,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             {
                 string Scheme1 = PinCheck(Scheme);
                 string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
-                string Date1 = PinCheck(Date);
+                string Date1 = DateCheck(Date);
                 
                
 
@@ -15227,6 +15299,33 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string UserTypeId = NumberCheck(request["UserTypeId"].ToString());
+                string collegeCode = NumberCheck(request["collegeCode"].ToString());
+                string branchcode = NumberCheck(request["branchcode"].ToString());
+                string semester = PinCheck(request["semester"].ToString());
+                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+
+
+                if (UserTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, UserTypeId);
+                }
+                else if (collegeCode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, collegeCode);
+                }
+                else if (branchcode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, branchcode);
+                }
+                else if (semester != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, semester);
+                }
+                else if (StudentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, StudentTypeId);
+                }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
@@ -15662,6 +15761,23 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
+                string studentTypeId = NumberCheck(StudentTypeId.ToString());
+                string examtypeid = NumberCheck(ExamTypeID.ToString());
+
+                if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                if (examtypeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examtypeid);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
                 param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
@@ -18390,6 +18506,43 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string academicYearId = NumberCheck(AcademicYearId.ToString());
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
+                string studentTypeId = NumberCheck(StudentTypeId.ToString());
+                string examTypeId = NumberCheck(ExamTypeId.ToString());
+                string schemeid = NumberCheck(Schemeid.ToString());
+                string Branchid = NumberCheck(branchid.ToString());
+                string Semid = NumberCheck(semid.ToString());
+
+
+                if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (schemeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                }
+                else if (Branchid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Branchid);
+                }
+                else if (Semid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Semid);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[7];
                 param[0] = new SqlParameter("@AcademicYearId", AcademicYearId);
@@ -18416,7 +18569,43 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string academicYearId = NumberCheck(AcademicYearId.ToString());
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
+                string studentTypeId = NumberCheck(StudentTypeId.ToString());
+                string examTypeId = NumberCheck(ExamTypeId.ToString());
+                string examdate = DateCheck(ExamDate.ToString());
+                string examSession = PinCheck(ExamSession.ToString());
+                string Schemeid = NumberCheck(schemeid.ToString());
 
+
+                if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (examdate != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examdate);
+                }
+                else if (examSession != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examSession);
+                }
+                else if (Schemeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Schemeid);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[7];
                 param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
@@ -18446,6 +18635,35 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
+                string academicYearId = NumberCheck(AcademicYearId.ToString());
+                string studentTypeId = NumberCheck(StudentTypeId.ToString());
+                string examTypeId = NumberCheck(ExamTypeId.ToString());
+                string Pcode = PinCheck(pcode.ToString());
+
+
+
+                if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (Pcode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Pcode);
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
 
@@ -19273,6 +19491,34 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string DataType = NumberCheck(request["DataType"].ToString());
+                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString());
+                string Exammonthyearid = NumberCheck(request["Exammonthyearid"].ToString());
+                string CollegeCode = NumberCheck(request["CollegeCode"].ToString());
+                string BranchCode = NameCheck(request["BranchCode"].ToString());
+
+
+                if (DataType != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, DataType);
+                }
+                else if (AcademicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, AcademicYearId);
+                }
+                else if (Exammonthyearid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Exammonthyearid);
+                }
+                else if (CollegeCode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CollegeCode);
+                }
+                else if (BranchCode != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, BranchCode);
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
                 param[0] = new SqlParameter("@DataType", request["DataType"]);

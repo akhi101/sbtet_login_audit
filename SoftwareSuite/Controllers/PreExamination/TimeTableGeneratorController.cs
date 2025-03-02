@@ -7,15 +7,18 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Web;
 using System.Web.Http;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
 using PdfSharp.Pdf.IO;
 using RestSharp;
 using SelectPdf;
 using SoftwareSuite.Models;
 using SoftwareSuite.Models.Database;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace SoftwareSuite.Controllers.PreExamination
 {
@@ -201,7 +204,16 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];             
                 param[0] = new SqlParameter("@ExamMonthYearId", request["ExamMonthYearId"]);
@@ -312,13 +324,606 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("CheckFee")]
+        public string CheckFee(int DataType)
+        {
+            try
+            {
+                if (DataType != 0)
+                {
+                    Regex regex = new Regex("[0-9]");
+                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType.ToString()))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("PinCheck")]
+        public string PinCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^[a-zA-Z0-9_.-]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NameCheck")]
+        public string NameCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[a-zA-Z\\s]*$");
+                    if (!regex.IsMatch(DataType))
+                    {
+
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GenderCheck")]
+        public string GenderCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[MF]$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("MobileNumberCheck")]
+        public string MobileNumberCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{10}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("EmailCheck")]
+        public string EmailCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NumberCheck")]
+        public string NumberCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[0-9]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("DateCheck")]
+        public string DateCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyThreeDigitCheck")]
+        public string OnlyThreeDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{3}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("DataCheck1")]
+        public string DataCheck1(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[A-Za-z0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyFourDigitCheck")]
+        public string OnlyFourDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{4}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyTwelveDigitCheck")]
+        public string OnlyTwelveDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{12}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        return "NO";
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("CollegeNameCheck")]
+        public string CollegeNameCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[a-zA-Z\\s,]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        return "NO";
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
         [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTablePdfAdmin")]
         public string TimeTablePdfAdmin([FromBody] JsonObject request)
         {
             try
             {
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
+                string schemeid = NumberCheck(request["SchemeId"].ToString());
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
 
+
+                if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (schemeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                }
+                else if (dataTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
                 param[0] = new SqlParameter("@AcademicYearId", request["AcademicYearId"]);
@@ -351,7 +956,38 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
+                string schemeid = NumberCheck(request["SchemeId"].ToString());
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
 
+
+                if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (schemeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                }
+                else if (dataTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
                 param[0] = new SqlParameter("@AcademicYearId", request["AcademicYearId"]);
@@ -400,7 +1036,38 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
+                string schemeid = NumberCheck(request["SchemeId"].ToString());
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
 
+
+                if (academicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                }
+                else if (examMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                }
+                else if (studentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                }
+                else if (examTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                }
+                else if (schemeid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                }
+                else if (dataTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
                 param[0] = new SqlParameter("@AcademicYearId", request["AcademicYearId"]);

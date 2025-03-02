@@ -313,7 +313,7 @@ margin-top: 23px;
                                                     <label for="ExamType">
                                                         Enter PCode :
                                                     </label>
-                                                   <input class="form-control" placeholder="Enter PCode" name="PCode" ng-model="PCode"/>
+                                                   <input class="form-control" placeholder="Enter PCode" name="PCode" onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)" ng-model="PCode"/>
                                                 </div>
                                                 <div class="col-md-3 pull-left">
                                                     <button class="btn pull-left btn-success btn-css text-uppercase" style="margin-top: 23px;" ng-click="GetTimeTableDetailsByPCode()">
