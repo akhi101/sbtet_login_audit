@@ -139,7 +139,25 @@
             PublishTimetabledata.then(function (data) {
               
                 try { var response = JSON.parse(data) } catch (err) { }
-                if (response[0].ResponceCode == '200') {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (response[0].ResponceCode == '200') {
                     alert(response[0].ResponceDescription);
 
                 } else {
@@ -187,9 +205,31 @@
 
             var SchemeSem = PreExaminationService.GetTimeTableUpdateData($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType, $scope.selscheme, $scope.selsem, $scope.examtype , $scope.selbranch);
             SchemeSem.then(function (data) {
-                try { var data = JSON.parse(data) } catch (err) { }
+                try {
+                    var data = JSON.parse(data)
+                } catch (err)
+                {
 
-                if (data.length > 0) {
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     $scope.ReportFound = true;
                     $scope.Noreports = false;
                     $scope.GetMasterschemeSem = data;
@@ -208,7 +248,25 @@
 
 
         }
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
 
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
        
 
         $scope.GetTimeTableDetailsByPCode = function () {
@@ -241,8 +299,25 @@
             var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByPcode($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType, $scope.examtype, $scope.PCode);
             SchemeSem.then(function (data) {
                 try { var data = JSON.parse(data) } catch (err) { }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
 
-                if (data.length > 0) {
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     $scope.ReportFound1 = true;
                     $scope.Noreports1 = false;
                     $scope.GetMasterschemeSem = data;
@@ -318,8 +393,25 @@
             var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByDate($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType,$scope.examtype, $scope.ExamDate, $scope.ExamSession, $scope.selscheme);
             SchemeSem.then(function (data) {
                 try { var data = JSON.parse(data) } catch (err) { }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
 
-                if (data.length > 0) {
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     $scope.ReportFound2 = true;
                     $scope.Noreports2 = false;
                     $scope.GetMasterschemeSem = data;
@@ -515,7 +607,26 @@
             var getpdfTimeTableData = PreExaminationService.TimeTablePdfAdmin(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
             getpdfTimeTableData.then(function (data) {
                 $scope.gentmetbl = false;
-                if (data.length > 0) {
+
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     if (data.length > 4) {
 
                         $scope.LoadImg = false;
@@ -577,7 +688,26 @@
             var getpdfTimeTableData = PreExaminationService.TimeTableXlsxAdmin(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
             getpdfTimeTableData.then(function (data) {
                 $scope.gentmetbl = false;
-                if (data.length > 0) {
+
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     if (data.length > 4) {
                         $scope.Result = true;
                         var location = data;
@@ -639,7 +769,25 @@
             var getpdfTimeTableData = PreExaminationService.TimeTableEdepXlsx(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
             getpdfTimeTableData.then(function (data) {
                 $scope.gentmetbl = false;
-                if (data.length > 0) {
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (data.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = data.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = data.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                    $scope.ExamMonthYear = "";
+                }
+                else if (data.length > 0) {
                     if (data.length > 4) {
 
                         var location = data;
