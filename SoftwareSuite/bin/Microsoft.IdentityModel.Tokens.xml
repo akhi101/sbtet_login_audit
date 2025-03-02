@@ -70,6 +70,11 @@
             is used for `kid` and the public portion of <see cref="P:Microsoft.IdentityModel.Tokens.EncryptingCredentials.Key"/> is used for `epk`.
             </remarks>
         </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.AppContextSwitches.UpdateConfigAsBlocking">
+            <summary>
+            Unused, part of a previous release. This is a friend, so we cannot remove.
+            </summary>
+        </member>
         <member name="M:Microsoft.IdentityModel.Tokens.AppContextSwitches.ResetAllSwitches">
             <summary>
             Used for testing to reset all switches to its default value.
@@ -305,12 +310,6 @@
             <param name="arg">The base64url encoded string to decode.</param>
             <returns>The UTF-8 decoded string.</returns>
         </member>
-        <member name="T:Microsoft.IdentityModel.Tokens.Base64UrlEncoding">
-            <summary>
-            Base64 encode/decode implementation for as per https://tools.ietf.org/html/rfc4648#section-5.
-            Uses ArrayPool[T] to minimize memory usage.
-            </summary>
-        </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Base64UrlEncoding.Decode(System.String)">
             <summary>
             Decodes a base64url encoded string into a byte array.
@@ -391,12 +390,6 @@
             <param name="offset">The index of the character in <paramref name="input"/> to start decoding from.</param>
             <param name="length">The number of characters beginning from <paramref name="offset"/> to decode.</param>
             <param name="output">The byte array to place the decoded results into.</param>
-            <remarks>
-            Changes from Base64UrlEncoder implementation:
-            1. Padding is optional.
-            2. '+' and '-' are treated the same.
-            3. '/' and '_' are treated the same.
-            </remarks>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Base64UrlEncoding.Encode(System.Byte[])">
             <summary>
@@ -3822,6 +3815,13 @@
             <returns>a <see cref="T:Microsoft.IdentityModel.Tokens.JsonWebKey"/></returns>
             <exception cref="T:System.ArgumentNullException">if <paramref name="key"/>is null.</exception>
         </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.JsonWebKeyConverter.TryConvertToSecurityKey(Microsoft.IdentityModel.Tokens.JsonWebKey,Microsoft.IdentityModel.Tokens.SecurityKey@)">
+            <summary>
+            This will attempt to convert the <see cref="T:Microsoft.IdentityModel.Tokens.JsonWebKey"/> to a <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/>.
+            </summary>
+            <param name="webKey"><see cref="T:Microsoft.IdentityModel.Tokens.JsonWebKey"/></param>
+            <param name="key"><see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/></param>
+        </member>
         <member name="T:Microsoft.IdentityModel.Tokens.JsonWebKeyECTypes">
             <summary>
             Constants for JsonWebKey Elliptical Curve Types
@@ -4963,6 +4963,9 @@
             <summary>
             Defines properties shared across all security token handlers.
             </summary>
+            <summary>
+            Defines properties shared across all security token handlers.
+            </summary>
         </member>
         <member name="F:Microsoft.IdentityModel.Tokens.TokenHandler.DefaultTokenLifetimeInMinutes">
             <summary>
@@ -5404,9 +5407,13 @@
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.RequireAudience">
             <summary>
-            Gets or sets a value indicating whether SAML tokens must have at least one AudienceRestriction.
+            Gets or sets a value indicating whether SAML or JWT tokens must have at least one AudienceRestriction.
             The default is <c>true</c>.
             </summary>
+            <remarks>
+            If set to false and the Audience is null, Audience validation will be skipped.
+            If set to false and the Audience is not null, the Audience will still be validated.
+            </remarks>
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.RequireExpirationTime">
             <summary>
@@ -5784,17 +5791,166 @@
             true if the bytes are equal, false otherwise.
             </returns>
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.AudienceValidationError.GetException">
+        <member name="T:Microsoft.IdentityModel.Tokens.AlgorithmValidationError">
+            <summary>
+            Represents a validation error that occurs when a token's algorithm cannot be validated.
+            If available, the invalid algorithm is stored in <see cref="P:Microsoft.IdentityModel.Tokens.AlgorithmValidationError.InvalidAlgorithm"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.AlgorithmValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.AlgorithmValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="invalidAlgorithm"/> is the algorithm that could not be validated. Can be null if the algorithm is missing from the token.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.AlgorithmValidationError.CreateException">
             <summary>
             Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
             </summary>
             <returns>An instance of an Exception.</returns>
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.LifetimeValidationError.GetException">
+        <member name="P:Microsoft.IdentityModel.Tokens.AlgorithmValidationError.InvalidAlgorithm">
+            <summary>
+            The algorithm that could not be validated.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.AudienceValidationError">
+            <summary>
+            Represents an error that occurs when the token's audience cannot be validated.
+            If available, the invalid audiences from the token are stored in <see cref="P:Microsoft.IdentityModel.Tokens.AudienceValidationError.TokenAudiences"/>
+            and the allowed audiences are stored in <see cref="P:Microsoft.IdentityModel.Tokens.AudienceValidationError.ValidAudiences"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.AudienceValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.Collections.Generic.IList{System.String},System.Collections.Generic.IList{System.String},System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="tokenAudiences"/> are the audiences that were in the token. Can be null if no audiences were found in the token.
+            <param name="validAudiences"/> are the audiences that were expected. Can be null if no valid audiences were provided in the validation parameters.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.AudienceValidationError.CreateException">
             <summary>
             Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
             </summary>
             <returns>An instance of an Exception.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.AudienceValidationError.TokenAudiences">
+            <summary>
+            The audiences that were in the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.AudienceValidationError.ValidAudiences">
+            <summary>
+            The audiences that were expected.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError">
+            <summary>
+            Represents a validation error that occurs when the issuer signing key cannot be validated.
+            If available, the invalid signing key is stored in <see cref="P:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError.InvalidSigningKey"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,Microsoft.IdentityModel.Tokens.SecurityKey,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="invalidSigningKey"/> is the signing key that could not be validated. Can be null if the signing key for the token is missing.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an Exception.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError.NullParameter(System.String,System.Diagnostics.StackFrame)">
+            <summary>
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError"/> representing a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <param name="stackFrame">The stack frame where the error occurred.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError"/>.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError.InvalidSigningKey">
+            <summary>
+            The signing key that was found invalid.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.IssuerValidationError">
+            <summary>
+            Represents an error that occurs when the issuer of a token cannot be validated.
+            If available, the invalid issuer is stored in <see cref="P:Microsoft.IdentityModel.Tokens.IssuerValidationError.InvalidIssuer"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.IssuerValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="invalidIssuer"/> is the issuer that could not be validated. Can be null if the issuer is missing from the token.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.IssuerValidationError.InvalidIssuer">
+            <summary>
+            The issuer that could not be validated.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an exception.</returns>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.LifetimeValidationError">
+            <summary>
+            Represents an error that occurs when a token's lifetime cannot be validated.
+            If available, the not before and expires values are stored in <see cref="P:Microsoft.IdentityModel.Tokens.LifetimeValidationError.NotBefore"/> and <see cref="P:Microsoft.IdentityModel.Tokens.LifetimeValidationError.Expires"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.LifetimeValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.LifetimeValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="notBefore"/> is the date from which the token is valid. Can be null if the token does not contain a not before claim.
+            <param name="expires"/> is the date at which the token expires. Can be null if the token does not contain an expires claim.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.LifetimeValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an Exception.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.LifetimeValidationError.NotBefore">
+            <summary>
+            The date from which the token is valid.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.LifetimeValidationError.Expires">
+            <summary>
+            The date at which the token expires.
+            </summary>
         </member>
         <member name="T:Microsoft.IdentityModel.Tokens.LogDetail">
             <summary>
@@ -5830,14 +5986,129 @@
             <param name="formatString">The message to be formated.</param>
             <param name="parameters">The parameters for formatting.</param>
         </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.MessageDetail.NullParameter(System.String)">
+            <summary>
+            Creates a message detail for a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.MessageDetail"/>.</returns>
+        </member>
         <member name="P:Microsoft.IdentityModel.Tokens.MessageDetail.Message">
             <summary>
             Gets the formatted message.
             </summary>
         </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.SignatureValidationError">
+            <summary>
+            Represents an error that occurs when the token's signature cannot be validated.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.SignatureValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,Microsoft.IdentityModel.Tokens.ValidationError,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.SignatureValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="innerValidationError"/> if present, is the inner validation error that caused this signature validation error.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.SignatureValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an exception.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.SignatureValidationError.NullParameter(System.String,System.Diagnostics.StackFrame)">
+            <summary>
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.SignatureValidationError"/> representing a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <param name="stackFrame">The stack frame where the error occurred.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.SignatureValidationError"/>.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.SignatureValidationError.InnerValidationError">
+            <summary>
+            The inner validation error that caused this signature validation error.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.TokenReplayValidationError">
+            <summary>
+            Represents an error that occurs when a token cannot be validated against being re-used or replay is detected.
+            If available, the expiration time of the token that failed the validation is included.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenReplayValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.Nullable{System.DateTime},System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="expirationTime"/> is the expiration time of the token that failed the validation. Can be null if the token does not have an expiration time.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenReplayValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an exception.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenReplayValidationError.NullParameter(System.String,System.Diagnostics.StackFrame)">
+            <summary>
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.TokenReplayValidationError"/> representing a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <param name="stackFrame">The stack frame where the error occurred.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.TokenReplayValidationError"/>.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.TokenReplayValidationError.ExpirationTime">
+            <summary>
+            The expiration time of the token that failed the validation.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.TokenTypeValidationError">
+            <summary>
+            Represents an error that occurs when a token type cannot be validated.
+            If available, the invalid token type is stored in <see cref="P:Microsoft.IdentityModel.Tokens.TokenTypeValidationError.InvalidTokenType"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenTypeValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.IdentityModel.Tokens.TokenTypeValidationError"/> class.
+            </summary>
+            <param name="messageDetail" /> contains information about the exception that is used to generate the exception message.
+            <param name="validationFailureType"/> is the type of validation failure that occurred.
+            <param name="exceptionType"/> is the type of exception that occurred.
+            <param name="stackFrame"/> is the stack frame where the exception occurred.
+            <param name="invalidTokenType"/> is the token type that could not be validated. Can be null if the token type is missing from the token.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenTypeValidationError.CreateException">
+            <summary>
+            Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
+            </summary>
+            <returns>An instance of an exception.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.TokenTypeValidationError.NullParameter(System.String,System.Diagnostics.StackFrame)">
+            <summary>
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.TokenTypeValidationError"/> representing a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <param name="stackFrame">The stack frame where the error occurred.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.TokenTypeValidationError"/>.</returns>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.TokenTypeValidationError.InvalidTokenType">
+            <summary>
+            The token type that could not be validated.
+            </summary>
+        </member>
         <member name="T:Microsoft.IdentityModel.Tokens.ValidationError">
             <summary>
-            Contains information so that Exceptions can be logged or thrown written as required.
+            Represents an error that occurred during token validation.
+            If necessary, it can be used to create an instance of <see cref="T:System.Exception"/>.
             </summary>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.#ctor(Microsoft.IdentityModel.Tokens.MessageDetail,Microsoft.IdentityModel.Tokens.ValidationFailureType,System.Type,System.Diagnostics.StackFrame,System.Exception)">
@@ -5848,13 +6119,27 @@
             <param name="validationFailureType"/> is the type of validation failure that occurred.
             <param name="exceptionType"/> is the type of exception that occurred.
             <param name="stackFrame"/> is the stack frame where the exception occurred.
-            <param name="innerException"/> is the inner exception that occurred.
+            <param name="innerException"/> if present, represents the exception that occurred during validation.
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.GetException">
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.CreateException">
             <summary>
             Creates an instance of an <see cref="T:System.Exception"/> using <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>
             </summary>
             <returns>An instance of an Exception.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.Log(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Logs the validation error.
+            </summary>
+            <param name="logger">The <see cref="T:Microsoft.Extensions.Logging.ILogger"/> to be used for logging.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.NullParameter(System.String,System.Diagnostics.StackFrame)">
+            <summary>
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/> representing a null parameter.
+            </summary>
+            <param name="parameterName">The name of the parameter.</param>
+            <param name="stackFrame">The stack frame where the error occurred.</param>
+            <returns>A new <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/>.</returns>
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.ValidationError.FailureType">
             <summary>
@@ -5869,6 +6154,11 @@
         <member name="P:Microsoft.IdentityModel.Tokens.ValidationError.InnerException">
             <summary>
             Gets the inner exception that occurred.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidationError.Message">
+            <summary>
+            Gets the message that explains the error.
             </summary>
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.ValidationError.MessageDetail">
@@ -5908,6 +6198,53 @@
             <param name="skipFrames">The number of stack frames to skip when capturing. Used to avoid capturing this method and get the caller instead.</param>
             <returns>The captured stack frame.</returns>
             <remarks>If this is called from a helper method, consider adding an extra skip frame to avoid capturing the helper instead.</remarks>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidationError.Logger.TokenValidationFailed(Microsoft.Extensions.Logging.ILogger,System.String,System.String)">
+            <summary>
+            Logger for handling failures in token validation.
+            </summary>
+            <param name="logger">ILogger.</param>
+            <param name="validationFailureType">The cause of the failure.</param>
+            <param name="messageDetail">The message provided as part of the failure.</param>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.IssuerValidationSource">
+            <summary>
+            Represents the source from which the token issuer was validated.
+            i.e. whether the issuer was matched with the configuration provided or the validation parameters provided.
+            If a custom issuer validation delegate is used, a custom validation source can be instantiated and used.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerValidationSource.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.IssuerValidationSource"/>.
+            </summary>
+            <param name="name">The name of the issuer validation source.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.IssuerValidationSource.Name">
+            <summary>
+            The name of the issuer validation source.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Tokens.IssuerValidationSource.NotValidated">
+            <summary>
+            Represents the issuer validation source that has not been validated.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Tokens.IssuerValidationSource.IssuerMatchedConfiguration">
+            <summary>
+            Represents the issuer validation source that has been matched with the configuration provided.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Tokens.IssuerValidationSource.IssuerMatchedValidationParameters">
+            <summary>
+            Represents the issuer validation source that has been matched with the validation parameters provided.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.IssuerValidationSource.ToString">
+            <summary>
+            The issuer validation source's string representation.
+            </summary>
+            <returns>The name of the issuer validation source.</returns>
         </member>
         <member name="T:Microsoft.IdentityModel.Tokens.TokenValidationResult">
             <summary>
@@ -6015,6 +6352,204 @@
             (e.g for a JSON Web Token, from the "typ" header). 
             </summary>
         </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer">
+            <summary>
+            Represents a validated issuer, including the source of the validation.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.#ctor(System.String,Microsoft.IdentityModel.Tokens.IssuerValidationSource)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/>.
+            </summary>
+            <param name="issuer">The issuer that was validated.</param>
+            <param name="validationSource">The source of the validation, i.e. configuration, validation parameters.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedIssuer.Issuer">
+            <summary>
+            The issuer that was validated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedIssuer.ValidationSource">
+            <summary>
+            The source of the validation, i.e. configuration, validation parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/>.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.GetHashCode">
+            <summary>
+            Returns the hash code for this instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.op_Equality(Microsoft.IdentityModel.Tokens.ValidatedIssuer,Microsoft.IdentityModel.Tokens.ValidatedIssuer)">
+            <summary>
+            Equality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.op_Inequality(Microsoft.IdentityModel.Tokens.ValidatedIssuer,Microsoft.IdentityModel.Tokens.ValidatedIssuer)">
+            <summary>
+            Inequality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is not equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.Equals(Microsoft.IdentityModel.Tokens.ValidatedIssuer)">
+            <summary>
+            Determines whether the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/> is equal to the current instance.
+            </summary>
+            <param name="other">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/> to compare with the current instance.</param>
+            <returns><c>true</c> if the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedIssuer"/> is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedIssuer.ToString">
+            <summary>
+            The validated issuer's string representation.
+            </summary>
+            <returns>A string representing the issuer and where it was validated from.</returns>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime">
+            <summary>
+            Represents a validated lifetime, including the NotBefore and Expires values.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.#ctor(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/>.
+            </summary>
+            <param name="notBefore">The <see cref="T:System.DateTime"/> representing the time from which the token is considered valid.</param>
+            <param name="expires">The <see cref="T:System.DateTime"/> representing the token's expiration time.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedLifetime.NotBefore">
+            <summary>
+            The <see cref="T:System.DateTime"/> representing the time from which the token is considered valid.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedLifetime.Expires">
+            <summary>
+            The <see cref="T:System.DateTime"/> representing the token's expiration time.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/>.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.GetHashCode">
+            <summary>
+            Returns the hash code for this instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.op_Equality(Microsoft.IdentityModel.Tokens.ValidatedLifetime,Microsoft.IdentityModel.Tokens.ValidatedLifetime)">
+            <summary>
+            Equality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.op_Inequality(Microsoft.IdentityModel.Tokens.ValidatedLifetime,Microsoft.IdentityModel.Tokens.ValidatedLifetime)">
+            <summary>
+            Inequality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is not equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.Equals(Microsoft.IdentityModel.Tokens.ValidatedLifetime)">
+            <summary>
+            Determines whether the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/> is equal to the current instance.
+            </summary>
+            <param name="other">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/> to compare with the current instance.</param>
+            <returns><c>true</c> if the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedLifetime"/> is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedLifetime.ToString">
+            <summary>
+            The validated lifetime's string representation.
+            </summary>
+            <returns>A string representing the validated lifetime.</returns>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime">
+            <summary>
+            Represents a validated signing key lifetime.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.#ctor(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/>.
+            </summary>
+            <param name="validFrom">The date from which the signing key is considered valid.</param>
+            <param name="validTo">The date until which the signing key is considered valid.</param>
+            <param name="validationTime">The time the validation occurred.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.ValidFrom">
+            <summary>
+            The date from which the signing key is considered valid.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.ValidTo">
+            <summary>
+            The date until which the signing key is considered valid.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.ValidationTime">
+            <summary>
+            The time the validation occurred.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/>.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.GetHashCode">
+            <summary>
+            Returns the hash code for this instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.op_Equality(Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime,Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime)">
+            <summary>
+            Equality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.op_Inequality(Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime,Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime)">
+            <summary>
+            Inequality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is not equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.Equals(Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime)">
+            <summary>
+            Determines whether the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/> is equal to the current instance.
+            </summary>
+            <param name="other">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/> to compare with the current instance.</param>
+            <returns><c>true</c> if the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime"/> is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedSigningKeyLifetime.ToString">
+            <summary>
+            The validated signing key lifetime's string representation.
+            </summary>
+            <returns>A string that represents the validated signing key lifetime and the validation time.</returns>
+        </member>
         <member name="T:Microsoft.IdentityModel.Tokens.ValidatedToken">
             <summary>
             Contains the results of successfully validating a <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.SecurityToken"/>.
@@ -6022,15 +6557,71 @@
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidatedToken.#ctor(Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.TokenHandler,Microsoft.IdentityModel.Tokens.ValidationParameters)">
             <summary>
-            Creates an instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedToken"/>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedToken"/>.
             </summary>
-            <param name="securityToken">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.SecurityToken"/> that is being validated.</param>
-            <param name="tokenHandler">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.TokenHandler"/> that is being used to validate the token.</param>
-            <param name="validationParameters">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidationParameters"/> to be used for validating the token.</param>
+            <param name="securityToken">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.SecurityToken"/> that was validated.</param>
+            <param name="tokenHandler">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.TokenHandler"/> that was used to validate the token.</param>
+            <param name="validationParameters">The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidationParameters"/> used to validate the token.</param>
+            <exception cref="T:System.ArgumentNullException">If <paramref name="securityToken"/>, <paramref name="tokenHandler"/>, or <paramref name="validationParameters"/> is null.</exception>
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedToken.Log">
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedToken.Log(Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Logs the validation result.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.SecurityToken">
+            <summary>
+            The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.SecurityToken"/> that was validated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.TokenHandler">
+            <summary>
+            The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.TokenHandler"/> that was used to validate the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidationParameters">
+            <summary>
+            The <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidationParameters"/> that were used to validate the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ActorValidationResult">
+            <summary>
+            The result of validating the actor, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedAudience">
+            <summary>
+            The audience that was validated, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedIssuer">
+            <summary>
+            The issuer that was validated. If present, it contains the source of the validation as well.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedLifetime">
+            <summary>
+            The lifetime that was validated, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedTokenReplayExpirationTime">
+            <summary>
+            The expiration time of the token that was used to validate the token was not replayed, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedTokenType">
+            <summary>
+            The token type that was validated, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedSigningKey">
+            <summary>
+            The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that was used to validate the token, if any.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ValidatedSigningKeyLifetime">
+            <summary>
+            The validated lifetime of the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that was used to sign the token, if any.
             </summary>
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.Claims">
@@ -6052,6 +6643,95 @@
         <member name="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ClaimsIdentitySyncObj">
             <summary>Gets the object to use in <see cref="P:Microsoft.IdentityModel.Tokens.ValidatedToken.ClaimsIdentity"/> for double-checked locking.</summary>
         </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.ValidatedToken.Logger">
+            <summary>
+            Internal class used for logging.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedToken.Logger.TokenValidationFailed(Microsoft.Extensions.Logging.ILogger,Microsoft.IdentityModel.Tokens.ValidationFailureType,Microsoft.IdentityModel.Tokens.MessageDetail)">
+            <summary>
+            Logger for handling failures in token validation.
+            </summary>
+            <param name="logger">ILogger.</param>
+            <param name="validationFailureType">The cause of the failure.</param>
+            <param name="messageDetail">The message provided as part of the failure.</param>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedToken.Logger.TokenValidationSucceeded(Microsoft.Extensions.Logging.ILogger,System.String,System.Nullable{Microsoft.IdentityModel.Tokens.ValidatedLifetime},System.Nullable{Microsoft.IdentityModel.Tokens.ValidatedIssuer},System.Nullable{Microsoft.IdentityModel.Tokens.ValidatedTokenType},System.String,System.Boolean)">
+            <summary>
+            Logger for handling successful token validation.
+            </summary>
+            <param name="logger">The instance to be used to log.</param>
+            <param name="validatedAudience">The audience that was validated.</param>
+            <param name="validatedLifetime">The lifetime that was validated.</param>
+            <param name="validatedIssuer">The issuer that was validated.</param>
+            <param name="validatedTokenType">The token type that was validated.</param>
+            <param name="validatedSigningKeyId">The signing key id that was validated.</param>
+            <param name="actorWasValidated">Whether the actor was validated.</param>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType">
+            <summary>
+            Represents a validated token type, including the number of valid types present in the validation parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/>.
+            </summary>
+            <param name="type">The token type that was validated.</param>
+            <param name="validTypeCount">The number of valid types present in the validation parameters.</param>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedTokenType.Type">
+            <summary>
+            The token type that was validated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidatedTokenType.ValidTypeCount">
+            <summary>
+            The number of valid types present in the validation parameters.
+            </summary>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/>.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.GetHashCode">
+            <summary>
+            Returns the hash code for this instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/>.
+            </summary>
+            <returns>The hash code for the current instance.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.op_Equality(Microsoft.IdentityModel.Tokens.ValidatedTokenType,Microsoft.IdentityModel.Tokens.ValidatedTokenType)">
+            <summary>
+            Equality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.op_Inequality(Microsoft.IdentityModel.Tokens.ValidatedTokenType,Microsoft.IdentityModel.Tokens.ValidatedTokenType)">
+            <summary>
+            Inequality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/>.
+            </summary>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is not equal to the right one.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.Equals(Microsoft.IdentityModel.Tokens.ValidatedTokenType)">
+            <summary>
+            Determines whether the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/> is equal to the current instance.
+            </summary>
+            <param name="other">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/> to compare with the current instance.</param>
+            <returns><c>true</c> if the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedTokenType"/> is equal to the current instance; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidatedTokenType.ToString">
+            <summary>
+            The validated token type's string representation.
+            </summary>
+            <returns>A string representing the validated token type and the amount of valid types.</returns>
+        </member>
         <member name="T:Microsoft.IdentityModel.Tokens.ValidationResult`1">
             <summary>
             Represents a validation result that can be either valid or invalid.
@@ -6060,13 +6740,15 @@
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.#ctor(`0)">
             <summary>
-            Creates a successful, valid validation result.
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> indicating a successful operation
+            and containing an object of the associated type.
             </summary>
             <param name="result">The value associated with the success.</param>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.#ctor(Microsoft.IdentityModel.Tokens.ValidationError)">
             <summary>
-            Creates an error, invalid validation result.
+            Creates a new instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> indicating a failed operation
+            and containing a <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/> with the error information.
             </summary>
             <param name="error">The error associated with the failure.</param>
         </member>
@@ -6126,42 +6808,41 @@
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.Equals(System.Object)">
             <summary>
-            
+            Determines whether the specified object is equal to the current instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>.
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><c>true</c> if the specified object is equal to the current instance; otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.GetHashCode">
             <summary>
-            
+            Returns the hash code for this instance of <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>.
             </summary>
-            <returns></returns>
-            <exception cref="T:System.NotImplementedException"></exception>
+            <returns>The hash code for the current instance.</returns>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.op_Equality(Microsoft.IdentityModel.Tokens.ValidationResult{`0},Microsoft.IdentityModel.Tokens.ValidationResult{`0})">
             <summary>
-            
+            Equality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>.
             </summary>
-            <param name="left"></param>
-            <param name="right"></param>
-            <returns></returns>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is equal to the right one.</returns>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.op_Inequality(Microsoft.IdentityModel.Tokens.ValidationResult{`0},Microsoft.IdentityModel.Tokens.ValidationResult{`0})">
             <summary>
-            
+            Inequality comparison operator for <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>.
             </summary>
-            <param name="left"></param>
-            <param name="right"></param>
-            <returns></returns>
+            <param name="left">The left value to compare.</param>
+            <param name="right">The right value to compare.</param>
+            <returns>A boolean indicating whether the left value is not equal to the right one.</returns>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.Equals(Microsoft.IdentityModel.Tokens.ValidationResult{`0})">
             <summary>
-            
+            Determines whether the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> is equal to the current instance.
             </summary>
-            <param name="other"></param>
-            <returns></returns>
+            <param name="other">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> to compare with the current instance.</param>
+            <returns><c>true</c> if the specified <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> is equal to the current instance; otherwise, <c>false</c>.</returns>
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.ToResult">
+        <member name="M:Microsoft.IdentityModel.Tokens.ValidationResult`1.ToValidationResult">
             <summary>
             Casts the result to a <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>.
             </summary>#
@@ -6278,9 +6959,19 @@
             Defines a type that represents the fact that the algorithm validation delegate threw an exception.
             </summary>
         </member>
+        <member name="F:Microsoft.IdentityModel.Tokens.ValidationFailureType.AudienceValidatorThrew">
+            <summary>
+            Defines a type that represents the fact that the audience validation delegate threw an exception.
+            </summary>
+        </member>
         <member name="F:Microsoft.IdentityModel.Tokens.ValidationFailureType.IssuerValidatorThrew">
             <summary>
             Defines a type that represents the fact that the issuer validation delegate threw an exception.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Tokens.ValidationFailureType.LifetimeValidatorThrew">
+            <summary>
+            Defines a type that represents the fact that the lifetime validation delegate threw an exception.
             </summary>
         </member>
         <member name="F:Microsoft.IdentityModel.Tokens.ValidationFailureType.IssuerSigningKeyValidatorThrew">
@@ -6446,8 +7137,6 @@
             </summary>
             <remarks>
             This <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> will be used to check the signature. This can be helpful when the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> does not contain a key identifier.
-            If both <see cref="T:Microsoft.IdentityModel.Tokens.IssuerSigningKeyResolverUsingConfiguration"/> and <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.IssuerSigningKeyResolver"/> are set, IssuerSigningKeyResolverUsingConfiguration takes
-            priority.
             </remarks>
         </member>
         <member name="P:Microsoft.IdentityModel.Tokens.ValidationParameters.IssuerSigningKeys">
@@ -6610,14 +7299,6 @@
             The default is <c>false</c>.
             </remarks>
         </member>
-        <member name="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidateSignatureLast">
-            <summary>
-            Gets or sets a boolean that controls the validation order of the payload and signature during token validation.
-            </summary>
-            <remarks>If <see cref= "P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidateSignatureLast" /> is set to true, it will validate payload ahead of signature.
-            The default is <c>false</c>.
-            </remarks>
-        </member>
         <member name="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidAlgorithms">
             <summary>
             Gets or sets the valid algorithms for cryptographic operations.
@@ -6649,6 +7330,12 @@
             </summary>
             <returns>The <see cref="T:System.Collections.Generic.IList`1"/> that contains valid token types that will be used to check against the token's 'typ' claim.</returns>
         </member>
+        <member name="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidateActor">
+            <summary>
+            Gets or sets a boolean that controls if the actor claim should be validated.
+            </summary>
+            <remarks>Default value is false.</remarks>
+        </member>
         <member name="T:Microsoft.IdentityModel.Tokens.AlgorithmValidationDelegate">
             <summary>
             Definition for delegate that will validate a given algorithm for a <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/>.
@@ -6663,19 +7350,25 @@
         </member>
         <member name="T:Microsoft.IdentityModel.Tokens.Validators">
             <summary>
+            Partial class for Algorithm Validation.
+            </summary>
+            <summary>
             Partial class for Audience Validation.
             </summary>
             <summary>
-            IssuerValidation
+            Partial class for Issuer Validation.
             </summary>
             <summary>
-            SigningKeyValidation
+            Partial class for Issuer Signing Key Validation.
             </summary>
             <summary>
-            IssuerValidation
+            Partial class for Lifetime Validation.
             </summary>
             <summary>
             Partial class for Token Replay validation.
+            </summary>
+            <summary>
+            Partial class for Token Type Validation.
             </summary>
             <summary>
             AudienceValidator
@@ -6689,7 +7382,7 @@
             <param name="securityKey">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that signed the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> being validated.</param>
             <param name="validationParameters"><see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> required for validation.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateAudience(System.Collections.Generic.IList{System.String},Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
             <summary>
@@ -6698,11 +7391,7 @@
             <param name="tokenAudiences">The audiences found in the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.TokenValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
-            <exception cref="T:System.ArgumentNullException">If 'validationParameters' is null.</exception>
-            <exception cref="T:System.ArgumentNullException">If 'audiences' is null and <see cref="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.ValidateAudience"/> is true.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenInvalidAudienceException">If <see cref="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.ValidAudience"/> is null or whitespace and <see cref="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.ValidAudiences"/> is null.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenInvalidAudienceException">If none of the 'audiences' matched either <see cref="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.ValidAudience"/> or one of <see cref="P:Microsoft.IdentityModel.Tokens.TokenValidationParameters.ValidAudiences"/>.</exception>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <remarks>An EXACT match is required.</remarks>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateIssuerAsync(System.String,Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext,System.Threading.CancellationToken)">
@@ -6717,18 +7406,14 @@
             <returns>An <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> that contains either the issuer that was validated or an error.</returns>
             <remarks>An EXACT match is required.</remarks>
         </member>
-        <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateIssuerSigningKey(Microsoft.IdentityModel.Tokens.SecurityKey,Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.BaseConfiguration,Microsoft.IdentityModel.Tokens.CallContext)">
+        <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateIssuerSigningKey(Microsoft.IdentityModel.Tokens.SecurityKey,Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
             <summary>
             Validates the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that signed a <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.
             </summary>
             <param name="securityKey">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that signed the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="configuration">The <see cref="T:Microsoft.IdentityModel.Tokens.BaseConfiguration"/> to be used for validation.</param>
-            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> to be used for logging.</param>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenArgumentNullException"> if 'securityKey' is null and ValidateIssuerSigningKey is true.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenArgumentNullException"> if 'securityToken' is null and ValidateIssuerSigningKey is true.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenArgumentNullException"> if 'validationParameters' is null.</exception>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateIssuerSigningKeyLifeTime(Microsoft.IdentityModel.Tokens.SecurityKey,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
             <summary>
@@ -6736,7 +7421,7 @@
             </summary>
             <param name="securityKey">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityKey"/> that signed the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(System.Nullable{System.DateTime},System.Nullable{System.DateTime},Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
             <summary>
@@ -6746,13 +7431,8 @@
             <param name="expires">The 'expiration' time found in the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <returns>A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> indicating whether validation was successful, and providing a <see cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenInvalidLifetimeException"/> if it was not.</returns>
-            <exception cref="T:System.ArgumentNullException">If 'validationParameters' is null.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenNoExpirationException">If 'expires.HasValue' is false.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenInvalidLifetimeException">If 'notBefore' is &gt; 'expires'.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenNotYetValidException">If 'notBefore' is &gt; DateTime.UtcNow.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException">If 'expires' is &lt; DateTime.UtcNow.</exception>
             <remarks>All time comparisons apply <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ClockSkew"/>.</remarks>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateTokenReplay(System.Nullable{System.DateTime},System.String,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
@@ -6762,12 +7442,7 @@
             <param name="expirationTime">When does the security token expire.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
-            <exception cref="T:System.ArgumentNullException">If 'securityToken' is null or whitespace.</exception>
-            <exception cref="T:System.ArgumentNullException">If 'validationParameters' is null or whitespace.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenNoExpirationException">If <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.TokenReplayCache"/> is not null and expirationTime.HasValue is false. When a TokenReplayCache is set, tokens require an expiration time.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenReplayDetectedException">If the 'securityToken' is found in the cache.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenReplayAddFailedException">If the 'securityToken' could not be added to the <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.TokenReplayCache"/>.</exception>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
         </member>
         <member name="M:Microsoft.IdentityModel.Tokens.Validators.ValidateTokenType(System.String,Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext)">
             <summary>
@@ -6776,7 +7451,7 @@
             <param name="type">The token type or <c>null</c> if it couldn't be resolved (e.g from the 'typ' header for a JWT).</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> that is being validated.</param>
             <param name="validationParameters"><see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> required for validation.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <returns> A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>that contains the results of validating the token type.</returns>
             <remarks>An EXACT match is required. <see cref="F:System.StringComparison.Ordinal"/> (case sensitive) is used for comparing <paramref name="type"/> against <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidTypes"/>.</remarks>
         </member>
@@ -6963,7 +7638,6 @@
             <param name="signingKey">The security key to validate.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> that is being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="configuration">The <see cref="T:Microsoft.IdentityModel.Tokens.BaseConfiguration"/> to be used for validation.</param>
             <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> to be used for logging.</param> 
             <returns>A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>that contains the results of validating the issuer.</returns>
             <remarks>This delegate is not expected to throw.</remarks>
@@ -6976,7 +7650,7 @@
             <param name="expires">The 'expiration' time found in the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/>.</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> that is being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.TokenValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <returns>A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>that contains the results of validating the issuer.</returns>
             <remarks>This delegate is not expected to throw.</remarks>
         </member>
@@ -6987,7 +7661,7 @@
             <param name="expirationTime">When does the <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> expire..</param>
             <param name="securityToken">The security token that is being validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <returns>A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>that contains the results of validating the token.</returns>
             <remarks>This delegate is not expected to throw.</remarks>
         </member>
@@ -6998,7 +7672,7 @@
             <param name="type">The token type or <c>null</c> if it couldn't be resolved (e.g from the 'typ' header for a JWT).</param>
             <param name="securityToken">The <see cref="T:Microsoft.IdentityModel.Tokens.SecurityToken"/> that is being validated.</param>
             <param name="validationParameters"><see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> required for validation.</param>
-            <param name="callContext"></param>
+            <param name="callContext">The <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <returns> A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/>that contains the results of validating the token type.</returns>
             <remarks>An EXACT match is required. <see cref="F:System.StringComparison.Ordinal"/> (case sensitive) is used for comparing <paramref name="type"/> against <see cref="P:Microsoft.IdentityModel.Tokens.ValidationParameters.ValidTypes"/>.</remarks>
         </member>
@@ -7164,6 +7838,96 @@
         <member name="P:Microsoft.IdentityModel.Tokens.X509SigningCredentials.Certificate">
             <summary>
             Gets the <see cref="T:System.Security.Cryptography.X509Certificates.X509Certificate2"/> used by this instance.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Telemetry.TelemetryClient">
+            <summary>
+            Prepares <see cref="T:System.Diagnostics.TagList"/>s using the provided data and sends them to <see cref="T:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder"/> for recording.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.IdentityModelVersionTag">
+            <summary>
+            Telemetry tag indicating the version of the IdentityModel library.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.MetadataAddressTag">
+            <summary>
+            Telemetry tag indicating the endpoint from which a configuration is retrieved.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.OperationStatusTag">
+            <summary>
+            Telemetry tag describing the operation being performed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.ExceptionTypeTag">
+            <summary>
+            Telemetry tag indicating the type of exception that occurred.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.BlockingTypeTag">
+            <summary>
+            Telemetry tag indicating if the update was blocking.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.Automatic">
+            <summary>
+            Telemetry tag indicating configuration retrieval after the refresh interval has expired.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.Manual">
+            <summary>
+            Telemetry tag indicating configuration retrieval per a call to RequestRefresh.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.FirstRefresh">
+            <summary>
+            Telemetry tag indicating configuration retrieval when there is no previously cached configuration.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.Lkg">
+            <summary>
+            Telemetry tag indicating configuration retrieval when the last known good configuration is needed.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.ConfigurationInvalid">
+            <summary>
+            Telemetry tag indicating that configuration could not be sucessfully validated after retrieval.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryConstants.Protocols.ConfigurationRetrievalFailed">
+            <summary>
+            Telemetry tag indicating that configuration could not be retrieved successfully.
+            </summary>
+        </member>
+        <member name="T:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder">
+            <summary>
+            Pushes telemetry data to the configured <see cref="T:System.Diagnostics.Metrics.Counter`1"/> or <see cref="T:System.Diagnostics.Metrics.Histogram`1"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder.MeterName">
+            <summary>
+            Meter name for MicrosoftIdentityModel.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder.IdentityModelMeter">
+            <summary>
+            The meter responsible for creating instruments.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder.IdentityModelConfigurationManagerCounterName">
+            <summary>
+            Counter to capture configuration refresh requests to ConfigurationManager.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder.BackgroundConfigurationRefreshFailureCounter">
+            <summary>
+            Counter to capture background refresh failures in the ConfigurationManager.
+            </summary>
+        </member>
+        <member name="F:Microsoft.IdentityModel.Telemetry.TelemetryDataRecorder.TotalDurationHistogram">
+            <summary>
+            Histogram to capture total duration of configuration retrieval by ConfigurationManager in milliseconds.
             </summary>
         </member>
     </members>

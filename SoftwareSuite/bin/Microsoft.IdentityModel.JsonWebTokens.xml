@@ -1046,22 +1046,13 @@
         <member name="M:Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenAsync(System.String,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext,System.Threading.CancellationToken)">
             <summary>
             Validates a token.
-            On a validation failure, no exception will be thrown; instead, the exception will be set in the returned TokenValidationResult.Exception property.
-            Callers should always check the TokenValidationResult.IsValid property to verify the validity of the result.
+            On validation failure no exception will be thrown. 'see cref="ValidationError"' will contain information pertaining to the error.
             </summary>
             <param name="token">The token to be validated.</param>
             <param name="validationParameters">The <see cref="T:Microsoft.IdentityModel.Tokens.ValidationParameters"/> to be used for validating the token.</param>
-            <param name="callContext">A <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains useful information for logging.</param>
+            <param name="callContext">A <see cref="T:Microsoft.IdentityModel.Tokens.CallContext"/> that contains call information.</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/> that can be used to request cancellation of the asynchronous operation.</param>
             <returns>A <see cref="T:Microsoft.IdentityModel.Tokens.ValidationResult`1"/> with either a <see cref="T:Microsoft.IdentityModel.Tokens.ValidatedToken"/> if the token was validated or an <see cref="T:Microsoft.IdentityModel.Tokens.ValidationError"/> with the failure information and exception otherwise.</returns>
-            <remarks>
-            <para>ValidationError.GetException() will return one of the following exceptions if the <paramref name="token"/> is invalid.</para>
-            </remarks>
-            <exception cref="T:System.ArgumentNullException">Returned if <paramref name="token"/> is null or empty.</exception>
-            <exception cref="T:System.ArgumentNullException">Returned if <paramref name="validationParameters"/> is null.</exception>
-            <exception cref="T:System.ArgumentException">Returned if 'token.Length' is greater than <see cref="P:Microsoft.IdentityModel.Tokens.TokenHandler.MaximumTokenSizeInBytes"/>.</exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenMalformedException">Returned if <paramref name="token"/> is not a valid <see cref="T:Microsoft.IdentityModel.JsonWebTokens.JsonWebToken"/>, <see cref="M:Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(System.String,Microsoft.IdentityModel.Tokens.CallContext)"/></exception>
-            <exception cref="T:Microsoft.IdentityModel.Tokens.SecurityTokenMalformedException">Returned if the validationParameters.TokenReader delegate is not able to parse/read the token as a valid <see cref="T:Microsoft.IdentityModel.JsonWebTokens.JsonWebToken"/>, <see cref="M:Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ReadToken(System.String,Microsoft.IdentityModel.Tokens.CallContext)"/></exception>
         </member>
         <member name="M:Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenAsync(Microsoft.IdentityModel.Tokens.SecurityToken,Microsoft.IdentityModel.Tokens.ValidationParameters,Microsoft.IdentityModel.Tokens.CallContext,System.Threading.CancellationToken)">
             <inheritdoc/>
