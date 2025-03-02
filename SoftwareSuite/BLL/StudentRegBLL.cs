@@ -15,6 +15,7 @@ namespace SoftwareSuite.BLL
 {
     public class StudentRegBLL
     {
+        [AuthorizationFilter]
         public DataSet PostStudentReg(PolytechStudent StudentReg)
         {
             dbHandler dbHandler = new dbHandler();
@@ -28,6 +29,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public List<BLLValidations> UpdateStudentRegFirstTab(StudentReg StudentReg)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -55,6 +57,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public List<BLLValidations> UpdateStudentRegSecondTab(StudentReg StudentReg)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -82,6 +86,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public List<BLLValidations> UpdateStudentRegThirdTab(StudentReg StudentReg)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -110,6 +116,8 @@ namespace SoftwareSuite.BLL
             }
         }
 
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegList()
         {
             try
@@ -145,6 +153,7 @@ namespace SoftwareSuite.BLL
         //    }
         //}
         //public IEnumerable<StudentReg> GetStudentRegById(Int64 StudRegID)
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegById(Int64 StudRegID)
         {
             try
@@ -179,6 +188,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public DataSet GetStaticDataForAdmission(dbHandler dbhandler)
         {
             try
@@ -192,6 +203,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public DataSet GetMandalsForDistrict(dbHandler dbhandler, int DistrictId)
         {
             try
@@ -208,6 +220,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegListForCollege(string CollegeCode, int UserId)
         {
             try
@@ -225,6 +238,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegListByCourseExamBranch(int CollegeID, int SchemeID, int SemID, int BranchID, int SectionID, int ShiftID)
         {
             try
@@ -241,6 +255,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegListByCollegeCourseBranch(string CollegeCode, int SchemeID, int SemID, int BranchID, int SectionID, int ShiftID, int AcademicYearId)
         {
             try
@@ -257,6 +273,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegListByCollegeCourseBranchDataNotUpdated(string CollegeCode, int SchemeID, int SemID, int BranchID, int SectionID, int ShiftID, int AcademicYearId)
         {
             try
@@ -273,6 +291,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<PolytechStudent> GetStudentRegListByCollegeCourseBranchAadharNotVerified(string CollegeCode, int SchemeID, int SemID, int BranchID, int SectionID, int ShiftID, int AcademicYearId)
         {
             try
@@ -289,6 +309,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<PinGenReply> GenPin(Int64 StudentID)
         {
             try
@@ -303,6 +325,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegDetailsListByAdmNoOrPhoto(int CollegeID, string WithPhoto, Int64 AdmNo = 0)
         {
             try
@@ -319,6 +343,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegDetailsListByGroupAndMedium(int CollegeID, int MainGrpID, int MediumID, int SubjectID = 0)
         {
             try
@@ -336,6 +362,8 @@ namespace SoftwareSuite.BLL
             }
         }
         //public IEnumerable<StudentReg> GetStudentRegDetailsListAll(string CollegeID)
+
+        [AuthorizationFilter]
         public IEnumerable<RegStudentTest> GetStudentRegDetailsListAll(string CollegeID)
         {
             try
@@ -353,6 +381,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetAdmissionFormPrint(int CollegeID, int CourseID, int ExamID, int BranchID, string FromDate, string ToDate, Int64 FromAdmNo, Int64 ToAdmNo)
         {
             try
@@ -381,6 +411,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegDetailsListForPhotoUpload(int CollegeID, int CourseID, int ExamID, int BranchID, string WithPhoto = "", string ForAadhar = "")
         {
             try
@@ -397,6 +429,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetFillStudentRegDetailsListForUpdateCertificates(int CollegeID, int CourseID, int ExamID, int BranchID, string WithCertificates)
         {
             try
@@ -413,6 +447,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetFillStudentRegDetailsListForGroupChange(int CollegeID, int CourseID, int ExamID, int BranchID)
         {
             try
@@ -429,6 +465,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetBlindCondAprovalList(int CollegeID, int CourseID, int ExamID, int BranchID)
         {
             try
@@ -459,7 +497,7 @@ namespace SoftwareSuite.BLL
 
 
 
-
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegListByCourseExamBranchForApproval(int CollegeID, int CourseID, int ExamID, int BranchID)
         {
             try
@@ -477,7 +515,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
-               
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegListBySSCHallTicket(string SSCHallTicket)
         {
             try
@@ -495,6 +533,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public Int64 GetAdmissionMaxNo()
         {
             try
@@ -508,6 +547,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public Int64 GetCurrentAdminNo(int CollegeID)
         {
             try
@@ -521,6 +562,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public Int16 CheckHallTicketNoPresent(string YrName, string SSCHallTicket, int BoardID, int CollegeID)
         {
             try
@@ -534,6 +577,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public Int16 CheckHallTicketNoPresentInCollege(string YrName, string SSCHallTicket, int BoardID)
         {
             try
@@ -547,6 +592,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public Int16 CheckHallTicketNoPresentOpenAdmission(string YrName, string SSCHallTicket, int BoardID, int CollegeID)
         {
             try
@@ -560,6 +607,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public void GetDeleteHallTicketNoPresentOpenAdmission(int AcdYrID, string YrName, string SSCHallTicket, int BoardID)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -578,7 +627,7 @@ namespace SoftwareSuite.BLL
         }
 
 
-
+        [AuthorizationFilter]
         public Int16 GetCheckMobileNoCount(string MobileNo, int CollegeID, int AcdYrID)
         {
             try
@@ -592,7 +641,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegByIdForApproved(Int64 StudRegID)
         {
             try
@@ -610,7 +659,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
-
+        [AuthorizationFilter]
         public DataTable GetOpenSchoolDataBySSCHallTicketAndAcdYrID(string SSCHallTicket)
         {
             try
@@ -627,6 +676,7 @@ namespace SoftwareSuite.BLL
             }
         }
         //Aadhar Methods
+        [AuthorizationFilter]
         public Int16 CheckAadharNoPresent(string AadharNo)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -640,6 +690,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataTable GetAadharDataByAadharId(string AadharNo)
         {
             try
@@ -653,6 +704,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public Int32 UpdateStudentAadharStatus(StudentReg studentReg)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -669,7 +721,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public int GetCheckFromTodate(string FromDate, string Todate)
         {
             dbHandler dbHandler = new dbHandler();
@@ -689,6 +741,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetStudentRegGroupWiseCountByCourseExamBranch(int CollegeID = 0, int CourseID = 0, int ExamID = 0, int BranchID = 0, int MainGrpID = 0)
         {
             try
@@ -705,7 +758,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-        
+        [AuthorizationFilter]
         public IEnumerable<StudentReg> GetPreStudentCollegeCodeByStudentID(Int64 StudRegID)
         {
             try
@@ -722,7 +775,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage PostAadharTemp(AadhaarList aadhaarList, StudentReg studentReg)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -739,7 +792,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public List<BLLValidations> CheckValidation(StudentReg StudentReg, dbHandler dbHandler)
         {
             try

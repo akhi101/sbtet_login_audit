@@ -1761,6 +1761,55 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
+
+        [AuthorizationFilter]
+        [HttpGet, ActionName("ExamMonthYearCheck")]
+        public string ExamMonthYearCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^(C\d{2}-)?(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{4}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         [AuthorizationFilter][HttpGet, ActionName("CheckFee")]
         public string CheckFee(int DataType)
         {
@@ -1811,7 +1860,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
         {
             try
             {
-                string ExamMonthYear1 = PinCheck(ExamMonthYear);
+                string ExamMonthYear1 = ExamMonthYearCheck(ExamMonthYear);
                 string DataTypeId1 = CheckFee(DataTypeId);
                 string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
                 string SequenceId1 = CheckFee(SequenceId);

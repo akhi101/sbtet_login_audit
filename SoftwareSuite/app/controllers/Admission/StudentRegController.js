@@ -66,7 +66,7 @@
         };
 
         $scope.goToStudentList = function () {
-            $state.go('Dadshboard.AdmissionDashboard.Admission.StudentRegList');
+            $state.go('Dashboard.AdmissionDashboard.Admission.StudentRegList');
         };
 
         $scope.UpdateFirstPage = function () {

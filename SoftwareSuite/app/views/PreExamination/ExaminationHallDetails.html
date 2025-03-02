@@ -51,7 +51,7 @@
                                             <label for="sel1">
                                                 Examination Hall Name :
                                             </label>
-                                            <input class="form-control" type="text" id="ExaminationHall" maxlength="100" placeholder="Enter Exam Hall Name" ng-model="ExaminationHall">
+                                            <input class="form-control"  type="text" id="ExaminationHall" onkeypress="return /[a-zA-Z]/i.test(event.key)"  onpaste="return /[a-zA-Z]/i.test(event.key)" maxlength="100" placeholder="Enter Exam Hall Name" ng-model="ExaminationHall">
                                         </div>
                                         <div class="col-md-3 form-group">
                                             <label for="sel1">

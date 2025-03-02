@@ -44,7 +44,7 @@ namespace SoftwareSuite.Controllers.Admission
     }
     public class AttendanceController : ApiController
     {
-
+        [AuthorizationFilter]
         public void SendSms(int p1, int p2, string Message)
         {
 
@@ -321,7 +321,7 @@ namespace SoftwareSuite.Controllers.Admission
             return res;
         }
 
-
+        [AuthorizationFilter]
         private string SendSms(string mobile, string message)
         {
             try

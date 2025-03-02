@@ -36,7 +36,7 @@
                         <label for="sel1">
                             Exam Month Year:
                         </label>
-                        <input class="form-control" type="text"  placeholder="Enter Exam Month Year" ng-model="ExamMonthYear" required />
+                        <input class="form-control" type="text" onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  maxlength="12" onpaste="return /[0-9a-zA-Z-]/i.test(event.key)"  placeholder="Enter Exam Month Year" ng-model="ExamMonthYear" required />
                     </div>
                  <!--   onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  maxlength="12" onpaste="return /[0-9a-zA-Z-]/i.test(event.key)"-->
                     <div class="col-md-3">

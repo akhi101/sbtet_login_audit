@@ -463,6 +463,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        [AuthorizationFilter]
         public void AddTokenToStore(string Message)
         {
             try
@@ -608,7 +609,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("GetNonceAndSalt")]
         public string GetNonceAndSalt(string UserName)
         {
@@ -659,6 +660,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         private static readonly TimeSpan NonceExpiration = TimeSpan.FromMinutes(1);
         private string json;
 
+     
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] SecureRequest requestData)
         {
@@ -2883,7 +2885,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
 
         }
-
+        [AuthorizationFilter]
         [HttpGet, ActionName("getNotifications")]
         public HttpResponseMessage getNotifications()
         {
@@ -3405,6 +3407,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        [AuthorizationFilter]
         [HttpGet, ActionName("GetNotificationByUser")]
         public HttpResponseMessage GetNotificationByUser(int UserTypeId)
         {
@@ -3511,6 +3514,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        [AuthorizationFilter]
         [HttpGet, ActionName("GetUserData")]
         public string GetUserData(string UserName)
         {
@@ -3533,6 +3537,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
+        [AuthorizationFilter]
         [HttpGet, ActionName("getCirculars")]
         public string getCirculars()
         {

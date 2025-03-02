@@ -52,6 +52,8 @@ namespace SoftwareSuite.Controllers.Admission
             return host + "/";
         }
 
+        [AuthorizationFilter]
+
         [HttpPost]
         public HttpResponseMessage PostStudentReg([FromBody]PolytechStudent StudentReg)
         {
@@ -84,7 +86,7 @@ namespace SoftwareSuite.Controllers.Admission
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage UpdateStudentRegFirstTab([FromBody]StudentReg StudentReg)
         {
             if (ModelState.IsValid)
@@ -109,6 +111,7 @@ namespace SoftwareSuite.Controllers.Admission
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
         }
+        [AuthorizationFilter]
         public HttpResponseMessage UpdateStudentRegSecondTab([FromBody]StudentReg StudentReg)
         {
             if (ModelState.IsValid)
@@ -133,6 +136,8 @@ namespace SoftwareSuite.Controllers.Admission
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
             }
         }
+
+        [AuthorizationFilter]
         public HttpResponseMessage UpdateStudentRegThirdTab([FromBody]StudentReg StudentReg)
         {
             if (ModelState.IsValid)
@@ -201,9 +206,9 @@ namespace SoftwareSuite.Controllers.Admission
 
         }
 
-        
-           
 
+
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegList()
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -211,7 +216,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStaticDataForAdmission()
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -229,7 +234,7 @@ namespace SoftwareSuite.Controllers.Admission
         //    HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StaticDataForAdmission);
         //    return response;
         //}
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegById(Int64 StudRegID)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -238,6 +243,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         [HttpGet]
         public HttpResponseMessage GenPin(Int64 StudentID)
         {
@@ -246,7 +252,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, Pin);
             return response;
         }
-
+        [AuthorizationFilter]
         [HttpGet]
         public HttpResponseMessage GetStudentRegListForCollege(string CollegeCode, int UserId)
         {
@@ -255,7 +261,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegListByCourseExamBranch(int CollegeID, int SchemeID = 0, int SemID = 0, int BranchID = 0, int SectionID = 0, int ShiftID = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -263,6 +269,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegListByCollegeCourseBranch(string CollegeCode, int SchemeID = 0, int SemID = 0, int BranchID = 0, int SectionID = 0, int ShiftID = 0, int AcademicYearId = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -270,7 +277,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegListByCollegeCourseBranchDataNotUpdated(string CollegeCode, int SchemeID = 0, int SemID = 0, int BranchID = 0, int SectionID = 0, int ShiftID = 0, int AcademicYearId = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -278,7 +285,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegListByCollegeCourseBranchAadharNotVerified(string CollegeCode, int SchemeID = 0, int SemID = 0, int BranchID = 0, int SectionID = 0, int ShiftID = 0, int AcademicYearId = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -287,7 +294,7 @@ namespace SoftwareSuite.Controllers.Admission
             return response;
         }
 
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegDetailsListByAdmNoOrPhoto(int CollegeID, string WithPhoto, Int64 AdmNo = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -295,6 +302,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegDetailsListByGroupAndMedium(int CollegeID, int MainGrpID, int MediumID, int SubjectID = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -302,6 +310,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegDetailsListAll(string CollegeID)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -310,6 +319,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetAdmissionFormPrint(int CollegeID, int CourseID, int ExamID, int BranchID, string FromDate, string ToDate, Int64 FromAdmNo, Int64 ToAdmNo)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -317,6 +327,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegDetailsListForPhotoUpload(int CollegeID, int CourseID = 0, int ExamID = 0, int BranchID = 0, string WithPhoto = "", string ForAadhar = "")
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -325,7 +336,7 @@ namespace SoftwareSuite.Controllers.Admission
             return response;
         }
 
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetFillStudentRegDetailsListForUpdateCertificates(int CollegeID, int CourseID, int ExamID, int BranchID, string WithCertificates)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -333,7 +344,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetFillStudentRegDetailsListForGroupChange(int CollegeID, int CourseID, int ExamID, int BranchID)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -341,6 +352,7 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetBlindCondAprovalList(int CollegeID, int CourseID, int ExamID, int BranchID)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -354,7 +366,7 @@ namespace SoftwareSuite.Controllers.Admission
 
 
 
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegListByCourseExamBranchForApproval(int CollegeID, int CourseID = 0, int ExamID = 0, int BranchID = 0)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -362,11 +374,14 @@ namespace SoftwareSuite.Controllers.Admission
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, StudentRegList);
             return response;
         }
+        [AuthorizationFilter]
         public Int64 GetAdmissionMaxNo()
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
             return StudentRegBLL.GetAdmissionMaxNo();
         }
+
+        [AuthorizationFilter]
         public Int64 GetCurrentAdminNo(int CollegeID)
         {
             try
@@ -380,6 +395,7 @@ namespace SoftwareSuite.Controllers.Admission
                  throw ex;
             }
         }
+        [AuthorizationFilter]
         public Int16 GetCheckHallTicketNoPresent(string YrName, string SSCHallTicket, int BoardID, int CollegeID)
         {
             try
@@ -392,6 +408,7 @@ namespace SoftwareSuite.Controllers.Admission
                  throw ex;
             }
         }
+        [AuthorizationFilter]
         public Int16 GetCheckHallTicketNoPresentInCollege(string YrName, string SSCHallTicket, int BoardID)
         {
             try
@@ -404,6 +421,7 @@ namespace SoftwareSuite.Controllers.Admission
                  throw ex;
             }
         }
+        [AuthorizationFilter]
         public Int16 GetCheckHallTicketNoPresentOpenAdmission(string YrName, string SSCHallTicket, int BoardID, int CollegeID)
         {
             try
@@ -416,6 +434,7 @@ namespace SoftwareSuite.Controllers.Admission
                  throw ex;
             }
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetDeleteHallTicketNoPresentOpenAdmission(int AcdYrID, string YrName, string SSCHallTicket, int BoardID)
         {
             try
@@ -436,7 +455,7 @@ namespace SoftwareSuite.Controllers.Admission
 
 
 
-
+        [AuthorizationFilter]
         public Int16 GetCheckMobileNoCount(string MobileNo, int CollegeID, int AcdYrID)
         {
             try
@@ -449,7 +468,7 @@ namespace SoftwareSuite.Controllers.Admission
                  throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegGroupWiseCountByCourseExamBranch(int CollegeID = 0, int CourseID = 0, int ExamID = 0, int BranchID = 0, int MainGrpID = 0)
         {
             try
@@ -467,7 +486,7 @@ namespace SoftwareSuite.Controllers.Admission
 
 
         #endregion
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentRegByIdForApproved(Int64 StudRegID)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
@@ -477,6 +496,8 @@ namespace SoftwareSuite.Controllers.Admission
         }
         //Aadhar KYC implementation
         #region
+
+        [AuthorizationFilter]
         public HttpResponseMessage PostStudentAadhar(StudentReg StudentReg)
         {
             try
@@ -631,6 +652,7 @@ namespace SoftwareSuite.Controllers.Admission
                 return Request.CreateResponse(HttpStatusCode.OK, ex.Message.ToString());
             }
         }
+        [AuthorizationFilter]
         [HttpGet]
         public HttpResponseMessage GetStudentTempAadhar(string AadharNo)
         {
@@ -672,7 +694,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-
+        [AuthorizationFilter]
         //Aadhar Authentication and KYC
         public HttpResponseMessage PostStudentAadharStatus(StudentReg StudentReg)
         {
@@ -692,6 +714,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
         #endregion
+        [AuthorizationFilter]
         public void createlog(string Message)
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(ConfigurationManager.AppSettings["logfilepath"].ToString() + System.DateTime.Now.ToString("ddMMMyyyy") + ".txt", true))
@@ -706,12 +729,14 @@ namespace SoftwareSuite.Controllers.Admission
                 }
             }
         }
+        [AuthorizationFilter]
 
         public int GetCheckFromTodate(string FromDate, string ToDate)
         {
             StudentRegBLL StudentRegBLL = new StudentRegBLL();
             return StudentRegBLL.GetCheckFromTodate(FromDate, ToDate);
         }
+        [AuthorizationFilter]
         protected void LoadPayment(string OrderID, string FeeAmount)
         {
             try
@@ -727,6 +752,7 @@ namespace SoftwareSuite.Controllers.Admission
                 throw _ex;
             }
         }
+        [AuthorizationFilter]
         private string Display()
         {
             string amt = string.Empty;
@@ -890,6 +916,7 @@ namespace SoftwareSuite.Controllers.Admission
                 return urladm;
             }
         }
+        [AuthorizationFilter]
         public string GetHMACSHA256(string text, string key)
         {
             UTF8Encoding encoder = new UTF8Encoding();
@@ -906,6 +933,7 @@ namespace SoftwareSuite.Controllers.Admission
             return hex;
         }
         // api/StudentReg/GetPaymentResponce?msg=billdeskmsgsting
+        [AuthorizationFilter]
         public IHttpActionResult GetPaymentForRecognition(string FeeAmount)
         {
             string url = ConfigurationManager.AppSettings["WebApiUrl"].ToString() + "/PaymentService.aspx?FormNo=31&FeeAmount=" + FeeAmount; // "https://localhost:44305/Templates/ReportPage.html";

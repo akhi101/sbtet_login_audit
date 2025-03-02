@@ -45,6 +45,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             public int SemesterSequence { get; set; }
         }
 
+        [AuthorizationFilter()]
+
         [HttpPost, ActionName("setTimeTable")]
         public string setTimeTable([FromBody] JsonObject request )   //int StudentTypeId, int SemId, int SchemeId, int ExamTypeId, string StartDate, string Fntime, string Antime)
         {
@@ -71,6 +73,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        [AuthorizationFilter()]
+
         [HttpPost, ActionName("getTimeTabledata")]
         public string getTimeTabledata([FromBody] JsonObject request)   //int StudentTypeId, int SemId, int SchemeId, int ExamTypeId, string StartDate, string Fntime, string Antime)
         {
@@ -92,7 +96,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("GetPrincipalTimeTablePdf")]
         public string GetPrincipalTimeTablePdf([FromBody] JsonObject request) 
         {
@@ -117,7 +121,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("GetPrincipalTimetableExcel")]
         public string GetPrincipalTimetableExcel([FromBody] JsonObject request)
         {
@@ -158,7 +162,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTablePdf")]
         public string TimeTablePdf([FromBody] JsonObject request)
         {
@@ -191,7 +195,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("PublishTimetable")]
         public HttpResponseMessage PublishTimetable([FromBody] JsonObject request)
         {
@@ -226,7 +230,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public bool AnswerBookLet { get; set; }
             public string ExamYearMonth { get; set; }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("PostTimetable")]
         public string PostTimetable(int ExamMonthYearId,int StudentTypeId)
         {
@@ -260,7 +264,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             ((Timer)sender).Stop();
             ((Timer)sender).Dispose();
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTableXlsx")]
         public string TimeTableXlsx([FromBody] JsonObject request)
         {
@@ -308,7 +312,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTablePdfAdmin")]
         public string TimeTablePdfAdmin([FromBody] JsonObject request)
         {
@@ -341,7 +345,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTableXlsxAdmin")]
         public string TimeTableXlsxAdmin([FromBody] JsonObject request)
         {
@@ -390,7 +394,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTableEdepXlsx")]
         public string TimeTableEdepXlsx([FromBody] JsonObject request)
         {
@@ -504,8 +508,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                 }
                 targetDoc.Save(targetPath);
             }
-        }  
-
+        }
+        [AuthorizationFilter()]
         public string GetTimeTablesheetPdf(List<TimeTableData> TimeTableData)
         {
             string dirPath = AppDomain.CurrentDomain.BaseDirectory + @"Reports\Timetable";
@@ -524,7 +528,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
+        [AuthorizationFilter()]
         public string GetTimeTableDataPdf(List<TimeTableData> TimeTableData)
         {
             try

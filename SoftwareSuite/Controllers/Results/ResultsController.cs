@@ -45,7 +45,7 @@ namespace SoftwareSuite.Controllers.Results
             }
             base.OnAuthorization(actionContext);
         }
-
+        [AuthorizationFilter]
         public bool validatetoken(string token)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
@@ -71,6 +71,7 @@ namespace SoftwareSuite.Controllers.Results
 
     public class ResultsController : ApiController
     {
+        [AuthorizationFilter]
         public HttpResponseMessage GetCollegeSemWiseReport(int SchemeId, int SemYearId)
         {
             IEnumerable<CollegeSemWiseReport> ResultList;
@@ -79,21 +80,21 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ResultList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetSchemeDataForResults()
         {
             ResultBLL ReportResultBLL = new ResultBLL();
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ReportResultBLL.GetSchemeDataForResults());
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetExamTypeForResults(int SchemeId)
         {
             ResultBLL ReportResultBLL = new ResultBLL();
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ReportResultBLL.GetExamTypeForResults(SchemeId));
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetBranchWiseReport(int CollegeId, int SchemeId, int SemYearId, int ExamTypeId, int BranchId, int ExamMonthYearId)
         {
             IEnumerable<BranchWiseReportData> ResultList;
@@ -102,6 +103,7 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ResultList); 
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetC18MidBranchWiseReport(int CollegeId, int SchemeId, int SemYearId, int ExamTypeId, int BranchId,int AcademicId)
         {
             IEnumerable<BranchWiseReportData> ResultList;
@@ -110,12 +112,15 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ResultList);
             return response;
         }
+        [AuthorizationFilter]
         public HttpResponseMessage GetBranchWiseOldReport(int CollegeId, int SchemeId, int SemYearId, int ExamTypeId, string BranchId)
         {
             ResultBLL ReportResultBLL = new ResultBLL();
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ReportResultBLL.GetBranchWiseOldReport(CollegeId, SchemeId, SemYearId, ExamTypeId, BranchId));
             return response;
         }
+
+        [AuthorizationFilter]
         public HttpResponseMessage GetStudentWiseReport( int StudentTypeId, string Pin, int SchemeId, int ExamMonthYearId, int ExamTypeId = 1, int SemYearId = 1)
         {
             List<Output> p = new List<Output>();
@@ -151,7 +156,7 @@ namespace SoftwareSuite.Controllers.Results
             public string ResponceCode { get; set; }
             public string ResponceDescription { get; set; }
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetC18MidStudentWiseReport(int SemYearId, string Pin, int SchemeId, int ExamTypeId)
         {
             List<Output> p = new List<Output>();
@@ -177,6 +182,8 @@ namespace SoftwareSuite.Controllers.Results
 
             }
         }
+
+        [AuthorizationFilter]
         public HttpResponseMessage GetOldStudentWiseReport(int StudentTypeId, string Pin, int SchemeId, int ExamMonthYearId, int ExamTypeId = 1, int SemYearId = 1)
         {
             List<Output> p = new List<Output>();
@@ -201,6 +208,8 @@ namespace SoftwareSuite.Controllers.Results
 
             }
 }
+
+        [AuthorizationFilter]
         public HttpResponseMessage GetSchemeSemBranchInfo(int CollegeId)
         {
             IEnumerable<SchemeSemBranchData> ResultList;
@@ -210,7 +219,7 @@ namespace SoftwareSuite.Controllers.Results
             return response;
         }
 
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetCollegesSchemeSemInfo()
         {
             IEnumerable<CollegeSchemeSemData> ResultList;
@@ -219,7 +228,7 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ResultList);
             return response;
         }
-
+        [AuthorizationFilter]
         public HttpResponseMessage GetExamTypeInfo(int SchemeId, int SemYearId)
         {
             IEnumerable<ExamTypeData> ResultList;
@@ -228,6 +237,8 @@ namespace SoftwareSuite.Controllers.Results
             HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, ResultList);
             return response;
         }
+
+        [AuthorizationFilter]
         public HttpResponseMessage GetTypeWritingShorthandReport(string HallTicketno)
         {
             ResultBLL ReportResultBLL = new ResultBLL();

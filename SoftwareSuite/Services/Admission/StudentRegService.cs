@@ -10,10 +10,11 @@ using SoftwareSuite.Models.Database;
 
 namespace SoftwareSuite.Controllers.Admission
 {
+
     public class StudentRegService
     {
         #region "Insert/Update/Delete"
-
+        [AuthorizationFilter]
         public void PostAadharTemp(AadhaarList aadhaarList, StudentReg studentReg, dbHandler dbHandler)
         {
             try
@@ -51,7 +52,7 @@ namespace SoftwareSuite.Controllers.Admission
             }
         }
 
-
+        [AuthorizationFilter]
         public static DataSet PostStudentReg(PolytechStudent polyStu, dbHandler dbHandler)
         {
             try
@@ -237,7 +238,7 @@ namespace SoftwareSuite.Controllers.Admission
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public void UpdateStudentRegFirstTab(StudentReg StudentReg, dbHandler dbHandler)
         {
             try
@@ -291,6 +292,7 @@ namespace SoftwareSuite.Controllers.Admission
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public void UpdateStudentRegSecondTab(StudentReg StudentReg, dbHandler dbHandler)
         {
             try
@@ -315,6 +317,8 @@ namespace SoftwareSuite.Controllers.Admission
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public void UpdateStudentRegThirdTab(StudentReg StudentReg, dbHandler dbHandler)
         {
             try
@@ -352,6 +356,8 @@ namespace SoftwareSuite.Controllers.Admission
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public void UpdateStudentRegAadharAuthenticate(StudentReg StudentReg, dbHandler dbHandler)
         {
             try
