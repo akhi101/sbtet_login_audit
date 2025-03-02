@@ -39,7 +39,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
                 return $"IsValidUser=false|SessionTimeOut={DateTime.Now}";
             }
         }
-
+        [AuthorizationFilter]
         public async Task<string> ResetPassword(SsoResetPasswordObj data)
         {
             var ekey = _eps.GetEncryptionKeyByOrgId(data.OrgId);
@@ -77,7 +77,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
                 return "Status=Failure|Message=Server Error";
             }
         }
-
+        [AuthorizationFilter]
         private string GetNewPassword()
         {
             var builder = new StringBuilder();

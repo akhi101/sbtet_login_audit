@@ -25,6 +25,7 @@ namespace SoftwareSuite.Controllers.Common
 {
     public class CommunicationController : ApiController
     {
+        [AuthorizationFilter]
         [HttpGet, ActionName("SendSms")]
         public async Task<string> SendSms(string mobile, string message,string templateid)
         {
@@ -57,6 +58,8 @@ namespace SoftwareSuite.Controllers.Common
             }
 
         }
+
+        [AuthorizationFilter]
 
         [HttpGet, ActionName("SendSmsTg")]
         public async Task<string> SendSmsTg(string mobile, string message, string templateid)
@@ -93,7 +96,7 @@ namespace SoftwareSuite.Controllers.Common
             }
 
         }
-
+        [AuthorizationFilter]
         [HttpGet, ActionName("BulkSendSms")]
         public async Task<string> BulkSendSms(string mobile, string message)
         {
@@ -110,7 +113,7 @@ namespace SoftwareSuite.Controllers.Common
             public string Mobile { get; set; }
             public string Message { get; set; }
         }
-
+        [AuthorizationFilter]
 
         [HttpPost, ActionName("BulkListSendSms")]
         public async Task<string> BulkListSendSms([FromBody]JsonObject data)
@@ -196,7 +199,7 @@ namespace SoftwareSuite.Controllers.Common
             public string attachpath { get; set; }
         }
 
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("SendEmails")]
         public async Task<object> SendEmails([FromBody]List<MailReq> data)
         {
@@ -209,7 +212,7 @@ namespace SoftwareSuite.Controllers.Common
             }
             return resList;
         }
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("SendEmail")]
         public async Task<string> SendEmail([FromBody] MailReq request)
         {
@@ -281,7 +284,7 @@ namespace SoftwareSuite.Controllers.Common
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("SendMails")]
         public async Task<object> SendMails([FromBody]List<MailRequest> data)
         {
@@ -294,7 +297,7 @@ namespace SoftwareSuite.Controllers.Common
             }
             return resList;
         }
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("SendOTP")]
         public async Task<string> SendOTP([FromBody] OtpReq request)
         {
@@ -343,7 +346,7 @@ namespace SoftwareSuite.Controllers.Common
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter]
         [HttpGet, ActionName("Set_GenuinenessEmailLog")]
         public string Set_GenuinenessEmailLog(string Pin, string Email, string OTP)
         {
@@ -364,7 +367,7 @@ namespace SoftwareSuite.Controllers.Common
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter]
         public string GeneratePassword()
         {
             string PasswordLength = "5";
@@ -399,7 +402,7 @@ namespace SoftwareSuite.Controllers.Common
 
 
 
-
+        [AuthorizationFilter]
         [HttpPost, ActionName("SendMail")]
         public async Task<string> SendMail([FromBody] MailRequest request)
         {

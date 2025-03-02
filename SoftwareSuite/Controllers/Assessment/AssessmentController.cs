@@ -494,7 +494,7 @@ namespace SoftwareSuite.Controllers.Assessment
             }
         }
 
-        
+
         //public string getCollegeAssessmentReports(int semid)
         //{
         //    try
@@ -514,7 +514,7 @@ namespace SoftwareSuite.Controllers.Assessment
         //    }
 
         //}
-
+        [AuthorizationFilter]
         public string getCollegeAssessmentReports(string collegecode, int examtypeid,int studentType,int AcademicYearId, string Semester,int ExamMonthYear)
         {
             try
@@ -660,8 +660,8 @@ namespace SoftwareSuite.Controllers.Assessment
         #endregion
         #region POST Methods
 
-        
 
+        [AuthorizationFilter]
         public string UpdateMarksEntryDatesforAdmin([FromBody] updatemarksentry ReqData)
         {
             var dbHandler = new dbHandler();

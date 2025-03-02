@@ -12,14 +12,72 @@ using System.Data;
 using SoftwareSuite.Models.Database;
 using SoftwareSuite.Services.Admission;
 using SoftwareSuite.Models;
+using SoftwareSuite.Models.Security;
+using System.Net.Http;
+using System.Net;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using System.Linq;
 
 namespace CoreExamin.Controllers
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     //[System.Web.Http.RoutePrefix("API")]
     public class PaymentController : Controller
     {
         // GET: Payment
-
+        [AuthorizationFilter]
         public async Task<System.Web.Mvc.ActionResult> BillResponse([FromBody] string msg)
         {
             string redirect = "";
@@ -138,7 +196,7 @@ namespace CoreExamin.Controllers
 
             return Redirect(redirect + "/" + Base64Encode(retMsg));
         }
-
+        [AuthorizationFilter]
         public async Task<System.Web.Mvc.ActionResult> BulkBillResponse([FromBody] string msg)
         {
             string redirect = string.Empty;
@@ -312,7 +370,7 @@ namespace CoreExamin.Controllers
             }
         }
 
-
+        [AuthorizationFilter]
         public System.Web.Mvc.ActionResult FindchalanaNo(string chalanaNo)
         {
             try
@@ -330,7 +388,7 @@ namespace CoreExamin.Controllers
                 return Content(ex.Message);
             }
         }
-
+        [AuthorizationFilter]
         [System.Web.Http.HttpPost]
         public async Task<string> Server2Server(string msg)
         {
@@ -518,7 +576,7 @@ namespace CoreExamin.Controllers
         }
 
 
-
+        [AuthorizationFilter]
         [System.Web.Http.HttpPost]
         public async Task<string> Server2ServerBMS(string msg)
         {
@@ -681,19 +739,19 @@ namespace CoreExamin.Controllers
             }
             return "Not yet added in DB";
         }
-
+        [AuthorizationFilter]
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
         }
-
+        [AuthorizationFilter]
         public static string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
-
+        [AuthorizationFilter]
         private string CheckSumResponse(string msg)
         {
 
@@ -702,6 +760,7 @@ namespace CoreExamin.Controllers
             hash = GetHMACSHA256(data, "ScG3yshuSFOr");
             return hash.ToUpper();
         }
+        [AuthorizationFilter]
 
         private string GetHMACSHA256(string text, string key)
         {

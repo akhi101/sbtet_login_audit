@@ -102,7 +102,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
 
         //}
 
-
+        [AuthorizationFilter]
         [HttpGet]
         public string DecryptCipher(string ciphertxt)
         {                  
@@ -111,6 +111,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             return msg;
         }
 
+        [AuthorizationFilter]
         [HttpPost]
         public string encryptPasswords()
         {
@@ -139,7 +140,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             return "";
         }
 
-
+        [AuthorizationFilter]
         [HttpPost]
         public async Task<HttpResponseMessage> GetCheckOldPassword()
         {
@@ -311,7 +312,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
                 }
             }
         }
-
+        [AuthorizationFilter]
         // Generate a secure salt
         public static byte[] GenerateSalt(int size = 16)
         {
@@ -324,6 +325,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
         }
 
         // Method to hash data with salt using SHA256
+        [AuthorizationFilter]
         public static byte[] HashWithSalt(string data, byte[] salt)
         {
             using (var sha256 = SHA256.Create())
@@ -342,7 +344,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
 
 
 
-
+        [AuthorizationFilter]
 
         [HttpPost]
         public async Task<HttpResponseMessage> GetChangePassword()
@@ -372,6 +374,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
 
 
         // Generate a unique salt
+        [AuthorizationFilter]
         private static string GenerateUniqueSalt()
         {
             using (var rng = new RNGCryptoServiceProvider())
@@ -383,6 +386,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
         }
 
         // Compute SHA-256 Hash
+        [AuthorizationFilter]
         private static string ComputeSHA256Hash(string input)
         {
             using (SHA256 sha256 = SHA256.Create())

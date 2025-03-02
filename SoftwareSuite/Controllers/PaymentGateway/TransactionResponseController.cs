@@ -20,6 +20,8 @@ namespace SoftwareSuite.Controllers.PaymentGateway
         protected string encrypted_data;
         protected string skey_encryption;
         RijndaelManaged sessionKey = new RijndaelManaged();
+
+        [AuthorizationFilter]
         public async Task<HttpResponseMessage> TwalletTxnResponse()
         {
             HttpResponseMessage response = new HttpResponseMessage();

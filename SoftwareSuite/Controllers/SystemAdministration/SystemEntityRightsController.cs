@@ -10,6 +10,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
 {
     public class SystemEntityRightsController : BaseController
     {
+        [AuthorizationFilter]
         public string GetModulesbyRole(Int32 UserTypeId)
         {
             SystemUserBLL SystemUserBLL = new SystemUserBLL();
@@ -18,6 +19,7 @@ namespace SoftwareSuite.Controllers.SystemAdministration
             return JsonConvert.SerializeObject(SystemGroups);
         }
 
+        [AuthorizationFilter]
         public string GetSubModulesbyRole(Int32 UserTypeId, Int32 moduleId)
         {
             SystemUserBLL SystemUserBLL = new SystemUserBLL();

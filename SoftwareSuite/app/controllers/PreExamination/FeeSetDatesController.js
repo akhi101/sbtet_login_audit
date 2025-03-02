@@ -75,7 +75,7 @@
             $scope.modalInstance.close();
         }
 
-        $scope.ApplicationLetter1 = "/contents/img/cesign.png";
+        //$scope.ApplicationLetter1 = "/contents/img/cesign.png";
         $scope.UploadApplication = function () {
             var input = document.getElementById("ApplicationLetter");
             var fileSize = input.files[0].size;
@@ -153,6 +153,16 @@
 
         $scope.OpenSignaturePopup = function () {
 
+            var signature = PreExaminationService.GetSignature();
+            signature.then(function (response) {
+                var Res = JSON.parse(response)
+                $scope.ApplicationLetter1 = Res[0].Sign.replace(/^['"]+|['"]+$/g, '');
+            },
+                    function (error) {
+                        alert("error while loading semesters");
+                        var err = JSON.parse(error);
+                        //    console.log(err.Message);
+                    });
             $scope.modalInstance = $uibModal.open({
                 templateUrl: "/app/views/PreExamination/SignaturePopup.html",
                 size: 'xlg',
@@ -546,14 +556,15 @@
 
         $scope.submit = function (CurrentMonthYear) {
             //if ($scope.SetDatesForm.$valid) {
-            if ($scope.FeeAttendance == '' || $scope.FeeAttendance == undefined || $scope.FeeAttendance == null) {
-                alert("Please select Fee Payment With Timeteble or not")
-                return;
-            }
             if ($scope.FeeTimetable == '' || $scope.FeeTimetable == undefined || $scope.FeeTimetable == null) {
                 alert("Please select Fee Payment With Presumptive Attendance or not")
                 return;
             }
+            //else if ($scope.FeeAttendance == '' || $scope.FeeAttendance == undefined || $scope.FeeAttendance == null) {
+            //    alert("Please select Fee Payment With Timeteble or not")
+            //    return;
+            //}
+
 
             //if ($scope.FeeForSelScheme == '' || $scope.FeeForSelScheme == undefined || $scope.FeeForSelScheme == null) {
             //    alert("Please select Fee Payment Only for c18 scheme or not.")
@@ -612,26 +623,72 @@
             var setFeePaymentDates = PreExaminationService.PostFeepaymentDates(StudentType, Semid, FromDate, ToDate, Fee, FineDate, LateFee, TatkalDate, TatkalFee, $scope.PremiumTatkalFee, CondonationFee,
                 PresemptiveAttendedDays, maxWorkingDays, certificateFee, current_schemeid, CurrentMonthYear, CondonationPercent, DetendPercent, IsAttendance, FeeTimetable); //
             setFeePaymentDates.then(function (response) {
-                $scope.StartDate = '';
-                $scope.current_schemeid = '';
-                $scope.EndDate = '';
-                $scope.FineDate = '';
-                $scope.TatkalDate = '';
-                $scope.feeAmount = '';
-                $scope.lateFee = '';
-                $scope.condonationalFee = '';
-                $scope.tatkalFee = '';
-                $scope.StudentId = '';
-                $scope.attendedDays = '';
-                $scope.maxWorkingDays = '';
-                $scope.certificateFee = '';
-                alert("Fee Payment Dates are Defined successfully");
-                $scope.getFeeSetdate();
-                // $scope.GetMarksEntryDatesList();
+                var res = JSON.parse(response);
+                try {
+                    var res = JSON.parse(res);
+                }
+                catch
+                {
+
+                }      
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+
+                    }
+                }
+                else {
+                    $scope.StartDate = '';
+                    $scope.current_schemeid = '';
+                    $scope.EndDate = '';
+                    $scope.FineDate = '';
+                    $scope.TatkalDate = '';
+                    $scope.feeAmount = '';
+                    $scope.lateFee = '';
+                    $scope.condonationalFee = '';
+                    $scope.tatkalFee = '';
+                    $scope.StudentId = '';
+                    $scope.attendedDays = '';
+                    $scope.maxWorkingDays = '';
+                    $scope.certificateFee = '';
+                    alert("Fee Payment Dates are Defined successfully");
+                    $scope.getFeeSetdate();
+                    // $scope.GetMarksEntryDatesList();
+                }
             }, function (error) {
                 let err = JSON.parse(error);
                 console.log(err);
             });
+        };
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
         };
 
 

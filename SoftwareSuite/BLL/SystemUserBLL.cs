@@ -59,7 +59,7 @@ namespace SoftwareSuite.BLL
         //        throw ex;
         //    }
         //}
-
+        [AuthorizationFilter]
         public SystemUserAuth GetUserLogin(string username,string password, string Ipaddress)
         {
             try
@@ -87,7 +87,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public IEnumerable<SystemModules> GetModulesbyRole(Int32 UserTypeId)
         {
 
@@ -106,6 +106,8 @@ namespace SoftwareSuite.BLL
                 // throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public IEnumerable<SystemSubModules> GetSubModulesbyRole(Int32 UserTypeId, Int32 moduleId)
         {
             try
@@ -146,6 +148,8 @@ namespace SoftwareSuite.BLL
         //		throw ex;
         //	}
         //}
+
+        [AuthorizationFilter]
         public object GetCheckOldPassword(string OldPassword, int LoggedUserId)
         {
             try
@@ -160,6 +164,8 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+
+        [AuthorizationFilter]
         public SystemRes GetForgetPassword(string LoginName, Int64 CellNo)
         {
             try
@@ -198,7 +204,7 @@ namespace SoftwareSuite.BLL
 
 
 
-
+        [AuthorizationFilter]
         public SystemRes GetForgotPassword(string UserName)
         {
             try
@@ -241,6 +247,8 @@ namespace SoftwareSuite.BLL
             public String UserPassword;
 
         }
+
+        [AuthorizationFilter]
         public SystemRes GetChangePassword(Int32 UserId, string OldPassword, string NewPassword,string Salt)
         {
             try

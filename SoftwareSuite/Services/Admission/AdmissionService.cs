@@ -2,20 +2,78 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
 using Newtonsoft.Json;
 using SoftwareSuite.Models.Database;
+using SoftwareSuite.Models.Security;
 
 namespace SoftwareSuite.Services.Admission
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+        [AuthorizationFilter]
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class AdmissionService
     {
 
         //new AdmissionReport sp
-
+        [AuthorizationFilter]
         public DataSet GetDataForAdmissionDashboard(dbHandler dbhandler, string CollegeCode, int UserId, int AcademicYearId)
         {
             try
@@ -50,6 +108,7 @@ namespace SoftwareSuite.Services.Admission
         //        throw ex;
         //    }
         //}
+        [AuthorizationFilter]
         public DataSet GetCollegesSchemeSemInfo()
         {
             try
@@ -65,6 +124,7 @@ namespace SoftwareSuite.Services.Admission
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataSet GetAcademicYearsActive()
         {
             try

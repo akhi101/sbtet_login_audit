@@ -688,7 +688,7 @@ namespace SoftwareSuite.Controllers.Admission
             public string attendeeid { get; set; }
             public string remarks { get; set; }
         }
-
+        [AuthorizationFilter]
         [HttpGet]
         public async Task<string> DeleteBmaAttendee(string attendeeid, string remarks)
         {
@@ -845,6 +845,12 @@ namespace SoftwareSuite.Controllers.Admission
             public string Data { get; set; }
             public string StudentPhoto { get; set; }
             public string StudentSign { get; set; }
+
+        }
+
+        public class person4
+        {
+            public string Sign { get; set; }
 
         }
 

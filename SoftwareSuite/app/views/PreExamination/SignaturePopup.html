@@ -1,8 +1,8 @@
 ﻿<html>
 <head>
-  
+
     <style>
-         .modal-dialog {
+        .modal-dialog {
             width: 50%;
         }
     </style>
@@ -12,6 +12,7 @@
         <h4 class="modal-title text-center">
             <b>Upload COE Signature</b>
             <button type="button" class="btn btn-circle btn-sm btn-info btn-close btn-modal-close" ng-click="closeModal()">&times;</button>
+
         </h4>
     </div>
     <!--<div class="col-md-6 ">
@@ -38,7 +39,8 @@
                             View COE Signature
                         </div>
                         <div class="col-md-6">
-                            <img ng-src="{{ApplicationLetter1}}" style="border: 2px solid #ddd;" height="175" width="150" id="ViewApplicationLetter" />
+                            <img ng-src="{{ApplicationLetter1}}" style="border: 2px solid #ddd;" height="175" width="150" id="ViewApplicationLetter" oncontextmenu="return false;"
+        draggable="false" />
                         </div>
                     </div>
 

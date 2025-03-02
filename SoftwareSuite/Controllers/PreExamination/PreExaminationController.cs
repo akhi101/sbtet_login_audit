@@ -333,7 +333,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-       [HttpGet, ActionName("GetStudentServicesCounts")]
+        [AuthorizationFilter]
+
+        [HttpGet, ActionName("GetStudentServicesCounts")]
         public HttpResponseMessage GetStudentServicesCounts()
         {
             try
@@ -449,7 +451,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()]
+
         [AuthorizationFilter()][HttpGet, ActionName("GetChallanNumbers")]
         public string GetChallanNumbers(int PaymentTypeID, int PaymentSubTypeID, string PIN, int ExamMonthYearID = 0)
         {
@@ -852,7 +854,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
-
+        [AuthorizationFilter]
         public string GetDaywisePcodeExcel(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int Schemeid, int ExamTypeId)
         {
             try
@@ -2678,8 +2680,8 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-
-       [HttpGet, ActionName("GetHomePageSlidesActive")]
+        [AuthorizationFilter]
+        [HttpGet, ActionName("GetHomePageSlidesActive")]
         public HttpResponseMessage GetHomePageSlidesActive()
         {
             try
@@ -3292,6 +3294,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             public string Mobile { get; set; }
             public string Message { get; set; }
         }
+        [AuthorizationFilter]
         public void SendSms(int p1, int p2, string Message)
         {
 
@@ -4244,7 +4247,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-
+        [AuthorizationFilter()]
         [HttpGet, ActionName("GetAllBranches")]
         public HttpResponseMessage GetAllBranches()
         {
@@ -6752,7 +6755,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
 
         }
-
+        [AuthorizationFilter]
         [HttpGet, ActionName("GenerateC18MemosDataByPin")]
         public string GenerateC18MemosDataByPin(int ExamMonthYearId, int MinCredits, int Day, int Month, int Year, string PIN)
         {
@@ -8509,6 +8512,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        [AuthorizationFilter()]
         [HttpGet, ActionName("GetExamMonthYearByAcademicYear")]
         public HttpResponseMessage GetExamMonthYearByAcademicYear(int Academicyearid, int SessionId)
         {
@@ -8572,6 +8576,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        [AuthorizationFilter()]
         [HttpGet, ActionName("GetExamMonthYearAcademicYear")]
         public HttpResponseMessage GetExamMonthYearAcademicYear(int Academicyearid)
         {
@@ -8697,8 +8702,27 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-              
-                    var dbHandler = new dbHandler();
+                string Name = NameCheck(request["Name"].ToString());
+                string ServiceType = NumberCheck(request["ServiceType"].ToString());
+                string ChallanPrefix = NameCheck(request["ChallanPrefix"].ToString());
+                string Price = NumberCheck(request["Price"].ToString());
+                if (Name != "YES")
+                {
+                    return Name;
+                }
+                else if (ServiceType != "YES")
+                {
+                    return ServiceType;
+                }
+                else if (ChallanPrefix != "YES")
+                {
+                    return ChallanPrefix;
+                }
+                else if (Price != "YES")
+                {
+                    return Price;
+                }
+                var dbHandler = new dbHandler();
                     var param = new SqlParameter[8];
                     param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
                     param[1] = new SqlParameter("@ID", request["ID"]);
@@ -8954,7 +8978,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext1 = "Invalid Input " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9167,17 +9191,33 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("OnlyThreeDigitCheck")]
-        public string OnlyThreeDigitCheck(string DataType)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NumberCheck")]
+        public string NumberCheck(string DataType)
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex("^\\d{3}$");
+                    Regex regex = new Regex("^[0-9]+$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9196,17 +9236,33 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-        [AuthorizationFilter()][HttpGet, ActionName("DataCheck1")]
-        public string DataCheck1(string DataType)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("DateCheck")]
+        public string DateCheck(string DataType)
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex("^[A-Za-z0-9\\s\\-\\/.,#]+$");
+                    Regex regex = new Regex("^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9217,7 +9273,96 @@ namespace SoftwareSuite.Controllers.PreExamination
                 {
                     return "YES";
                 }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
 
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyThreeDigitCheck")]
+        public string OnlyThreeDigitCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{3}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("DataCheck1")]
+        public string DataCheck1(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[A-Za-z0-9\\s\\-\\/.,#]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
             }
             catch (Exception ex)
             {
@@ -9236,7 +9381,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{4}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9254,6 +9414,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+
+
+       
         [AuthorizationFilter()][HttpGet, ActionName("OnlyTwelveDigitCheck")]
         public string OnlyTwelveDigitCheck(string DataType)
         {
@@ -12269,6 +12432,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [AuthorizationFilter]
 
         [HttpPost, ActionName("UpdateCircular")]
         public HttpResponseMessage UpdateCircular([FromBody] CircularData CircularData)
@@ -16323,6 +16488,89 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string StudentType = NumberCheck(request.StudentType.ToString());
+                string Semid = NumberCheck(request.Semid.ToString());
+                string FromDate = DateCheck(request.FromDate.ToString());
+                string ToDate = DateCheck(request.ToDate.ToString());
+                string Fee = NumberCheck(request.Fee.ToString());
+                string FineDate = DateCheck(request.FineDate.ToString());
+                string LateFee = NumberCheck(request.LateFee.ToString());
+                string TatkalDate = DateCheck(request.TatkalDate.ToString());
+                string TatkalFee = NumberCheck(request.TatkalFee.ToString());
+                string PremiumTatkalFee = NumberCheck(request.PremiumTatkalFee.ToString());
+                string CondonationFee = NumberCheck(request.CondonationFee.ToString());
+                string PresemptiveAttendedDays = NumberCheck(request.PresemptiveAttendedDays.ToString());
+                string MaxWorkingDays = NumberCheck(request.MaxWorkingDays.ToString());
+                string CertificateFee = NumberCheck(request.CertificateFee.ToString());
+                string SchemeId = NumberCheck(request.SchemeId.ToString());
+                string ExamMonthYearId = NumberCheck(request.ExamMonthYearId.ToString());
+
+
+                if (StudentType != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, StudentType);
+                }
+                if (Semid != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Semid);
+                }
+                if (FromDate != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, FromDate);
+                }
+                if (ToDate != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ToDate);
+                }
+                if (Fee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Fee);
+                }
+                if (FineDate != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, FineDate);
+                }
+                if (LateFee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, LateFee);
+                }
+                if (TatkalDate != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, TatkalDate);
+                }
+                if (TatkalFee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, TatkalFee);
+                }
+                if (PremiumTatkalFee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, PremiumTatkalFee);
+                }
+                if (CondonationFee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CondonationFee);
+                }
+                if (PresemptiveAttendedDays != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, PresemptiveAttendedDays);
+                }
+                if (MaxWorkingDays != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, MaxWorkingDays);
+                }
+                if (CertificateFee != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CertificateFee);
+                }
+                if (SchemeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, SchemeId);
+                }
+                if (ExamMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ExamMonthYearId);
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[18];
                 param[0] = new SqlParameter("@StudentTypeId", request.StudentType);
@@ -16747,7 +16995,33 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString());
+                string SessionId = NumberCheck(request["SessionId"].ToString());
+                string ExamMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
+                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string ExamTypeId = NumberCheck(request["ExamTypeId"].ToString());
 
+
+                if (AcademicYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, AcademicYearId);
+                }
+                else if (SessionId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, SessionId);
+                }
+                else if (ExamMonthYearId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ExamMonthYearId);
+                }
+                else if (StudentTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, StudentTypeId);
+                }
+                else if (ExamTypeId != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ExamTypeId);
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
                 param[0] = new SqlParameter("@Json", request["json"].ToString());
@@ -18361,6 +18635,21 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+                var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
+                //var jobject = JsonConvert.DeserializeObject<JsonObject>(JsonConvert.SerializeObject(js[i]));
+                string Scheme1 = PinCheck(js["ExamHall"].ToString());
+                if (Scheme1 != "YES")
+                {
+                    return Scheme1;
+                }
+                //var js = JsonConvert.DeserializeObject<ArrayList>(Convert.ToString(data["Json"]));
+
+                //for (int i = 0; i < js.Count; i++)
+                //{
+                    
+                //}
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
                 param[0] = new SqlParameter("@datatypeid", data["datatypeid"]);
@@ -18926,7 +19215,57 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetSignature")]
+        public string GetSignature()
+        {
+            try
+            {
+                List<person4> p = new List<person4>();
+                person4 p4 = new person4();
 
+                string sourcePath = @"D:\SBTET_LOGIN_AUDIT\publish\contents\img\cesign.png";
+
+                string NameofSign = "cesign" + ".png";
+                string destinationPath = @"D:\SBTET_LOGIN_AUDIT\publish\Photos\" + NameofSign;
+
+                if (File.Exists(sourcePath))
+                {
+                    File.Copy(sourcePath, destinationPath, true);                 
+                }
+                string SP = "http://eliteqa.in/Photos/" + NameofSign;
+                p4.Sign = JsonConvert.SerializeObject(SP);
+                p.Add(p4);
+                _ = Task.Run(() =>
+                {
+                    //string result = filePath;
+
+                    // Schedule file deletion in a background task
+                    Task.Run(async () =>
+                    {
+                        int delayInSeconds = 20;
+                        await Task.Delay(delayInSeconds * 150); // Wait for the specified delay
+                        if (File.Exists(destinationPath))
+                        {
+                            File.Delete(destinationPath);
+                        }
+                        else
+                        {
+                            //Console.WriteLine("File does not exist.");
+                        }
+                    });
+                });
+                return JsonConvert.SerializeObject(p);
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+
+
+        }
 
         [AuthorizationFilter()]
         [HttpPost, ActionName("GetSemorCollegeorBranchWiseStatistics")]

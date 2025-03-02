@@ -10,9 +10,67 @@ using System.Security.Cryptography;
 using System.IO;
 using SoftwareSuite.Models.Database;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using SoftwareSuite.Models.Security;
+using System.Net.Http;
+using System.Net;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using Newtonsoft.Json;
 
 namespace SoftwareSuite.Services
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+        [AuthorizationFilter]
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class SystemUserService
     {
         #region "Insert/Update/Delete"
@@ -53,7 +111,7 @@ namespace SoftwareSuite.Services
         //    }
 
         //}
-
+        [AuthorizationFilter]
         public DataSet GetUserLogin(dbHandler dbHandler, string username, string password, string Ipaddress)
         {
 
@@ -86,7 +144,7 @@ namespace SoftwareSuite.Services
             }
 
         }
-
+        [AuthorizationFilter]
         public DataTable GetModulesbyRole(dbHandler dbHandler, Int32 UserTypeId)
         {
             try
@@ -101,7 +159,7 @@ namespace SoftwareSuite.Services
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetSubModulesbyRole(dbHandler dbHandler, Int32 UserTypeId, Int32 moduleId)
         {
             try
@@ -117,6 +175,7 @@ namespace SoftwareSuite.Services
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataTable GetLoginAccess(dbHandler dbHandler, string UserName)
         {
             try
@@ -133,7 +192,7 @@ namespace SoftwareSuite.Services
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetUsersRightsById(dbHandler dbHandler, Int32 SysModID, Int32 SysUsrGrpID)
         {
             try
@@ -181,6 +240,7 @@ namespace SoftwareSuite.Services
         //		throw ex;
         //	}
         //}
+        [AuthorizationFilter]
         public Int32 GetCheckOldPassword(dbHandler dbHandler, string OldPassword, int LoggedUserId)
         {
             try
@@ -231,7 +291,7 @@ namespace SoftwareSuite.Services
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetChangePassword(dbHandler dbHandler, Int32 UserId, string OldPassword, string NewPassword,string Salt)
         {
             DataTable dt = new DataTable();

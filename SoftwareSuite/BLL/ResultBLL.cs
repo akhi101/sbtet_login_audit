@@ -1,16 +1,54 @@
 ﻿using SoftwareSuite.Models;
 using SoftwareSuite.Models.Database;
 using SoftwareSuite.Models.Results;
+using SoftwareSuite.Models.Security;
 using SoftwareSuite.Services.Results;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Http;
+using System.Net;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace SoftwareSuite.BLL
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt(t[1]).Decrypt(parsedToken));
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Not Authorised");
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                // ctx.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Authentication Token");
+            }
+            base.OnAuthorization(actionContext);
+        }
+
+
+    }
+
     public class ResultBLL
     {
         #region insert/update/delete
+        [AuthorizationFilter]
         public SystemResponse PostResultProcess(ResultProcess ResultProcess)
         {
             dbHandler dbHandler = new dbHandler(true);
@@ -34,6 +72,7 @@ namespace SoftwareSuite.BLL
         }
         #endregion
         #region GetMethod
+        [AuthorizationFilter]
         public IEnumerable<CollegeSemWiseReport> GetCollegeSemWiseReport(int Schemeid, int Semid)
         {
             try
@@ -52,7 +91,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetSchemeDataForResults()
         {
             try
@@ -68,6 +107,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public DataSet GetExamTypeForResults(int Schemeid)
         {
             try
@@ -84,6 +124,7 @@ namespace SoftwareSuite.BLL
 
 
 
+        [AuthorizationFilter]
         public IEnumerable<BranchWiseReportData> GetBranchWiseReport(int CollegeId, int Schemeid, int Semid, int ExamTypeId, int BranchId, int ExamMonthYearId)
         {
             try
@@ -114,6 +155,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public IEnumerable<BranchWiseReportData> GetC18MidBranchWiseReport(int CollegeId, int Schemeid, int Semid, int ExamTypeId, int BranchId,int AcademicId)
         {
             try
@@ -144,6 +186,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public DataSet GetBranchWiseOldReport(int CollegeId, int Schemeid, int Semid, int ExamTypeId, string BranchId)
         {
             try
@@ -176,6 +219,7 @@ namespace SoftwareSuite.BLL
 
 
 
+        [AuthorizationFilter]
         public IEnumerable<CollegeSchemeSemData> GetCollegesSchemeSemInfo()
         {
             try
@@ -205,6 +249,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public IEnumerable<C18MidStudentWiseReportData> GetC18MidStudentWiseReport(int Semid, string Pin, int SchemeId, int ExamTypeId)
         {
             try
@@ -237,6 +282,7 @@ namespace SoftwareSuite.BLL
 
 
 
+        [AuthorizationFilter]
         public IEnumerable<StudentWiseReportData> GetStudentWiseReport(int Semid,int StudentTypeId, string Pin, int SchemeId, int ExamTypeId,int ExamMonthYearId)
         {
             try
@@ -308,6 +354,7 @@ namespace SoftwareSuite.BLL
         }
 
 
+        [AuthorizationFilter]
         public DataSet GetOldStudentWiseReport(int Semid, int StudentTypeId, string Pin, int SchemeId, int ExamTypeId, int ExamMonthYearId)
         {
             try
@@ -351,6 +398,7 @@ namespace SoftwareSuite.BLL
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public IEnumerable<SchemeSemBranchData> GetSchemeSemBranchInfo(int CollegeId)
         {
             try
@@ -380,6 +428,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public IEnumerable<ExamTypeData> GetExamTypeInfo(int SchemeId, int SemYearId)
         {
             try
@@ -405,6 +454,7 @@ namespace SoftwareSuite.BLL
             }
         }
 
+        [AuthorizationFilter]
         public DataTable GetTypeWritingShorthandReport(string HallTicketno)
         {
             try

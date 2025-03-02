@@ -18,7 +18,7 @@ namespace SoftwareSuite.Controllers.ExternalServices
         {
             db = new dbHandler();
         }
-
+        [AuthorizationFilter]
         public string GetData(string ApiKey, int? ExamType = null)
         {
             var param = new SqlParameter[2];

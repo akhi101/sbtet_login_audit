@@ -4,7 +4,9 @@
         this.getStudentFeeDates = function () {
             return DataAccessService.getDataWithPara('api/PreExamination/getStudentFeePaymentDates');
         };
-
+        this.GetSignature = function () {
+            return DataAccessService.getDataAll('api/PreExamination/GetSignature');
+        };
         this.getAllBranches = function () {
             return DataAccessService.getDataAll('api/PreExamination/GetAllBranches');
         };

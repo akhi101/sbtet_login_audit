@@ -27,7 +27,7 @@
 
         var authdata = $localStorage.authorizationData;
         $scope.userType = authdata.SystemUserTypeId
-        $scope.UserName = authdata.userName;
+        $scope.UserName = authdata.UserName;
 
         if ($scope.userType == 1) {
             $scope.ClgCode = localStorage.getItem('collegeCode')

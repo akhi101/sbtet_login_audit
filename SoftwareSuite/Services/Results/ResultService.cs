@@ -1,18 +1,78 @@
 ﻿using SoftwareSuite.Models.Database;
 using SoftwareSuite.Models.Results;
+using SoftwareSuite.Models.Security;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Web;
+using System.Web.Http.Controllers;
+using System.Web.Http.Filters;
+using Newtonsoft.Json;
 
 namespace SoftwareSuite.Services.Results
 {
+    public class AuthorizationFilter : AuthorizationFilterAttribute
+    {
+        protected AuthToken token = null;
+        public override void OnAuthorization(HttpActionContext actionContext)
+        {
+
+            try
+            {
+                var tokenStr = actionContext.Request.Headers.FirstOrDefault(h => h.Key == "token");
+                var tkn = tokenStr.Value.FirstOrDefault();
+                var t = tkn.Split(new string[] { "$$@@$$" }, StringSplitOptions.None);
+                var parsedToken = t[0];
+                token = JsonConvert.DeserializeObject<AuthToken>(new HbCrypt().Decrypt(parsedToken));
+                if (!validatetoken(token.AuthTokenId))
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+                if (token.ExpiryDate < DateTime.Now)
+                {
+                    actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                }
+            }
+            catch (Exception ex)
+            {
+                actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+            base.OnAuthorization(actionContext);
+        }
+        [AuthorizationFilter]
+        public bool validatetoken(string token)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path
+            bool istokenvalid = false;
+
+            string content;
+            using (StreamReader reader = new StreamReader(path))
+            {
+                content = reader.ReadToEnd(); // Read entire file
+            }
+            if (content.Contains(token))
+            {
+                istokenvalid = true;
+            }
+
+            return istokenvalid;
+        }
+
+
+
+
+    }
+
     public class ResultService
     {
 
         #region "Insert/Update/Delete"
+        [AuthorizationFilter]
         public DataSet PostResultProcess(ResultProcess ResultProcess, dbHandler dbHandler)
         {
             try
@@ -38,6 +98,7 @@ namespace SoftwareSuite.Services.Results
 
         #endregion
         #region "Get Methods"
+        [AuthorizationFilter]
         public DataTable GetCollegeSemWiseReport(dbHandler dbHandler, int Schemeid, int Semid)
         {
             try
@@ -52,7 +113,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetSchemesForResults(dbHandler dbHandler)
         {
             try
@@ -66,7 +127,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataSet GetExamTypeForResults(dbHandler dbHandler, int Schemeid)
         {
             try
@@ -81,7 +142,7 @@ namespace SoftwareSuite.Services.Results
             }
         }
 
-     
+        [AuthorizationFilter]
         public DataTable GetTypeWritingShorthandReport(dbHandler dbHandler, string HallTicketno)
         {
             try
@@ -95,7 +156,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataSet GetBranchWiseReport(dbHandler dbHandler, int CollegeId, int Schemeid, int Semid, int ExamTypeId, int BranchId,int ExamMonthYearId)
         {
             try
@@ -110,6 +171,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataSet GetC18MidBranchWiseReport(dbHandler dbHandler, int CollegeId, int Schemeid, int Semid, int ExamTypeId, int BranchId,int AcademicId)
         {
             try
@@ -124,6 +186,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataSet GetBranchWiseOldReport(dbHandler dbHandler, int CollegeId, int Schemeid, int Semid, int ExamTypeId, string BranchId)
         {
             try
@@ -138,7 +201,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataSet Getc09StudentWiseReport(dbHandler dbHandler, int CollegeId, int Schemeid, int Semid, int ExamTypeId, string BranchId)
         {
             try
@@ -153,7 +216,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataSet GetStudentWiseReport(dbHandler dbHandler, int Semid,int StudentTypeId, string Pin, int SchemeId, int ExamTypeId,int ExamMonthYearId)
         {
             try
@@ -171,7 +234,7 @@ namespace SoftwareSuite.Services.Results
             }
         }
 
-       
+        [AuthorizationFilter]
         public DataSet GetC18MidStudentWiseReport(dbHandler dbHandler, int Semid, string Pin, int SchemeId, int ExamTypeId)
         {
 
@@ -187,6 +250,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataSet GetOldStudentWiseReport(dbHandler dbHandler, int Semid, int StudentTypeId, string Pin, int SchemeId, int ExamTypeId, int ExamMonthYearId)
         {
             try
@@ -211,7 +275,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataSet GetSchemeSemBranchInfo(dbHandler dbHandler, int CollegeId)
         {
             try
@@ -226,6 +290,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
+        [AuthorizationFilter]
         public DataSet GetCollegesSchemeSemInfo(dbHandler dbHandler)
         {
             try
@@ -240,7 +305,7 @@ namespace SoftwareSuite.Services.Results
                 throw ex;
             }
         }
-
+        [AuthorizationFilter]
         public DataTable GetExamTypeInfo(dbHandler dbHandler, int Schemeid, int Semid)
         {
             try
