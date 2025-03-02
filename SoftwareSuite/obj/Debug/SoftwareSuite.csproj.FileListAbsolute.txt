@@ -769,3 +769,17 @@ E:\TS_SBTET_LOGIN_AUDIT\sbtet_login_audit\SoftwareSuite\obj\Debug\SoftwareSuite.
 E:\TS_SBTET_LOGIN_AUDIT\sbtet_login_audit\SoftwareSuite\obj\Debug\SoftwareSuite.csproj.CopyComplete
 E:\TS_SBTET_LOGIN_AUDIT\sbtet_login_audit\SoftwareSuite\obj\Debug\SoftwareSuite.dll
 E:\TS_SBTET_LOGIN_AUDIT\sbtet_login_audit\SoftwareSuite\obj\Debug\SoftwareSuite.pdb
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\BCrypt.Net-Next.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Bcl.Memory.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Owin.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Owin.Security.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Newtonsoft.Json.Bson.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Owin.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\System.Configuration.ConfigurationManager.dll
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\BCrypt.Net-Next.xml
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Bcl.Memory.xml
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Owin.xml
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Microsoft.Owin.Security.xml
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Newtonsoft.Json.Bson.pdb
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\Newtonsoft.Json.Bson.xml
+D:\sbtet_login_audit_me\sbtet_login_audit\SoftwareSuite\bin\System.Configuration.ConfigurationManager.xml
