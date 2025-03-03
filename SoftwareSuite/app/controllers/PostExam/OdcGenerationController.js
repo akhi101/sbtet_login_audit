@@ -92,40 +92,58 @@
             $scope.NoData = false;
             var OdcDetails = PreExaminationService.GetOdcDataByPin($scope.ODCPin);
             OdcDetails.then(function (resp) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(response);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                // Check if the response is a JSON string
+                if (typeof resp === "string") {
+                    var res1 = JSON.parse(resp);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                }
-                else if (resp.Table[0].ResponceCode == '200') {  
-                    $scope.OdcData = resp.Table1[0];
-                    //$scope.NAME = $scope.OdcData[0].NAME
-                    //console.log($scope.OdcData[0].NAME)
-                    $scope.loading = false;
-                    $scope.DataFound = true;
-                    $scope.NoData = false;
-                    for (var j = 1; j < resp.Table1.length + 1; j++) {
-                        $scope['edit' + j] = true;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
                     }
-                } else {
-                    $scope.OdcData = [];
-                    alert("No Details Found.");
-                    $scope.loading = false;
-                    $scope.DataFound = false;
-                    $scope.NoData = true;
                 }
+                else {
+
+                    if (resp.Table[0].ResponceCode == '200') {
+                        $scope.OdcData = resp.Table1[0];
+                        //$scope.NAME = $scope.OdcData[0].NAME
+                        //console.log($scope.OdcData[0].NAME)
+                        $scope.loading = false;
+                        $scope.DataFound = true;
+                        $scope.NoData = false;
+                        for (var j = 1; j < resp.Table1.length + 1; j++) {
+                            $scope['edit' + j] = true;
+                        }
+                    } else {
+                        $scope.OdcData = [];
+                        alert("No Details Found.");
+                        $scope.loading = false;
+                        $scope.DataFound = false;
+                        $scope.NoData = true;
+                    }
+
+
+
+                }
+
             },
              function (error) {
                  alert("error while loading Data");
@@ -199,51 +217,71 @@
             //    return
             //}           
             var loadData2 = PreExaminationService.GenerateOdcDataByPin($scope.Pin)
-            loadData2.then(function (res) {
-                var response = JSON.parse(res)
-                console.log(response)
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(response);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+            loadData2.then(function (response) {
+                // Check if the response is a JSON string
+                if (typeof response === "string" && response !="Cannot find table 0.") {
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
-                else if (response[0].ResponceCode == '200') {
-                    $scope.loading = false;
-                    var msg = response[0].ResponceDescription;
-                    var Pin = response[0].Pin;
-                    var value = msg + ' ' + 'for' + ' ' + 'Pin : ' + $scope.Pin
-                    alert(value)
-                    var location = response[0].file;
-                    window.location.href = location;
-                    $scope.Error1 = false;
-                    $scope.Noresult = false;
-                } else if (response[0].ResponceCode == '400') {
-                    $scope.loading = false;
-                    $scope.Data = false;
-                    $scope.Noresult = false;
-                    $scope.Error1 = true;
-                    $scope.ErrMsg1 = response[0].ResponceDescription;
-                    alert($scope.ErrMsg1)
-                } else {
-                    $scope.loading = false;
-                    $scope.Data = false
-                    alert("No Data Found");
-                    $scope.Noresult = true;
-                    $scope.Error1 = false;
+                else {
+
+                    if (response[0].ResponceCode == '200') {
+                        $scope.loading = false;
+                        var msg = response[0].ResponceDescription;
+                        var Pin = response[0].Pin;
+                        var value = msg + ' ' + 'for' + ' ' + 'Pin : ' + $scope.Pin
+                        alert(value)
+                        var location = response[0].file;
+                        window.location.href = location;
+                        $scope.Error1 = false;
+                        $scope.Noresult = false;
+                    } else if (response[0].ResponceCode == '400') {
+                        $scope.loading = false;
+                        $scope.Data = false;
+                        $scope.Noresult = false;
+                        $scope.Error1 = true;
+                        $scope.ErrMsg1 = response[0].ResponceDescription;
+                        alert($scope.ErrMsg1)
+                    } else {
+                        $scope.loading = false;
+                        $scope.Data = false
+                        alert("No Data Found");
+                        $scope.Noresult = true;
+                        $scope.Error1 = false;
+
+                    }
+
+
 
                 }
+
+
+
+                
+                
             },
                 function (error) {
                     $scope.loading = false;
@@ -281,40 +319,62 @@
             }
             var loadData2 = PreExaminationService.GenerateOdcData($scope.ExamMonthYear, $scope.Day, $scope.Month, $scope.Year)
             loadData2.then(function (data) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(response);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                // Check if the response is a JSON string
+                if (typeof res === "string") {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                }
-                else if (data.length > 4) {
-                    console.log(window.location.href);
-                    $scope.loading = false;
-                    $scope.Data = true;
-                    $scope.NoOutput = false;
-                    $scope.Error = false;
-                    var location = data;
-                    window.location.href = location;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
 
-                } else {
-                    $scope.loading = false;
-                    $scope.Data = false
-                    $scope.ErrMsg = "No ODC Data Generated for the Selected Input."
-                    $scope.NoOutput = true;
-                    $scope.Error = false;
-                    alert("No ODC Data Generated for the Selected Input.");
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
+                else {
+
+                    if (data.length > 4) {
+                        console.log(window.location.href);
+                        $scope.loading = false;
+                        $scope.Data = true;
+                        $scope.NoOutput = false;
+                        $scope.Error = false;
+                        var location = data;
+                        window.location.href = location;
+
+                    } else {
+                        $scope.loading = false;
+                        $scope.Data = false
+                        $scope.ErrMsg = "No ODC Data Generated for the Selected Input."
+                        $scope.NoOutput = true;
+                        $scope.Error = false;
+                        alert("No ODC Data Generated for the Selected Input.");
+                    }
+
+
+
+                }
+
+
+
+
+                
                 //if (response.Table[0].ResponceCode == '200') {                
                 //    $scope.loading = false;
                 //    $scope.Data = true;

@@ -352,44 +352,61 @@
             $scope.loading = true;
             $scope.Noresult = false
             var loadData1 = PreExaminationService.GetResultsReports($scope.Scheme, JSON.stringify($scope.semarr), JSON.stringify($scope.BranchArray), JSON.stringify($scope.CollegeArray))
-            loadData1.then(function (res) {
-                var data = JSON.parse(res)
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(response);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+            loadData1.then(function (data) {
+                // Check if the response is a JSON string
+                if (typeof data === "string") {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                } 
-                else if (data[0].ResponceCode == '200') {
-                    $scope.Noresult = false
-                    $scope.loading = false;
-                    var location = data[0].file;
-                    console.log(location)
-                    console.log(window.location.href)
-                    window.location.href = location;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
 
-                } else
-                    if (data[0].ResponceCode == '400') {
-                        $scope.Noresult = true
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
+                else {
+
+                    if (data[0].ResponceCode == '200') {
+                        $scope.Noresult = false
                         $scope.loading = false;
-                        alert(data[0].ResponceDescription);
-                    }
-                    else {
-                        $scope.Noresult = true
-                        $scope.loading = false;
-                        alert('Something Went Wrong')
-                    }
+                        var location = data[0].file;
+                        console.log(location)
+                        console.log(window.location.href)
+                        window.location.href = location;
+
+                    } else
+                        if (data[0].ResponceCode == '400') {
+                            $scope.Noresult = true
+                            $scope.loading = false;
+                            alert(data[0].ResponceDescription);
+                        }
+                        else {
+                            $scope.Noresult = true
+                            $scope.loading = false;
+                            alert('Something Went Wrong')
+                        }
+
+
+
+                }
+
 
             }, function (error) {
                 $scope.Noresult = true

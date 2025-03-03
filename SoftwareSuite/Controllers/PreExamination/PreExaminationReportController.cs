@@ -32,50 +32,7 @@ namespace SoftwareSuite.Controllers.PreExamination
     {
 
 
-        [AuthorizationFilter][HttpGet, ActionName("CheckFee")]
-        public string CheckFee(int DataType)
-        {
-            try
-            {
-                if (DataType != 0)
-                {
-                    Regex regex = new Regex("[0-9]");
-                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
-                    if (!regex.IsMatch(DataType.ToString()))
-                    {
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        //  return Content;
-                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
-                        return res;
-                    }
-                    else
-                    {
-                        return "YES";
-                    }
-                }
-                else
-                {
-                    return "YES";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
+        
 
         [AuthorizationFilter]
         [AuthorizationFilter][HttpGet, ActionName("GetDecryptedData")]
