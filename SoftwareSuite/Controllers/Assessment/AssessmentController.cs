@@ -21,10 +21,7 @@ using System.Net;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using System.Linq;
-
-
-
-
+using SoftwareSuite.Controllers.PreExamination;
 
 namespace SoftwareSuite.Controllers.Assessment
 {
@@ -271,6 +268,17 @@ namespace SoftwareSuite.Controllers.Assessment
         {
             try
             {
+                PreExaminationController PreExamination = new PreExaminationController();
+
+                string semid1 = PreExamination.CheckFee(semid);
+               
+
+                if (semid1 != "YES")
+                {
+                    return semid1;
+                }
+              
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@semid", semid);

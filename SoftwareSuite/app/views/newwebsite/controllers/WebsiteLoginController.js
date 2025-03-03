@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("WebsiteLoginController", function ($scope, $localStorage, $http, $timeout, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
 
         sessionStorage.loggedIn = "no";

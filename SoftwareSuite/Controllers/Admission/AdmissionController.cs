@@ -235,6 +235,9 @@ namespace SoftwareSuite.Controllers.Admission
                 return ex.Message;
             }
         }
+
+        
+
         [AuthorizationFilter][HttpGet, ActionName("GetOdcDataByPin")]
         public string GetOdcDataByPin(string pin)
         {
@@ -918,6 +921,8 @@ namespace SoftwareSuite.Controllers.Admission
         {
             try
             {
+                PinCheck(Pin);
+
                 string maskedFAadhar = String.Empty;
                 string maskedMAadhar = String.Empty;
                 var dbHandler = new dbHandler();
@@ -1002,11 +1007,66 @@ namespace SoftwareSuite.Controllers.Admission
 
 
         }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("AttendeeIdCheck")]
+        public string AttendeeIdCheck(string DataType)
+
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex(@"^[0-9_.-]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+
+
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         [AuthorizationFilter][HttpGet, ActionName("GetSudentByAadhaar")]
         public string GetSudentByAadhaar(string AadhaarNo)
         {
             try
             {
+
+              var AadhaarNo1=  NumberCheck(AadhaarNo);
+                if (AadhaarNo1 != "YES")
+                {
+                    return AadhaarNo1;
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@aadhar", AadhaarNo);
@@ -1059,6 +1119,11 @@ namespace SoftwareSuite.Controllers.Admission
         {
             try
             {
+                var AttendeeId1 = AttendeeIdCheck(AttendeeId);
+                if (AttendeeId1 != "YES")
+                {
+                    return AttendeeId1;
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[1];
                 param[0] = new SqlParameter("@AttendeeId", AttendeeId);
@@ -2108,6 +2173,51 @@ namespace SoftwareSuite.Controllers.Admission
         //    }
         //    return Request.CreateResponse(HttpStatusCode.NoContent);
         //}
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NumberCheck")]
+        public string NumberCheck(string DataType)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^[0-9]+$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid Input";
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         [AuthorizationFilter][HttpGet, ActionName("StudentReadmissiondata")]
         public string StudentReadmissiondata(string pinNumber)
         {

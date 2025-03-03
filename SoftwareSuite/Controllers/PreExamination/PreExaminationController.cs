@@ -3006,6 +3006,19 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                var AcademicYearId1 = NumberCheck(data["AcademicYearId"].ToString());
+                if (AcademicYearId1 != "YES")
+                {
+                    return AcademicYearId1;
+                }
+                var DataTypeId1 = NumberCheck(data["DataTypeId"].ToString());
+                if (DataTypeId1 != "YES")
+                {
+                    return DataTypeId1;
+                }
+                
+
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[9];
 
@@ -3836,6 +3849,22 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                var DataTypeId1 = NumberCheck(DataTypeId.ToString());
+                if (DataTypeId1 != "YES")
+                {
+                    return DataTypeId1;
+                }
+                var CollegeCode1 = NumberCheck(CollegeCode);
+                if (CollegeCode1 != "YES")
+                {
+                    return CollegeCode1;
+                }
+                var BranchCode1 = PinCheck(BranchCode);
+                if (BranchCode1 != "YES")
+                {
+                    return BranchCode1;
+                }
+
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
@@ -6311,6 +6340,22 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string Scheme1 = NumberCheck(request["Scheme"].ToString());
+                if (Scheme1 != "YES")
+                {
+                    return Scheme1;
+                }
+                string AcademicYearId1 = NumberCheck(request["AcademicYearId"].ToString());
+                if (AcademicYearId1 != "YES")
+                {
+                    return Scheme1;
+                }
+                string CollegeCode1 = NumberCheck(request["CollegeCode"].ToString());
+                if (CollegeCode1 != "YES")
+                {
+                    return Scheme1;
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Scheme", request["Scheme"]);
@@ -15349,6 +15394,12 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string UserTypeId1 = PinCheck(request["UserTypeId"].ToString());
+
+                if (UserTypeId1 != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, UserTypeId1);
+                }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];
@@ -18386,6 +18437,18 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                string SessionId1 = NumberCheck(SessionId.ToString());
+                string AcademicYearId1 = NumberCheck(AcademicYearId.ToString());
+
+
+                if (SessionId1 != "YES")
+                {
+                    return SessionId1;
+                }
+                if (AcademicYearId1 != "YES")
+                {
+                    return AcademicYearId1;
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@AcademicYearId", AcademicYearId);
@@ -18428,6 +18491,55 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+                //"Id": data.Id, "AcademicYearId": parseInt(data.AcademicYearId), "SessionId": parseInt(data.SessionId), "SchemeId": data.SchemeId, "SemId": data.SemId,
+
+                //"StartDate": srtdate, "EndDate": enddate, "NofDays": parseInt(data.NofDays), "ReAdmissionEndDate": ReAdmissionEndDate
+                var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
+                string Id1 = NumberCheck(js["Id"].ToString());
+                string AcademicYearId1 = PinCheck(js["AcademicYearId"].ToString());
+                string SessionId1 = PinCheck(js["SessionId"].ToString());
+                string SchemeId1 = PinCheck(js["SchemeId"].ToString());
+                string SemId1 = PinCheck(js["SemId"].ToString());
+                string NofDays1 = PinCheck(js["NofDays"].ToString());
+                string StartDate1 = PinCheck(js["StartDate"].ToString());
+                string EndDate1 = PinCheck(js["EndDate"].ToString());
+                string ReAdmissionEndDate1 = PinCheck(js["ReAdmissionEndDate"].ToString());
+                if (StartDate1 != "YES")
+                {
+                    return StartDate1;
+                }
+                if (EndDate1 != "YES")
+                {
+                    return EndDate1;
+                }
+                if (ReAdmissionEndDate1 != "YES")
+                {
+                    return ReAdmissionEndDate1;
+                }
+                if (Id1 != "YES")
+                {
+                    return Id1;
+                }
+                if (AcademicYearId1 != "YES")
+                {
+                    return AcademicYearId1;
+                }
+                if (SessionId1 != "YES")
+                {
+                    return SessionId1;
+                }
+                if (SchemeId1 != "YES")
+                {
+                    return SchemeId1;
+                }
+                if (SemId1 != "YES")
+                {
+                    return SemId1;
+                }
+                if (NofDays1 != "YES")
+                {
+                    return NofDays1;
+                }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];
                 param[0] = new SqlParameter("@DataTypeId", data["DataTypeId"]);
@@ -19337,6 +19449,13 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
+
+              var pin1 = PinCheck(Pin);
+                if (pin1 != "YES")
+                {
+                    return pin1;
+                }
+
                 string maskedFAadhar = String.Empty;
                 string maskedMAadhar = String.Empty;
                 var dbHandler = new dbHandler();

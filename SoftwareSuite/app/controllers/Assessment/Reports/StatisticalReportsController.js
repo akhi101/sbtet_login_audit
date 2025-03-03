@@ -57,6 +57,26 @@
             console.log($scope.selectedSem)
             var getActiveList = AssessmentService.getStatisticalReports($scope.selectedSem);
             getActiveList.then(function (response) {
+                var res = JSON.parse(response);
+                try {
+                    var res = JSON.parse(response);
+                }
+                catch
+                {
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+                    }
+                } else
                 if (response.length > 0) {
                     $scope.StatisticalReports = response;
                     $scope.loading = false;
