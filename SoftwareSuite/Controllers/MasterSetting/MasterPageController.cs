@@ -1810,19 +1810,19 @@ namespace SoftwareSuite.Controllers.MasterSetting
             }
         }
 
-        [AuthorizationFilter][HttpGet, ActionName("CheckFee")]
-        public string CheckFee(int DataType)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("NumberCheck")]
+        public string NumberCheck(string DataType)
         {
             try
             {
-                if (DataType != 0)
+                if (DataType != "")
                 {
-                    Regex regex = new Regex("[0-9]");
-                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
-                    if (!regex.IsMatch(DataType.ToString()))
+                    Regex regex = new Regex("^[0-9]+$");
+                    if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid Input";
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -1847,7 +1847,6 @@ namespace SoftwareSuite.Controllers.MasterSetting
                 {
                     return "YES";
                 }
-
             }
             catch (Exception ex)
             {
@@ -1861,9 +1860,9 @@ namespace SoftwareSuite.Controllers.MasterSetting
             try
             {
                 string ExamMonthYear1 = ExamMonthYearCheck(ExamMonthYear);
-                string DataTypeId1 = CheckFee(DataTypeId);
-                string ExamMonthYearId1 = CheckFee(ExamMonthYearId);
-                string SequenceId1 = CheckFee(SequenceId);
+                string DataTypeId1 = NumberCheck(DataTypeId.ToString());
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString());
+                string SequenceId1 = NumberCheck(SequenceId.ToString());
                 if (ExamMonthYear1 != "YES")
                 {
                     return ExamMonthYear1;

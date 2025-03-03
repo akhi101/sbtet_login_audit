@@ -1,4 +1,4 @@
-﻿define(['app'], function (app) {
+define(['app'], function (app) {
     app.controller("WebsiteLoginController", function ($scope, $localStorage, $http, $timeout, $state, $window, AppSettings, SystemUserService, $crypto, PreExaminationService, AdminService) {
 
         sessionStorage.loggedIn = "no";
@@ -8,17 +8,21 @@
         $ctrl.$onInit = () => {
             $scope.Loginbutton = false;
         }
-        var sessionId= 'Session_' + Math.random().toString(36).substr(2, 16);
+        //var sessionId= 'Session_' + Math.random().toString(36).substr(2, 16);
         
         var eKey = SystemUserService.GetEKey();
         eKey.then(function (res) {
             $scope.LoginEKey = res;
-            $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt(sessionId, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+            //$scope.EncriptedSession = $crypto.encrypt($crypto.encrypt(sessionId, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             $scope.GetCaptchaData()
 
         });
         $scope.GetCaptchaData = function () {
+            var sessionId = 'Session_' + Math.random().toString(36).substr(2, 16);
+            $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt(sessionId, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
             var captcha = PreExaminationService.GetCaptchaString($scope.EncriptedSession);
+            $scope.EncriptedSession = $crypto.encrypt($crypto.encrypt(sessionId, 'HBSBP9214EDU00TS'), $scope.LoginEKey) + '$$@@$$' + $scope.LoginEKey;
+
             captcha.then(function (response) {
                 try {
                     var res = JSON.parse(response);
@@ -189,9 +193,8 @@
                         console.log(sessionStorage)
                         // Wait for a small delay before redirecting (ensures data is set properly)
                         setTimeout(() => {
-                            console.log("Redirecting to Dashboard...");
-                            //$scope.GetCaptchaData();
-                            $state.go('Dashboard');
+                            //console.log("Redirecting to Dashboard...");
+                            $scope.GetCaptchaData();
                             $state.go("Dashboard", {}, { reload: true });
                         }, 500); 
 
@@ -208,7 +211,6 @@
                 alert($scope.decryptedMessage);
 
                 setTimeout(() => {
-                    //$scope.GetCaptchaData();
                 }, 500); // Wait 0.5 seconds before regenerating Captcha
             }
         };

@@ -582,36 +582,53 @@
                 //{
 
                 //}
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (dat.Status) {
-                    // var keys = Object.keys(res);
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = dat.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = dat.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                // Check if the response is a JSON string
+                if (typeof res === "string") {
+                    var res1 = JSON.parse(dat);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
-                else if (dat[0].ResponceCode == '200') {
-                    alert(dat[0].ResponceDescription);
-                  //  $scope.LoadImg = false;
-                              
-                    $scope.ResultFound = true;
-                    $scope.setTimeTabledata();
-                } else {
-                    alert('Something Went Wrong');
-                    $scope.ResultNotFound = true;
-                    $scope.ResultFound = false;
-                    $scope.LoadImg = false;
-                }               
+                else {
+
+                    if (dat[0].ResponceCode == '200') {
+                        alert(dat[0].ResponceDescription);
+                        //  $scope.LoadImg = false;
+
+                        $scope.ResultFound = true;
+                        $scope.setTimeTabledata();
+                    } else {
+                        alert('Something Went Wrong');
+                        $scope.ResultNotFound = true;
+                        $scope.ResultFound = false;
+                        $scope.LoadImg = false;
+                    }  
+
+
+
+                }
 
             }, function (error) {
                 $scope.ResultNotFound = true;

@@ -146,54 +146,71 @@
             $scope.isShowResults = true;
             PreExaminationService.GetSemesterWiseStatistics(DataType, $scope.AcademicYearID, $scope.ExamMonthYearID, 0, 0)
                 .then(function (response) {
-                    var Res = JSON.parse(response)
-                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                    if (response.Status) {
-                        // var keys = Object.keys(response);
 
-                        //   $scope.statusKey = keys[0];
-                        $scope.statusValue = response.Status;
-
-                        // $scope.descriptionKey = keys[1];
-                        $scope.descriptionValue = response.Description;
-
-                        $scope.EncStatusDescription2 = $scope.descriptionValue;
-                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                            $scope.decryptParameter2();
-                            alert($scope.decryptedParameter2);
-                            return;
+                    // Check if the response is a JSON string
+                    if (typeof data === "string") {
+                        var res1 = JSON.parse(response);
+                        try {
+                            var res2 = JSON.parse(res1);
                         }
-                            var OnRoll = 0;
-                            var FeePaid = 0;
-                            var Pass = 0;
-                            var Per = 0;
-                            if (Res.length > 0) {
-                                $scope.SemesterWiseData = Res;
-                                for (var i = 0; i < Res.length; i++) {
-                                    if (Res[i].OnRoll != null)
-                                        OnRoll = OnRoll + Res[i].OnRoll;
-                                    if (Res[i].FeePaid != null)
-                                        FeePaid = FeePaid + Res[i].FeePaid;
-                                    if (Res[i].Pass != null)
-                                        Pass = Pass + Res[i].Pass;
-                                    //if (Res[i].Per != null)
-                                    //    Per = Per + Res[i].Per;
-                                    $scope.LoadImg = false;
-                                    $scope.Noresult = false;
-                                }
-                                $scope.OnRoll = OnRoll;
-                                $scope.FeePaid = FeePaid;
-                                $scope.Pass = Pass;
-                                $scope.Per = ($scope.Pass / $scope.FeePaid) * 100;
-                        
-                    }
-                    
+                        catch
+                        {
+
+                        }
+                        const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                        if (res2.Status) {
+                            // var keys = Object.keys(res);
+
+                            //   $scope.statusKey = keys[0];
+                            $scope.statusValue = res2.Status;
+
+                            // $scope.descriptionKey = keys[1];
+                            $scope.descriptionValue = res2.Description;
+
+                            $scope.EncStatusDescription2 = $scope.descriptionValue;
+                            if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                                $scope.decryptParameter2();
+                                alert($scope.decryptedParameter2);
+
+                            }
+                        }
                     }
                     else {
-                        $scope.SemesterWiseData = [];
-                        $scope.LoadImg = false;
-                        $scope.Noresult = true;
+
+                        var Res = JSON.parse(response)
+
+                        var OnRoll = 0;
+                        var FeePaid = 0;
+                        var Pass = 0;
+                        var Per = 0;
+                        if (Res.length > 0) {
+                            $scope.SemesterWiseData = Res;
+                            for (var i = 0; i < Res.length; i++) {
+                                if (Res[i].OnRoll != null)
+                                    OnRoll = OnRoll + Res[i].OnRoll;
+                                if (Res[i].FeePaid != null)
+                                    FeePaid = FeePaid + Res[i].FeePaid;
+                                if (Res[i].Pass != null)
+                                    Pass = Pass + Res[i].Pass;
+                                //if (Res[i].Per != null)
+                                //    Per = Per + Res[i].Per;
+                                $scope.LoadImg = false;
+                                $scope.Noresult = false;
+                            }
+                            $scope.OnRoll = OnRoll;
+                            $scope.FeePaid = FeePaid;
+                            $scope.Pass = Pass;
+                            $scope.Per = ($scope.Pass / $scope.FeePaid) * 100;
+
+                        }
+                        else {
+                            $scope.SemesterWiseData = [];
+                            $scope.LoadImg = false;
+                            $scope.Noresult = true;
+                        }
+
                     }
+
                 },
                     function (error) {
                         $scope.LoadImg = false;
@@ -240,25 +257,44 @@
             $scope.isShowResults = true;
             PreExaminationService.GetCollegeWiseStatistics(DataType, $scope.academicYearID, $scope.examMonthYearID, $scope.College, 0)
                 .then(function (response) {
-                    var Res = JSON.parse(response)
+                    
 
-
-                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                    if (response.Status) {
-                        // var keys = Object.keys(response);
-
-                        //   $scope.statusKey = keys[0];
-                        $scope.statusValue = response.Status;
-
-                        // $scope.descriptionKey = keys[1];
-                        $scope.descriptionValue = response.Description;
-
-                        $scope.EncStatusDescription2 = $scope.descriptionValue;
-                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                            $scope.decryptParameter2();
-                            alert($scope.decryptedParameter2);
-                            return;
+                    // Check if the response is a JSON string
+                    if (typeof data === "string") {
+                        var res1 = JSON.parse(Res);
+                        try {
+                            var res2 = JSON.parse(res1);
                         }
+                        catch
+                        {
+
+                        }
+                        const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                        if (res2.Status) {
+                            // var keys = Object.keys(res);
+
+                            //   $scope.statusKey = keys[0];
+                            $scope.statusValue = res2.Status;
+
+                            // $scope.descriptionKey = keys[1];
+                            $scope.descriptionValue = res2.Description;
+
+                            $scope.EncStatusDescription2 = $scope.descriptionValue;
+                            if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                                $scope.decryptParameter2();
+                                alert($scope.decryptedParameter2);
+
+                            }
+                        }
+
+
+
+
+                    }
+
+                    else {
+                        var Res = JSON.parse(response);
+
                         var OnRoll = 0;
                         var FeePaid = 0;
                         var Pass = 0;
@@ -282,18 +318,18 @@
                             $scope.Pass = Pass;
                             $scope.Per = ($scope.Pass / $scope.FeePaid) * 100;
                         }
+                        else {
+                            $scope.CollegeWiseData = [];
+                            $scope.LoadImg = false;
+                            $scope.Noresult = true;
+
 
                         }
 
+
                     }
+
                     
-                    else {
-                        $scope.CollegeWiseData = [];
-                        $scope.LoadImg = false;
-                        $scope.Noresult = true;
-
-
-                    }
                 },
                     function (error) {
                         $scope.LoadImg = false;
@@ -322,24 +358,39 @@
             $scope.isShowResults = true;
             PreExaminationService.GetBranchWiseStatistics(DataType, $scope.academicyearID, $scope.exammonthYearID, 0, $scope.Branch)
                 .then(function (response) {
-                    var Res = JSON.parse(response)
-
-                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                    if (response.Status) {
-                        // var keys = Object.keys(response);
-
-                        //   $scope.statusKey = keys[0];
-                        $scope.statusValue = response.Status;
-
-                        // $scope.descriptionKey = keys[1];
-                        $scope.descriptionValue = response.Description;
-
-                        $scope.EncStatusDescription2 = $scope.descriptionValue;
-                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                            $scope.decryptParameter2();
-                            alert($scope.decryptedParameter2);
+                    let keys = Object.keys(response[0]);
+                    // Check if the response is a JSON string
+                    if (typeof response === "string") {
+                        var res1 = JSON.parse(response);
+                        try {
+                            var res2 = JSON.parse(res1);
+                        }
+                        catch
+                        {
 
                         }
+                        const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                        if (res2.Status) {
+                            // var keys = Object.keys(res);
+
+                            //   $scope.statusKey = keys[0];
+                            $scope.statusValue = res2.Status;
+
+                            // $scope.descriptionKey = keys[1];
+                            $scope.descriptionValue = res2.Description;
+
+                            $scope.EncStatusDescription2 = $scope.descriptionValue;
+                            if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                                $scope.decryptParameter2();
+                                alert($scope.decryptedParameter2);
+
+                            }
+                        }
+                    }
+                    else {
+
+                        var Res = JSON.parse(response)
+
                         var OnRoll = 0;
                         var FeePaid = 0;
                         var Pass = 0;
@@ -363,14 +414,16 @@
                             $scope.Pass = Pass;
                             $scope.Per = ($scope.Pass / $scope.FeePaid) * 100;
                         }
-                    }
-                    
-                    else {
-                        $scope.BranchWiseData = [];
-                        $scope.LoadImg = false;
-                        $scope.Noresult = true;
+                        else {
+                            $scope.BranchWiseData = [];
+                            $scope.LoadImg = false;
+                            $scope.Noresult = true;
+
+                        }
 
                     }
+
+                    
                 },
                     function (error) {
                         $scope.LoadImg = false;

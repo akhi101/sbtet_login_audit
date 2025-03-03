@@ -740,11 +740,11 @@ namespace SoftwareSuite.Controllers.AdminServices
                 param[1] = new SqlParameter("@Captcha", decryptedCaptcha);
                 var dt = new dbHandler().ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
 
-                if (dt.Rows[0]["ResponseCode"].ToString() != "200")
+                if (dt.Rows[0]["ResponseCode"].ToString() == "400"  || dt.Rows[0]["IsUsed"].ToString() == "True")
                 {
                     return EncryptedResponse("Invalid Captcha");
                 }
-
+                MarkCaptchaValidated(decryptedSessionId,decryptedCaptcha,true);
                 string decryptedLoginName = GetDecryptedData(requestData.LoginName);
 
                 byte[] saltBytes = Convert.FromBase64String(requestData.Salt);
@@ -830,7 +830,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                             t.ExpiryDate,
                             AuthTokenId = authTokenId
                         },
-                        clientIpAddress
+                        
                     });
 
                     return response;
@@ -919,7 +919,28 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-       
+        [AuthorizationFilter]
+        [HttpPost, ActionName("MarkCaptchaValidated")]
+        public void MarkCaptchaValidated(string SessionId,string Captcha, bool IsUsed)
+        {
+            try
+            {
+                var dbHandler = new dbHandler();
+                var param = new SqlParameter[3];
+                param[0] = new SqlParameter("@SessionId", SessionId);
+                param[1] = new SqlParameter("@Captcha", Captcha);
+                param[2] = new SqlParameter("@IsUsed", IsUsed);
+                var dt = dbHandler.ReturnDataWithStoredProcedureTable("SP_Update_CaptchaValidation", param);
+            }
+            catch (Exception ex)
+            {
+
+                dbHandler.SaveErorr("SP_Update_CaptchaValidation", 0, ex.Message);
+            }
+        }
+
+
+
 
 
         [AuthorizationFilter]
@@ -3465,7 +3486,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter]
+        //[AuthorizationFilter]
         [HttpGet, ActionName("GetNotificationByUser")]
         public HttpResponseMessage GetNotificationByUser(int UserTypeId)
         {
@@ -3595,7 +3616,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        [AuthorizationFilter]
+        //[AuthorizationFilter]
         [HttpGet, ActionName("getCirculars")]
         public string getCirculars()
         {
