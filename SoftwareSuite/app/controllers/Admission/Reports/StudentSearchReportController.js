@@ -476,25 +476,51 @@ define(['app'], function (app) {
                 $('#userImg').attr('src', '');
                 var SearchstudentInfo = ReportService.GetStudentByPin(filter);
                 SearchstudentInfo.then(function (response) {
-                    $scope.searchResult = true;
-                    $scope.LoadImg = false;
+                    var res = JSON.parse(response);
+                    try {
+                        var res = JSON.parse(response);
+                    }
+                    catch
+                    {
 
-                    var Res = JSON.parse(response);
+                    }
+                    var res = JSON.parse(res);
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res.Status) {
+                        // var keys = Object.keys(res);
 
-                    $scope.MaskedAadhar =  Res[0].Aadhar;
-                    $scope.MaskedFAadhar = Res[0].FAadhar;
-                    $scope.MaskedMAadhar = Res[0].MAadhar;
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                        $scope.searchResult = true;
+                        $scope.LoadImg = false;
+
+                        var res = JSON.parse(response);
+
+                        $scope.MaskedAadhar = res[0].Aadhar;
+                        $scope.MaskedFAadhar = res[0].FAadhar;
+                        $scope.MaskedMAadhar = res[0].MAadhar;
 
 
 
 
-                    $scope.Table1Details = Res[0].Data;
- 
+                        $scope.Table1Details = res[0].Data;
 
-                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
-                    $scope.Table1Details = $scope.Table1Details1.Table[0];
 
-                    if ($scope.Table1Details1.Table.length > 0 || $scope.Table1Details1.Table1.length > 0 || $scope.Table1Details1.Table2.length > 0) {
+                        $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                        $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    }else
+                        if ($scope.Table1Details1.Table.length > 0 || $scope.Table1Details1.Table1.length > 0 || $scope.Table1Details1.Table2.length > 0) {
+                         
                         if ($scope.Table1Details1.Table.length == 0) {
                             $scope.Table = false;
                             alert("No Data Found in Assessment")
@@ -557,6 +583,33 @@ define(['app'], function (app) {
                 $('#userImg').attr('src', '');
                 var SearchstudentInfos = ReportService.GetSudentByAadhaar(filter);
                 SearchstudentInfos.then(function (response) {
+                    var res = JSON.parse(response);
+                    try {
+                        var res = JSON.parse(response);
+                    }
+                    catch
+                    {
+
+                    }
+                    var res = JSON.parse(res);
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                  
+                    
                     $scope.searchResult = true;
                     $scope.LoadImg = false;
 
@@ -565,7 +618,8 @@ define(['app'], function (app) {
                     $scope.Table1Details = response[0].Data;
 
                     $scope.Table1Details1 = JSON.parse($scope.Table1Details)
-                    $scope.Table1Details = $scope.Table1Details1.Table[0];
+                        $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    } else
                     if ($scope.Table1Details1.Table.length > 0) {
                       
                         $scope.StudentDetailsFound = true;
@@ -605,15 +659,43 @@ define(['app'], function (app) {
                 $('#userImg').attr('src', '');
                 var SearchstudentInfo = ReportService.GetStudentByattendeeId(filter);
                 SearchstudentInfo.then(function (response) {
-                    $scope.searchResult = true;
-                    $scope.LoadImg = false;
+                    var res = JSON.parse(response);
+                    try {
+                        var res = JSON.parse(response);
+                    }
+                    catch
+                    {
 
-                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+                    }
+                    var res = JSON.parse(res);
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res.Status) {
+                        // var keys = Object.keys(res);
 
-                    $scope.Table1Details = response[0].Data;
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res.Status;
 
-                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
-                    $scope.Table1Details = $scope.Table1Details1.Table[0];
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+
+                        $scope.searchResult = true;
+                        $scope.LoadImg = false;
+
+                        $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+
+                        $scope.Table1Details = response[0].Data;
+
+                        $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                        $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    }
+                        else
                     if ($scope.Table1Details1.Table.length > 0) {
                       
                         $scope.StudentDetailsFound = true;
@@ -656,6 +738,27 @@ define(['app'], function (app) {
 
             }
         }
+
+
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
 
         //var getRegion = ReportService.GetRegion();
         //getRegion.then(function (data) {

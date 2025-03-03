@@ -101,6 +101,64 @@ namespace SoftwareSuite.Controllers.AdminServices
         {
             try
             {
+                PreExaminationController PreExamination = new PreExaminationController();
+
+                string examId1 = PreExamination.CheckFee(ReqData.examId);
+                string semid1 = PreExamination.CheckFee(ReqData.semid);
+                string AcademicYearId1 = PreExamination.CheckFee(ReqData.AcademicYearId);
+                string userName1 = PreExamination.PinCheck(ReqData.userName);
+                string fromDate1 = PreExamination.PinCheck(ReqData.fromDate);
+                string toDate1 = PreExamination.PinCheck(ReqData.toDate);
+                string fineDate1 = PreExamination.PinCheck(ReqData.fineDate);
+                string fine1 = PreExamination.CheckFee(ReqData.fine);
+                string Studenttypeid1 = PreExamination.CheckFee(ReqData.Studenttypeid);
+                string schemeid1 = PreExamination.CheckFee(ReqData.schemeid);
+                string ExamMonthYearId1 = PreExamination.CheckFee(ReqData.ExamMonthYearId);
+
+                if (examId1 != "YES")
+                {
+                    return examId1;
+                }
+                if (semid1 != "YES")
+                {
+                    return semid1;
+                }
+                if (AcademicYearId1 != "YES")
+                {
+                    return AcademicYearId1;
+                }
+                if (userName1 != "YES")
+                {
+                    return userName1;
+                }
+                if (fromDate1 != "YES")
+                {
+                    return fromDate1;
+                }
+                if (toDate1 != "YES")
+                {
+                    return toDate1;
+                }
+                if (fineDate1 != "YES")
+                {
+                    return fineDate1;
+                }
+                if (fine1 != "YES")
+                {
+                    return fine1;
+                }
+                if (Studenttypeid1 != "YES")
+                {
+                    return Studenttypeid1;
+                }
+                if (schemeid1 != "YES")
+                {
+                    return schemeid1;
+                }
+                if (ExamMonthYearId1 != "YES")
+                {
+                    return ExamMonthYearId1;
+                }
                 string clientIpAddress = System.Web.HttpContext.Current.Request.UserHostAddress;
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[12];

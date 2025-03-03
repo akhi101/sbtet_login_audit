@@ -168,13 +168,33 @@
 
             var SchemeSem = PreExaminationService.GetTimeTableSessionSchemeSemesters($scope.selSession, $scope.selAcademicYear);
             SchemeSem.then(function (data) {
-                try { var data = JSON.parse(data) } catch (err) { }
+                var res = JSON.parse(data);
+                try {
+                    var res = JSON.parse(data);
+                }
+                catch
+                {
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+                    }
+                } else
+                //try { var data = JSON.parse(data) } catch (err) { }
 
-                if (data.length > 0) {
+                    if (res.length > 0) {
                     $scope.ReportFound = true;
                     $scope.Noreports = false;
-                    $scope.GetMasterschemeSem = data;
-                    for (var j = 1; j < data.length + 1; j++) {
+                        $scope.GetMasterschemeSem = res;
+                        for (var j = 1; j < res.length + 1; j++) {
                         $scope['edit' + j] = true;
                     }
                 } else {
@@ -261,12 +281,32 @@
 
             var SetTimeTableSessionSchemeSemesters = PreExaminationService.SetTimeTableSessionSchemeSemesters(datatypeid, json)
             SetTimeTableSessionSchemeSemesters.then(function (response) {
-                try { var response = JSON.parse(response) } catch (err) { }
-                if (response[0].ResponceCode == '200') {
-                    alert(response[0].ResponceDescription);
+                //try { var response = JSON.parse(response) } catch (err) { }
+                var res = JSON.parse(response);
+                try {
+                    var res = JSON.parse(response);
+                }
+                catch
+                {
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+                    }
+                } else
+                if (res[0].ResponceCode == '200') {
+                    alert(res[0].ResponceDescription);
 
-                } else if (response[0].ResponceCode == '400') {
-                    alert(response[0].ResponceDescription);
+                } else if (res[0].ResponceCode == '400') {
+                    alert(res[0].ResponceDescription);
 
                 } else {
                     alert('Something Went Wrong')

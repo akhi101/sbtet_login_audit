@@ -191,6 +191,7 @@
                         setTimeout(() => {
                             console.log("Redirecting to Dashboard...");
                             //$scope.GetCaptchaData();
+                            $state.go('Dashboard');
                             $state.go("Dashboard", {}, { reload: true });
                         }, 500); 
 

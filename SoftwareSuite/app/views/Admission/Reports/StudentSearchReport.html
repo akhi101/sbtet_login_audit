@@ -188,9 +188,10 @@
                             <h5><b>Search By :</b></h5>
                         </div>
                         <div class="col-md-4 form-inline">
-                            <input type="radio" name="SearchType" value="Pin" ng-click="searchBy('PIN')"> Pin &nbsp;&nbsp;
-                            <input type="radio" name="SearchType" value="Attid" ng-click="searchBy('ATTID')"> Attendee Id &nbsp;&nbsp;
-                            <input type="radio" name="SearchType" value="Aadhaar" ng-click="searchBy('Aadhaar')"> Aadhaar No
+                            <input type="radio" name="SearchType" value="Pin" onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)" ng-click="searchBy('PIN')"> Pin &nbsp;&nbsp;
+                            <input type="radio" name="SearchType" value="Attid" onkeypress="return /[0-9-]/i.test(event.key)"  onpaste="return /[0-9-]/i.test(event.key)" ng-click="searchBy('ATTID')"> Attendee Id &nbsp;&nbsp;
+                            <input type="radio" name="SearchType" value="Aadhaar"onkeypress="return /[0-9-]/i.test(event.key)"  onpaste="return /[0-9-]/i.test(event.key)"  ng-click="searchBy('Aadhaar')"> Aadhaar No
+                          <!--  onkeypress="return /[0-9a-zA-Z]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z]/i.test(event.key)"-->
                         </div>
                         <div class="col-md-3 form-group" style="margin:0px!important;">
                             <input type="text" placeholder="{{placeholder}}" class="form-control input-sm" ng-Model="filter" />

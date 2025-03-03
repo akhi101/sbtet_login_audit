@@ -190,9 +190,29 @@
             $scope.loading = true;
             var getData = AcademicService.getAdminSyllabusCoverageReport($scope.UserTypeId, $scope.AcademicYear, $scope.semesterarr, $scope.CollegeCode, branchCode);
             getData.then(function (response) {
-                var response = JSON.parse(response)
-                if (response.Table.length > 0) {
-                    $scope.getSyllabusReport = response.Table;
+                //var response = JSON.parse(response)
+                var res = JSON.parse(response);
+                try {
+                    var res = JSON.parse(response);
+                }
+                catch
+                {
+                }
+                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                if (res.Status) {
+                    // var keys = Object.keys(res);
+                    //   $scope.statusKey = keys[0];
+                    $scope.statusValue = res.Status;
+                    // $scope.descriptionKey = keys[1];
+                    $scope.descriptionValue = res.Description;
+                    $scope.EncStatusDescription2 = $scope.descriptionValue;
+                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                        $scope.decryptParameter2();
+                        alert($scope.decryptedParameter2);
+                    }
+                } else
+                if (res.Table.length > 0) {
+                    $scope.getSyllabusReport = res.Table;
                     $scope.loading = false;
                     $scope.Data = true;
                     $scope.NoData = false;
@@ -247,6 +267,25 @@
             //$state.go('Dashboard.Academic.PrincipalSyllabusCoverageReport')
         }
 
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
 
     })
 })

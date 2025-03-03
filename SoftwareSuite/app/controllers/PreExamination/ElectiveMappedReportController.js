@@ -7,7 +7,7 @@
             alert("UnAuthorized Access")
             $state.go('Dashboard')
         }
-        $scope.userType = authdata.SystemUserTypeId
+        //$scope.userType = authdata.SystemUserTypeId
         if ($scope.userType == 1) {
             var ClgCode = '';
 

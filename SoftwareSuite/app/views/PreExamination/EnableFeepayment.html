@@ -71,47 +71,48 @@
                         </select>
                     </div>
                     <!--<div class="col-md-3 form-group">
-                        <label for="sel1">
-                            Select Fee:
-                        </label>
-                        <select class="form-control" ng-model="SelectedFeeType" name="FeeType" ng-change="ChangeFee(SelectedFeeType)"  required>
-                            <option value="" selected>Select Fee</option>
-                            <option ng-repeat="data in FeeTypes" value="{{data}}">
-                                {{data.FeeType}}(Rs {{data.FeeAmount}})
-                            </option>
+        <label for="sel1">
+            Select Fee:
+        </label>
+        <select class="form-control" ng-model="SelectedFeeType" name="FeeType" ng-change="ChangeFee(SelectedFeeType)"  required>
+            <option value="" selected>Select Fee</option>
+            <option ng-repeat="data in FeeTypes" value="{{data}}">
+                {{data.FeeType}}(Rs {{data.FeeAmount}})
+            </option>
 
-                        </select>
-                    </div>-->
+        </select>
+    </div>-->
                     <div class="form-group col-md-3">
                         <label for="sel1">
                             Enter Fee :
                         </label>
-                        <input class="form-control" type="text"  onkeypress="return /[0-9]/i.test(event.key)"  onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Fee" ng-model="Fee" required />
+                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Fee" ng-model="Fee" required />
                     </div>
                     <div class="form-group col-md-3">
                         <label for="sel1">
                             Enter Late Fee :
                         </label>
-                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)"  onpaste="return /[0-9]/i.test(event.key)"   maxlength="5" placeholder="Enter Late Fee" ng-model="LateFee" required />
+                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Late Fee" ng-model="LateFee" required />
                     </div>
                     <div class="form-group col-md-3">
                         <label for="sel1">
                             Enter Tatkal Fee :
                         </label>
-                        <input class="form-control" type="text"  onkeypress="return /[0-9]/i.test(event.key)"  onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Tatkal Fee" ng-model="TatkalFee" required />
+                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Tatkal Fee" ng-model="TatkalFee" required />
                     </div>
                     <div class="form-group col-md-3">
                         <label for="sel1">
                             Enter Premium Tatkal Fee :
                         </label>
-                        <input class="form-control" type="text"  onkeypress="return /[0-9]/i.test(event.key)"  onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Premium Tatkal Fee" ng-model="PremiumTatkalFee" required />
+                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" onpaste="return /[0-9]/i.test(event.key)" maxlength="5" placeholder="Enter Premium Tatkal Fee" ng-model="PremiumTatkalFee" required />
                     </div>
                     <div class="form-group col-md-3">
                         <label for="sel1">
                             Enter PIN number :
                         </label>
-                        <input class="form-control" type="text"  onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)"  placeholder="Enter PIN" ng-model="Pin" required />
+                        <input class="form-control" type="text" placeholder="Enter PIN" ng-model="Pin" required />
                     </div>
+                   <!-- onkeypress="return /[0-9a-zA-Z-]/i.test(event.key)"  onpaste="return /[0-9a-zA-Z-]/i.test(event.key)"-->
                     <div class="col-md-12 ">
                         <div class="gr-btn">
                             <button type="submit" class="btn btn-sm btn-primary gr-button  pull-right" ng-click="dataForm.$valid && Submit()">Enable Fee Payment<span class="fa fa-arrow-down heading_icon btn_icons"></span></button>
