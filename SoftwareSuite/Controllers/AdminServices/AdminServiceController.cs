@@ -103,17 +103,17 @@ namespace SoftwareSuite.Controllers.AdminServices
             {
                 PreExaminationController PreExamination = new PreExaminationController();
 
-                string examId1 = PreExamination.CheckFee(ReqData.examId);
-                string semid1 = PreExamination.CheckFee(ReqData.semid);
-                string AcademicYearId1 = PreExamination.CheckFee(ReqData.AcademicYearId);
+                string examId1 = PreExamination.NumberCheck(ReqData.examId.ToString());
+                string semid1 = PreExamination.NumberCheck(ReqData.semid.ToString());
+                string AcademicYearId1 = PreExamination.NumberCheck(ReqData.AcademicYearId.ToString());
                 string userName1 = PreExamination.PinCheck(ReqData.userName);
                 string fromDate1 = PreExamination.PinCheck(ReqData.fromDate);
                 string toDate1 = PreExamination.PinCheck(ReqData.toDate);
                 string fineDate1 = PreExamination.PinCheck(ReqData.fineDate);
-                string fine1 = PreExamination.CheckFee(ReqData.fine);
-                string Studenttypeid1 = PreExamination.CheckFee(ReqData.Studenttypeid);
-                string schemeid1 = PreExamination.CheckFee(ReqData.schemeid);
-                string ExamMonthYearId1 = PreExamination.CheckFee(ReqData.ExamMonthYearId);
+                string fine1 = PreExamination.NumberCheck(ReqData.fine.ToString());
+                string Studenttypeid1 = PreExamination.NumberCheck(ReqData.Studenttypeid.ToString());
+                string schemeid1 = PreExamination.NumberCheck(ReqData.schemeid.ToString());
+                string ExamMonthYearId1 = PreExamination.NumberCheck(ReqData.ExamMonthYearId.ToString());
 
                 if (examId1 != "YES")
                 {
