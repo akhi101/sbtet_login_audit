@@ -270,7 +270,7 @@ namespace SoftwareSuite.Controllers.Assessment
             {
                 PreExaminationController PreExamination = new PreExaminationController();
 
-                string semid1 = PreExamination.NumberCheck(semid.ToString());
+                string semid1 = PreExamination.NumberCheck(semid.ToString(),"Sem");
                
 
                 if (semid1 != "YES")

@@ -590,7 +590,7 @@
                 var CurrentMonthYear = CurrentMonthYear;
                 var CondonationPercent = $scope.CondonationPercent;
                 var DetendPercent = $scope.DetendPercent;
-                var IsAttendance = $scope.FeeAttendance;
+                var IsAttendance = 1;
                 var FeeTimetable = $scope.FeeTimetable;
           
             } else {
@@ -620,13 +620,13 @@
             }
             alert('Please wait for 10 min, Now Calculating the Presumptive Attendance % for Entered Semester.')
 
-            var setFeePaymentDates = PreExaminationService.PostFeepaymentDates(StudentType, Semid, FromDate, ToDate, Fee, FineDate, LateFee, TatkalDate, TatkalFee, $scope.PremiumTatkalFee, CondonationFee,
-                PresemptiveAttendedDays, maxWorkingDays, certificateFee, current_schemeid, CurrentMonthYear, CondonationPercent, DetendPercent, IsAttendance, FeeTimetable); //
+            var setFeePaymentDates = PreExaminationService.PostFeepaymentDates(StudentType.toString(), Semid.toString(), FromDate.toString(), ToDate.toString(), Fee.toString(), FineDate.toString(), LateFee.toString(), TatkalDate.toString(), TatkalFee.toString(), $scope.PremiumTatkalFee.toString(), CondonationFee.toString(),
+                PresemptiveAttendedDays.toString(), maxWorkingDays.toString(), certificateFee.toString(), current_schemeid.toString(), CurrentMonthYear.toString(), CondonationPercent.toString(), DetendPercent.toString(), IsAttendance.toString(), FeeTimetable.toString()); //
             setFeePaymentDates.then(function (response) {
 
                 // Check if the response is a JSON string
-                if (typeof res === "string") {
-                    var res1 = JSON.parse(res);
+                if (typeof response === "string") {
+                    var res1 = JSON.parse(response);
                     try {
                         var res2 = JSON.parse(res1);
                     }

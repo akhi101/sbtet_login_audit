@@ -128,26 +128,26 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         public class paymentDetails
         {
-            public int StudentType { get; set; }
-            public int Semid { get; set; }
-            public DateTime FromDate { get; set; }
-            public DateTime ToDate { get; set; }
-            public double Fee { get; set; }
-            public DateTime FineDate { get; set; }
-            public double LateFee { get; set; }
-            public DateTime TatkalDate { get; set; }
-            public double TatkalFee { get; set; }
-            public double PremiumTatkalFee { get; set; }
-            public double CondonationFee { get; set; }
-            public int PresemptiveAttendedDays { get; set; }
-            public int MaxWorkingDays { get; set; }
-            public double CertificateFee { get; set; }
-            public int SchemeId { get; set; }
-            public int ExamMonthYearId { get; set; }
-            public double CondonationP { get; set; }
-            public double DetentionP { get; set; }
-            public int IsPresemtiveCalculationRequired { get; set; }
-            public int IsTimetableRequired { get; set; }
+            public string StudentType { get; set; }
+            public string Semid { get; set; }
+            public string FromDate { get; set; }
+            public string ToDate { get; set; }
+            public string Fee { get; set; }
+            public string FineDate { get; set; }
+            public string LateFee { get; set; }
+            public string TatkalDate { get; set; }
+            public string TatkalFee { get; set; }
+            public string PremiumTatkalFee { get; set; }
+            public string CondonationFee { get; set; }
+            public string PresemptiveAttendedDays { get; set; }
+            public string MaxWorkingDays { get; set; }
+            public string CertificateFee { get; set; }
+            public string SchemeId { get; set; }
+            public string ExamMonthYearId { get; set; }
+            public string CondonationP { get; set; }
+            public string DetentionP { get; set; }
+            public string IsPresemtiveCalculationRequired { get; set; }
+            public string IsTimetableRequired { get; set; }
         }
         public class UploadData
         {
@@ -765,7 +765,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-                string Pin = PinCheck(pin.ToString());
+                string Pin = PinCheck(pin.ToString(),"Pin");
 
                 if (Pin != "YES")
                 {
@@ -1334,10 +1334,10 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString());
-                string Day1 = OnlyTwoDigitCheck(day);
-                string Month1 = OnlyTwoDigitCheck(month);
-                string Year1 = OnlyFourDigitCheck(year);
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string Day1 = OnlyTwoDigitCheck(day,"Day");
+                string Month1 = OnlyTwoDigitCheck(month, "Month");
+                string Year1 = OnlyFourDigitCheck(year,"Year");
                 
 
 
@@ -1988,7 +1988,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             person p1 = new person();
             try
             {
-                string Scheme = PinCheck(scheme.ToString());
+                string Scheme = PinCheck(scheme.ToString(), "Scheme");
                 if (Scheme != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Scheme);
@@ -2207,10 +2207,10 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
                 var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
-                string Scheme = NumberCheck(data["Scheme"].ToString());
-                string semid = NumberCheck(js["semid"].ToString());
-                string branchid = NumberCheck(js["branchid"].ToString());
-                string collegecode = NumberCheck(js["collegecode"].ToString());
+                string Scheme = NumberCheck(data["Scheme"].ToString(), "Scheme");
+                string semid = NumberCheck(js["semid"].ToString(),"Sem");
+                string branchid = NumberCheck(js["branchid"].ToString(),"Branch");
+                string collegecode = NumberCheck(js["collegecode"].ToString(),"CollegeCode");
 
 
                 if (Scheme != "YES")
@@ -2350,10 +2350,10 @@ namespace SoftwareSuite.Controllers.PreExamination
             person p1 = new person();
             try
             {
-                string academicYearId = NumberCheck(AcademicYearId.ToString());
-                string exammonthyearid = NumberCheck(Exammonthyearid.ToString());
-                string dataType = NumberCheck(DataType.ToString());
-                string collegeCode = NumberCheck(CollegeCode.ToString());
+                string academicYearId = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
+                string exammonthyearid = NumberCheck(Exammonthyearid.ToString(), "ExamMonthYear");
+                string dataType = NumberCheck(DataType.ToString(), "DataType");
+                string collegeCode = NumberCheck(CollegeCode.ToString(), "CollegeCode");
 
                 if (academicYearId != "YES")
                 {
@@ -2852,15 +2852,15 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string DataTypeId1 = NumberCheck(DataTypeId.ToString());
-                string AcademicYear1 = PinCheck(AcademicYear);
-                string AcademicStartYear1 = NumberCheck(AcademicStartYear.ToString());
+                string DataTypeId1 = NumberCheck(DataTypeId.ToString(), "DataType");
+                string AcademicYear1 = PinCheck(AcademicYear, "AcademicYear");
+                string AcademicStartYear1 = NumberCheck(AcademicStartYear.ToString(), "AcademicStartYear");
                 //string StartDate1 = NumberCheck(StartDate);
                 //string EndDate1 = NumberCheck(EndDate);
-                string UserName1 = PinCheck(UserName);
+                string UserName1 = PinCheck(UserName, "UserName");
                 //string IsCurrentAcademicYear1 = NumberCheck(IsCurrentAcademicYear);
-                string AcademicID1 = NumberCheck(AcademicID.ToString());
-                string ActiveFlag1 = NumberCheck(ActiveFlag.ToString());
+                string AcademicID1 = NumberCheck(AcademicID.ToString(), "AcademicID");
+                string ActiveFlag1 = NumberCheck(ActiveFlag.ToString(), "ActiveFlag");
 
 
                 if (DataTypeId1 != "YES")
@@ -3006,12 +3006,12 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                var AcademicYearId1 = NumberCheck(data["AcademicYearId"].ToString());
+                var AcademicYearId1 = NumberCheck(data["AcademicYearId"].ToString(), "AcademicYear");
                 if (AcademicYearId1 != "YES")
                 {
                     return AcademicYearId1;
                 }
-                var DataTypeId1 = NumberCheck(data["DataTypeId"].ToString());
+                var DataTypeId1 = NumberCheck(data["DataTypeId"].ToString(), "DataType");
                 if (DataTypeId1 != "YES")
                 {
                     return DataTypeId1;
@@ -3698,20 +3698,20 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [HttpGet, ActionName("EnableFeePayment")]
-        public string EnableFeePayment(int ExamMonthYear, string Pin, int studenttypeid, int ExamFee, int LateFee, int TatkalFee, int PremiumTatkalFee, int Semid = 0)
+        public string EnableFeePayment(string ExamMonthYear, string Pin, string studenttypeid, string ExamFee, string LateFee, string TatkalFee, string PremiumTatkalFee, string Semid = "0")
         {
             try
             {
 
 
-                string ExamMonthYear1 = NumberCheck(ExamMonthYear.ToString());
-                string pin1 = PinCheck(Pin);
-                string studenttypeid1 = NumberCheck(studenttypeid.ToString());
-                string ExamFee1 = NumberCheck(ExamFee.ToString());
-                string LateFee1 = NumberCheck(LateFee.ToString());
-                string TatkalFee1 = NumberCheck(TatkalFee.ToString());
-                string PremiumTatkalFee1 = NumberCheck(PremiumTatkalFee.ToString());
-                string Semid1 = NumberCheck(Semid.ToString());
+                string ExamMonthYear1 = NumberCheck(ExamMonthYear.ToString(), "ExamMonthYear");
+                string pin1 = PinCheck(Pin,"Pin");
+                string studenttypeid1 = NumberCheck(studenttypeid.ToString(), "StudentType");
+                string ExamFee1 = NumberCheck(ExamFee.ToString(), "ExamFee");
+                string LateFee1 = NumberCheck(LateFee.ToString(), "LateFee");
+                string TatkalFee1 = NumberCheck(TatkalFee.ToString(), "TatkalFee");
+                string PremiumTatkalFee1 = NumberCheck(PremiumTatkalFee.ToString(), "PremiumTatkalFee");
+                string Semid1 = NumberCheck(Semid.ToString(), "Sem");
 
 
                 if (ExamMonthYear1 != "YES")
@@ -3751,14 +3751,14 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 var dbHandler = new dbHandler();
                     var param = new SqlParameter[8];
-                    param[0] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
+                    param[0] = new SqlParameter("@ExamMonthYear", int.Parse(ExamMonthYear));
                     param[1] = new SqlParameter("@Pin", Pin);
-                    param[2] = new SqlParameter("@studenttypeid", studenttypeid);
-                    param[3] = new SqlParameter("@ExamFee", ExamFee);
-                    param[4] = new SqlParameter("@LateFee", LateFee);
-                    param[5] = new SqlParameter("@TatkalFee", TatkalFee);
-                    param[6] = new SqlParameter("@PremiumTatkalFee", PremiumTatkalFee);
-                    param[7] = new SqlParameter("@Semid", Semid);
+                    param[2] = new SqlParameter("@studenttypeid", int.Parse(studenttypeid));
+                    param[3] = new SqlParameter("@ExamFee", float.Parse(ExamFee));
+                    param[4] = new SqlParameter("@LateFee", float.Parse(LateFee));
+                    param[5] = new SqlParameter("@TatkalFee", float.Parse(TatkalFee));
+                    param[6] = new SqlParameter("@PremiumTatkalFee", float.Parse(PremiumTatkalFee));
+                    param[7] = new SqlParameter("@Semid", int.Parse(Semid));
                     var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_SET_ManualUpdation", param);
                     return JsonConvert.SerializeObject(dt);
               
@@ -3849,17 +3849,17 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                var DataTypeId1 = NumberCheck(DataTypeId.ToString());
+                var DataTypeId1 = NumberCheck(DataTypeId.ToString(), "DataType");
                 if (DataTypeId1 != "YES")
                 {
                     return DataTypeId1;
                 }
-                var CollegeCode1 = NumberCheck(CollegeCode);
+                var CollegeCode1 = NumberCheck(CollegeCode, "CollegeCode");
                 if (CollegeCode1 != "YES")
                 {
                     return CollegeCode1;
                 }
-                var BranchCode1 = PinCheck(BranchCode);
+                var BranchCode1 = PinCheck(BranchCode, "BranchCode");
                 if (BranchCode1 != "YES")
                 {
                     return BranchCode1;
@@ -4002,9 +4002,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string DataTypeId1 = NumberCheck(DataTypeId.ToString());
-                string CollegeCode1 = PinCheck(CollegeCode);
-                string BranchCode1 = PinCheck(BranchCode);
+                string DataTypeId1 = NumberCheck(DataTypeId.ToString(), "DataType");
+                string CollegeCode1 = PinCheck(CollegeCode, "CollegeCode");
+                string BranchCode1 = PinCheck(BranchCode, "BranchCode");
               
 
 
@@ -6340,17 +6340,17 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string Scheme1 = NumberCheck(request["Scheme"].ToString());
+                string Scheme1 = NumberCheck(request["Scheme"].ToString(), "Scheme");
                 if (Scheme1 != "YES")
                 {
                     return Scheme1;
                 }
-                string AcademicYearId1 = NumberCheck(request["AcademicYearId"].ToString());
+                string AcademicYearId1 = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
                 if (AcademicYearId1 != "YES")
                 {
                     return Scheme1;
                 }
-                string CollegeCode1 = NumberCheck(request["CollegeCode"].ToString());
+                string CollegeCode1 = NumberCheck(request["CollegeCode"].ToString(), "CollegeCode");
                 if (CollegeCode1 != "YES")
                 {
                     return Scheme1;
@@ -8803,10 +8803,10 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string Name = NameCheck(request["Name"].ToString());
-                string ServiceType = NumberCheck(request["ServiceType"].ToString());
-                string ChallanPrefix = NameCheck(request["ChallanPrefix"].ToString());
-                string Price = NumberCheck(request["Price"].ToString());
+                string Name = NameCheck(request["Name"].ToString(), "Name");
+                string ServiceType = NumberCheck(request["ServiceType"].ToString(), "ServiceType");
+                string ChallanPrefix = NameCheck(request["ChallanPrefix"].ToString(), "ChallanPrefix");
+                string Price = NumberCheck(request["Price"].ToString(), "Price");
                 if (Name != "YES")
                 {
                     return Name;
@@ -9021,7 +9021,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         
         [AuthorizationFilter()]
         [HttpGet, ActionName("PinCheck")]
-        public string PinCheck(string DataType)
+        public string PinCheck(string DataType,string DataType1)
 
         {
             try
@@ -9034,7 +9034,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9070,7 +9070,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("NameCheck")]
-        public string NameCheck(string DataType)
+        public string NameCheck(string DataType,string DataType1)
 
         {
             try
@@ -9083,7 +9083,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                        
 
                             var plaintext = "400";
-                            var plaintext1 = "Invalid Input "+ DataType;
+                            var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                             var plaintext2 = "status";
                             var plaintext3 = "description";
 
@@ -9117,7 +9117,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()][HttpGet, ActionName("GenderCheck")]
-        public string GenderCheck(string DataType)
+        public string GenderCheck(string DataType, string DataType1)
 
         {
             try
@@ -9128,7 +9128,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9161,7 +9161,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()][HttpGet, ActionName("MobileNumberCheck")]
-        public string MobileNumberCheck(string DataType)
+        public string MobileNumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9171,7 +9171,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9204,7 +9204,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()][HttpGet, ActionName("EmailCheck")]
-        public string EmailCheck(string DataType)
+        public string EmailCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9214,7 +9214,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9249,7 +9249,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("NumberCheck")]
-        public string NumberCheck(string DataType)
+        public string NumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9259,7 +9259,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9294,17 +9294,17 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("DateCheck")]
-        public string DateCheck(string DataType)
+        public string DateCheck(string DataType, string DataType1)
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex("^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
+                    Regex regex = new Regex(@"^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])| (0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.\d{3})?)?$");
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9339,7 +9339,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyThreeDigitCheck")]
-        public string OnlyThreeDigitCheck(string DataType)
+        public string OnlyThreeDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9349,7 +9349,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9384,7 +9384,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("DataCheck1")]
-        public string DataCheck1(string DataType)
+        public string DataCheck1(string DataType, string DataType1)
         {
             try
             {
@@ -9394,7 +9394,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9428,7 +9428,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyTwoDigitCheck")]
-        public string OnlyTwoDigitCheck(string DataType)
+        public string OnlyTwoDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9438,7 +9438,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9472,7 +9472,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyFourDigitCheck")]
-        public string OnlyFourDigitCheck(string DataType)
+        public string OnlyFourDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9482,7 +9482,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -9515,10 +9515,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
-       
-        [AuthorizationFilter()][HttpGet, ActionName("OnlyTwelveDigitCheck")]
-        public string OnlyTwelveDigitCheck(string DataType)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyTwelveDigitCheck")]
+        public string OnlyTwelveDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9527,7 +9526,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{12}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9545,8 +9559,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        [AuthorizationFilter()][HttpGet, ActionName("CollegeNameCheck")]
-        public string CollegeNameCheck(string DataType)
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("CollegeNameCheck")]
+        public string CollegeNameCheck(string DataType, string DataType1)
         {
             try
             {
@@ -9555,7 +9570,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z\\s,]+$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -9573,6 +9603,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+
         [AuthorizationFilter()][HttpPost, ActionName("AddMersyData")]
         public HttpResponseMessage AddMersyData([FromBody] CertificateReqAtt CertificateReqAtt)
         {
@@ -9580,350 +9611,94 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
-                string first_Name = NameCheck(CertificateReqAtt.first_Name.ToString());
-                if (first_Name == "NO")
+                string first_Name = NameCheck(CertificateReqAtt.first_Name.ToString(), "FirstName");
+                if (first_Name != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid First Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, first_Name);
                 }
 
 
-                string last_Name = NameCheck(CertificateReqAtt.last_Name.ToString());
-                if (last_Name == "NO")
+                string last_Name = NameCheck(CertificateReqAtt.last_Name.ToString(), "LastName");
+                if (last_Name != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid last Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, last_Name);
                 }
 
 
-                string Father_Name = NameCheck(CertificateReqAtt.Father_Name.ToString());
-                if (Father_Name == "NO")
+                string Father_Name = NameCheck(CertificateReqAtt.Father_Name.ToString(), "FatherName");
+                if (Father_Name != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Father Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Father_Name);
                 }
 
 
-                string Gender = GenderCheck(CertificateReqAtt.Gender.ToString());
-                if (Gender == "NO")
+                string Gender = GenderCheck(CertificateReqAtt.Gender.ToString(), "Gender");
+                if (Gender != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Gender";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Gender);
                 }
-                string Mobile = MobileNumberCheck(CertificateReqAtt.Mobile.ToString());
-                if (Mobile == "NO")
+                string Mobile = MobileNumberCheck(CertificateReqAtt.Mobile.ToString(), "Mobile");
+                if (Mobile != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Mobile";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Mobile);
                 }
-                string Email = EmailCheck(CertificateReqAtt.Email.ToString());
-                if (Email == "NO")
+                string Email = EmailCheck(CertificateReqAtt.Email.ToString(), "Email");
+                if (Email != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Email";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Email);
                 }
-                string CollegeName = CollegeNameCheck(CertificateReqAtt.CollegeName.ToString());
-                if (CollegeName == "NO")
+                string CollegeName = CollegeNameCheck(CertificateReqAtt.CollegeName.ToString(), "CollegeName");
+                if (CollegeName != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid College Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CollegeName);
                 }
-                string CourseName = NameCheck(CertificateReqAtt.CourseName.ToString());
-                if (CourseName == "NO")
+                string CourseName = NameCheck(CertificateReqAtt.CourseName.ToString(), "CourseName");
+                if (CourseName != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Course Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CourseName);
                 }
-                string CollegeCode = OnlyThreeDigitCheck(CertificateReqAtt.CollegeCode.ToString());
-                if (CollegeCode == "NO")
+                string CollegeCode = OnlyThreeDigitCheck(CertificateReqAtt.CollegeCode.ToString(), "CollegeCode");
+                if (CollegeCode != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid College Code";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CollegeCode);
                 }
 
-                string CourseType = NameCheck(CertificateReqAtt.CourseType.ToString());
-                if (CourseType == "NO")
+                string CourseType = NameCheck(CertificateReqAtt.CourseType.ToString(), "CourseType");
+                if (CourseType != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Course Type";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CourseType);
                 }
-                string Purpose = NameCheck(CertificateReqAtt.Purpose.ToString());
-                if (Purpose == "NO")
+                string Purpose = NameCheck(CertificateReqAtt.Purpose.ToString(), "Purpose");
+                if (Purpose != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Purpose";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Purpose);
                 }
 
-                string Village = DataCheck1(CertificateReqAtt.Village.ToString());
-                if (Village == "NO")
+                string Village = DataCheck1(CertificateReqAtt.Village.ToString(), "Village");
+                if (Village != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Village";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Village);
                 }
-                string Town = DataCheck1(CertificateReqAtt.Town.ToString());
-                if (Town == "NO")
+                string Town = DataCheck1(CertificateReqAtt.Town.ToString(), "Town");
+                if (Town != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Town";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Town);
                 }
-                string Mandal = NameCheck(CertificateReqAtt.Mandal.ToString());
-                if (Mandal == "NO")
+                string Mandal = NameCheck(CertificateReqAtt.Mandal.ToString(), "Mandal");
+                if (Mandal != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Mandal";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Mandal);
                 }
 
-                string District = NameCheck(CertificateReqAtt.District.ToString());
-                if (District == "NO")
+                string District = NameCheck(CertificateReqAtt.District.ToString(), "District");
+                if (District != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid District";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, District);
                 }
-                string States = NameCheck(CertificateReqAtt.States.ToString());
-                if (States == "NO")
+                string States = NameCheck(CertificateReqAtt.States.ToString(), "State");
+                if (States != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid State";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, States);
                 }
                 string FileType = CheckFileType(CertificateReqAtt.FileName.ToString());
 
@@ -10205,7 +9980,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 string EncryptedAadhar = GetEncryptedData(CertificateReqAtt.IdNumber);
                 string DecryptedAadhar = GetDecryptedData(CertificateReqAtt.IdNumber);
-                string Aadhar = OnlyTwelveDigitCheck(DecryptedAadhar.ToString());
+                string Aadhar = OnlyTwelveDigitCheck(DecryptedAadhar.ToString(), "Aadhar");
                 string decOTP = GetDecryptedData(CertificateReqAtt.OTP);
 
                 var dbHandler = new dbHandler();
@@ -10517,9 +10292,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string Scheme1 = PinCheck(Scheme);
-                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString());
-                string Date1 = DateCheck(Date);
+                string Scheme1 = PinCheck(Scheme, "Scheme");
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string Date1 = DateCheck(Date, "Date");
                 
                
 
@@ -11381,7 +11156,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                string description = NameCheck(TenderData.Title.ToString());
+                string description = NameCheck(TenderData.Title.ToString(), "Description");
                 if (description == "NO")
                 {
 
@@ -11622,26 +11397,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                string description = NameCheck(CircularData.Title.ToString());
-                if (description == "NO")
+                string description = NameCheck(CircularData.Title.ToString(), "Description");
+                if (description != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Description";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                 }
 
                 else if (CircularName.Contains("\0"))
@@ -11859,26 +11618,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                     };
                 }
 
-                string description = NameCheck(DownloadData.Title.ToString());
-                if (description == "NO")
+                string description = NameCheck(DownloadData.Title.ToString(), "Description");
+                if (description != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Description";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                 }
 
                 else if (DownloadName.Contains("\0"))
@@ -12199,26 +11942,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                             };
                         }
 
-                        string description = NameCheck(TenderData.Title.ToString());
-                        if (description == "NO")
+                        string description = NameCheck(TenderData.Title.ToString(), "Description");
+                        if (description != "YES")
                         {
-
-                            var plaintext = "400";
-                            var plaintext1 = "Invalid Description";
-                            var plaintext2 = "status";
-                            var plaintext3 = "description";
-
-                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                            string Status = Encryption.Encrypt(plaintext2, key, iv);
-                            string Description = Encryption.Encrypt(plaintext3, key, iv);
-                            return new HttpResponseMessage(HttpStatusCode.OK)
-                            {
-                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                            };
+                            HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                         }
 
                         else if (TenderName.Contains("\0"))
@@ -12408,26 +12135,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                             };
                         }
 
-                        string description = NameCheck(TenderData.Title.ToString());
-                        if (description == "NO")
+                        string description = NameCheck(TenderData.Title.ToString(), "Description");
+                        if (description != "YES")
                         {
-
-                            var plaintext = "400";
-                            var plaintext1 = "Invalid Description";
-                            var plaintext2 = "status";
-                            var plaintext3 = "description";
-
-                            string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                            string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                            string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                            string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                            string Status = Encryption.Encrypt(plaintext2, key, iv);
-                            string Description = Encryption.Encrypt(plaintext3, key, iv);
-                            return new HttpResponseMessage(HttpStatusCode.OK)
-                            {
-                                Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                            };
+                            HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                         }
 
                         else if (TenderName.Contains("\0"))
@@ -12641,26 +12352,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                         };
                     }
 
-                    string description = NameCheck(CircularData.Title.ToString());
-                    if (description == "NO")
+                    string description = NameCheck(CircularData.Title.ToString(), "Description");
+                    if (description != "YES")
                     {
-
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Description";
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        return new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        };
+                        HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                     }
 
                     else if (CircularName.Contains("\0"))
@@ -12852,26 +12547,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                         };
                     }
 
-                    string description = NameCheck(CircularData.Title.ToString());
-                    if (description == "NO")
+                    string description = NameCheck(CircularData.Title.ToString(), "Description");
+                    if (description != "YES")
                     {
-
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Description";
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        return new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        };
+                        HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                     }
 
                     else if (CircularName.Contains("\0"))
@@ -13086,26 +12765,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                         };
                     }
 
-                    string description = NameCheck(DownloadData.Title.ToString());
-                    if (description == "NO")
+                    string description = NameCheck(DownloadData.Title.ToString(), "Description");
+                    if (description != "YES")
                     {
-
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Description";
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        return new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        };
+                        HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                     }
 
                     else if (DownloadName.Contains("\0"))
@@ -13297,26 +12960,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                         };
                     }
 
-                    string description = NameCheck(DownloadData.Title.ToString());
-                    if (description == "NO")
+                    string description = NameCheck(DownloadData.Title.ToString(), "Description");
+                    if (description != "YES")
                     {
-
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Description";
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        return new HttpResponseMessage(HttpStatusCode.OK)
-                        {
-                            Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        };
+                        HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, description);
                     }
 
                     else if (DownloadName.Contains("\0"))
@@ -14073,114 +13720,34 @@ namespace SoftwareSuite.Controllers.PreExamination
             {
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK);
 
-                string Org_Name = NameCheck(GenuineRequest.OrganizationName.ToString());
-                if (Org_Name == "NO")
+                string Org_Name = NameCheck(GenuineRequest.OrganizationName.ToString(), "OrganizationName");
+                if (Org_Name != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Organization Name";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Org_Name);
                 }
 
-                string Org_Email = EmailCheck(GenuineRequest.OrganizationEmail.ToString());
-                if (Org_Email == "NO")
+                string Org_Email = EmailCheck(GenuineRequest.OrganizationEmail.ToString(), "OrganizationEmail");
+                if (Org_Email != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Organization Email";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Org_Email);
                 }
 
-                string Org_Contact = MobileNumberCheck(GenuineRequest.OrganizationMobile.ToString());
-                if (Org_Contact == "NO")
+                string Org_Contact = MobileNumberCheck(GenuineRequest.OrganizationMobile.ToString(), "OrganizationMobile");
+                if (Org_Contact != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Organization Contact Number";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Org_Contact);
                 }
 
-                string Name_Applying = NameCheck(GenuineRequest.ApplyingOfficer.ToString());
-                if (Name_Applying == "NO")
+                string Name_Applying = NameCheck(GenuineRequest.ApplyingOfficer.ToString(), "ApplyingOfficer");
+                if (Name_Applying != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Organization Contact Number";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Name_Applying);
                 }
 
-                string Design_Applying = NameCheck(GenuineRequest.OfficerDesignation.ToString());
-                if (Design_Applying == "NO")
+                string Design_Applying = NameCheck(GenuineRequest.OfficerDesignation.ToString(), "OfficerDesignation");
+                if (Design_Applying != "YES")
                 {
-
-                    var plaintext = "400";
-                    var plaintext1 = "Invalid Organization Contact Number";
-                    var plaintext2 = "status";
-                    var plaintext3 = "description";
-
-                    string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                    string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                    string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                    string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                    string Status = Encryption.Encrypt(plaintext2, key, iv);
-                    string Description = Encryption.Encrypt(plaintext3, key, iv);
-                    return new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                    };
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Design_Applying);
                 }
 
 
@@ -15170,10 +14737,10 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string datatype = NumberCheck(DataTypeId.ToString());
-                string ExamMonthYear1 = PinCheck(ExamMonthYear);
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string sequenceId = NumberCheck(SequenceId.ToString());
+                string datatype = NumberCheck(DataTypeId.ToString(), "DataType");
+                string ExamMonthYear1 = PinCheck(ExamMonthYear, "ExamMonthYear");
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYearID");
+                string sequenceId = NumberCheck(SequenceId.ToString(), "Sequence");
 
 
                 if (datatype != "YES")
@@ -15340,11 +14907,11 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string UserTypeId = NumberCheck(request["UserTypeId"].ToString());
-                string collegeCode = NumberCheck(request["collegeCode"].ToString());
-                string branchcode = NumberCheck(request["branchcode"].ToString());
-                string semester = PinCheck(request["semester"].ToString());
-                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string UserTypeId = NumberCheck(request["UserTypeId"].ToString(), "UserType");
+                string collegeCode = NumberCheck(request["collegeCode"].ToString(), "CollegeCode");
+                string branchcode = NumberCheck(request["branchcode"].ToString(), "BranchCode");
+                string semester = PinCheck(request["semester"].ToString(), "Semester");
+                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
 
 
                 if (UserTypeId != "YES")
@@ -15394,7 +14961,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string UserTypeId1 = PinCheck(request["UserTypeId"].ToString());
+                string UserTypeId1 = PinCheck(request["UserTypeId"].ToString(), "UserType");
 
                 if (UserTypeId1 != "YES")
                 {
@@ -15809,9 +15376,9 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string examtypeid = NumberCheck(ExamTypeID.ToString());
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string examtypeid = NumberCheck(ExamTypeID.ToString(), "ExamType");
 
                 if (examMonthYearId != "YES")
                 {
@@ -16645,116 +16212,146 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
         [AuthorizationFilter()][HttpPost, ActionName("setStudentFeepayments")]
         public HttpResponseMessage setStudentFeepayments([FromBody] paymentDetails request)
         {
             try
             {
-                string StudentType = NumberCheck(request.StudentType.ToString());
-                string Semid = NumberCheck(request.Semid.ToString());
-                string FromDate = DateCheck(request.FromDate.ToString());
-                string ToDate = DateCheck(request.ToDate.ToString());
-                string Fee = NumberCheck(request.Fee.ToString());
-                string FineDate = DateCheck(request.FineDate.ToString());
-                string LateFee = NumberCheck(request.LateFee.ToString());
-                string TatkalDate = DateCheck(request.TatkalDate.ToString());
-                string TatkalFee = NumberCheck(request.TatkalFee.ToString());
-                string PremiumTatkalFee = NumberCheck(request.PremiumTatkalFee.ToString());
-                string CondonationFee = NumberCheck(request.CondonationFee.ToString());
-                string PresemptiveAttendedDays = NumberCheck(request.PresemptiveAttendedDays.ToString());
-                string MaxWorkingDays = NumberCheck(request.MaxWorkingDays.ToString());
-                string CertificateFee = NumberCheck(request.CertificateFee.ToString());
-                string SchemeId = NumberCheck(request.SchemeId.ToString());
-                string ExamMonthYearId = NumberCheck(request.ExamMonthYearId.ToString());
+                string StudentType = NumberCheck(request.StudentType.ToString(), "StudentType");
+                string Semid = NumberCheck(request.Semid.ToString(),"Sem");
+                string FromDate = DateCheck(request.FromDate.ToString(), "FromDate");
+                string ToDate = DateCheck(request.ToDate.ToString(), "ToDate");
+                string Fee = NumberCheck(request.Fee.ToString(), "Fee");
+                string FineDate = DateCheck(request.FineDate.ToString(), "FineDate");
+                string LateFee = NumberCheck(request.LateFee.ToString(), "LateFee");
+                string TatkalDate = DateCheck(request.TatkalDate.ToString(), "TatkalDate");
+                string TatkalFee = NumberCheck(request.TatkalFee.ToString(), "TatkalFee");
+                string PremiumTatkalFee = NumberCheck(request.PremiumTatkalFee.ToString(), "PremiumTatkalFee");
+                string CondonationFee = NumberCheck(request.CondonationFee.ToString(), "CondonationFee");
+                string PresemptiveAttendedDays = NumberCheck(request.PresemptiveAttendedDays.ToString(), "PresemptiveAttendedDays");
+                string MaxWorkingDays = NumberCheck(request.MaxWorkingDays.ToString(), "MaxWorkingDays");
+                string CertificateFee = NumberCheck(request.CertificateFee.ToString(), "CertificateFee");
+                string SchemeId = NumberCheck(request.SchemeId.ToString(), "Scheme");
+                string ExamMonthYearId = NumberCheck(request.ExamMonthYearId.ToString(), "ExamMonthYear");
 
 
                 if (StudentType != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, StudentType);
+                    return response1;
                 }
                 if (Semid != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Semid);
+                    return response1;
+
                 }
                 if (FromDate != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, FromDate);
+                    return response1;
+
                 }
                 if (ToDate != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ToDate);
+                    return response1;
+
                 }
                 if (Fee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Fee);
+                    return response1;
+
                 }
                 if (FineDate != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, FineDate);
+                    return response1;
+
                 }
                 if (LateFee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, LateFee);
+                    return response1;
+
                 }
                 if (TatkalDate != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, TatkalDate);
+                    return response1;
+
                 }
                 if (TatkalFee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, TatkalFee);
+                    return response1;
+
                 }
                 if (PremiumTatkalFee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, PremiumTatkalFee);
+                    return response1;
+
                 }
                 if (CondonationFee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CondonationFee);
+                    return response1;
+
                 }
                 if (PresemptiveAttendedDays != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, PresemptiveAttendedDays);
+                    return response1;
+
                 }
                 if (MaxWorkingDays != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, MaxWorkingDays);
+                    return response1;
+
                 }
                 if (CertificateFee != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, CertificateFee);
+                    return response1;
+
                 }
                 if (SchemeId != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, SchemeId);
+                    return response1;
+
                 }
                 if (ExamMonthYearId != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, ExamMonthYearId);
+                    return response1;
+
                 }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[18];
-                param[0] = new SqlParameter("@StudentTypeId", request.StudentType);
-                param[1] = new SqlParameter("@Semid", request.Semid);
-                param[2] = new SqlParameter("@FromDate", request.FromDate);
-                param[3] = new SqlParameter("@ToDate", request.ToDate);
-                param[4] = new SqlParameter("@Fee", request.Fee);
-                param[5] = new SqlParameter("@FineDate", request.FineDate);
-                param[6] = new SqlParameter("@LateFee", request.LateFee);
-                param[7] = new SqlParameter("@TatkalDate", request.TatkalDate);
-                param[8] = new SqlParameter("@TatkalFee", request.TatkalFee);
-                param[9] = new SqlParameter("@PremiumTatkalFee", request.PremiumTatkalFee);
-                param[10] = new SqlParameter("@CondonationFee", request.CondonationFee);
-                param[11] = new SqlParameter("@PresemptiveAttendedDays", request.PresemptiveAttendedDays);
-                param[12] = new SqlParameter("@MaxWorkingDays", request.MaxWorkingDays);
-                param[13] = new SqlParameter("@CertificateFee", request.CertificateFee);
-                param[14] = new SqlParameter("@SchemeId ", request.SchemeId);
-                param[15] = new SqlParameter("@ExamMonthYearId", request.ExamMonthYearId);
+                param[0] = new SqlParameter("@StudentTypeId", int.Parse(request.StudentType));
+                param[1] = new SqlParameter("@Semid", int.Parse(request.Semid));
+                param[2] = new SqlParameter("@FromDate", DateTime.Parse(request.FromDate));
+                param[3] = new SqlParameter("@ToDate", DateTime.Parse(request.ToDate));
+                param[4] = new SqlParameter("@Fee", Double.Parse(request.Fee));
+                param[5] = new SqlParameter("@FineDate", DateTime.Parse(request.FineDate));
+                param[6] = new SqlParameter("@LateFee", Double.Parse(request.LateFee));
+                param[7] = new SqlParameter("@TatkalDate", DateTime.Parse(request.TatkalDate));
+                param[8] = new SqlParameter("@TatkalFee", Double.Parse(request.TatkalFee));
+                param[9] = new SqlParameter("@PremiumTatkalFee", Double.Parse(request.PremiumTatkalFee));
+                param[10] = new SqlParameter("@CondonationFee", Double.Parse(request.CondonationFee));
+                param[11] = new SqlParameter("@PresemptiveAttendedDays", int.Parse(request.PresemptiveAttendedDays));
+                param[12] = new SqlParameter("@MaxWorkingDays", int.Parse(request.MaxWorkingDays));
+                param[13] = new SqlParameter("@CertificateFee", Double.Parse(request.CertificateFee));
+                param[14] = new SqlParameter("@SchemeId ", int.Parse(request.SchemeId));
+                param[15] = new SqlParameter("@ExamMonthYearId", int.Parse(request.ExamMonthYearId));
                 //param[16] = new SqlParameter("@CondonationP", request.CondonationP);
                 //param[17] = new SqlParameter("@DetentionP", request.DetentionP);
-                param[16] = new SqlParameter("@IsPresemtiveCalculationRequired", request.IsPresemtiveCalculationRequired);
+                param[16] = new SqlParameter("@IsPresemtiveCalculationRequired", int.Parse(request.IsPresemtiveCalculationRequired));
                 param[17] = new SqlParameter("@IsTimetableRequired", request.IsTimetableRequired);
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("ADM_SFP_SET_StudentFeePaymentDates", param);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
@@ -17161,11 +16758,11 @@ namespace SoftwareSuite.Controllers.PreExamination
                 //var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(request["Json"]));
                 //string HolidayDate = DateCheck(js["HolidayDate"].ToString());
                 //string Day = NameCheck(js["Day"].ToString());
-                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString());
-                string SessionId = NumberCheck(request["SessionId"].ToString());
-                string ExamMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
-                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString());
-                string ExamTypeId = NumberCheck(request["ExamTypeId"].ToString());
+                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
+                string SessionId = NumberCheck(request["SessionId"].ToString(), "Session");
+                string ExamMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString(), "ExamMonthYear");
+                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
+                string ExamTypeId = NumberCheck(request["ExamTypeId"].ToString(), "ExamType");
                 //if (HolidayDate != "YES")
                 //{
                 //    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, HolidayDate);
@@ -18323,8 +17920,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string sessionId = NumberCheck(SessionId.ToString());
-                string academicYearId = NumberCheck(AcademicYearId.ToString());
+                string sessionId = NumberCheck(SessionId.ToString(), "Session");
+                string academicYearId = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
 
 
                 if (sessionId != "YES")
@@ -18437,8 +18034,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string SessionId1 = NumberCheck(SessionId.ToString());
-                string AcademicYearId1 = NumberCheck(AcademicYearId.ToString());
+                string SessionId1 = NumberCheck(SessionId.ToString(), "Session");
+                string AcademicYearId1 = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
 
 
                 if (SessionId1 != "YES")
@@ -18495,15 +18092,15 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 //"StartDate": srtdate, "EndDate": enddate, "NofDays": parseInt(data.NofDays), "ReAdmissionEndDate": ReAdmissionEndDate
                 var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
-                string Id1 = NumberCheck(js["Id"].ToString());
-                string AcademicYearId1 = PinCheck(js["AcademicYearId"].ToString());
-                string SessionId1 = PinCheck(js["SessionId"].ToString());
-                string SchemeId1 = PinCheck(js["SchemeId"].ToString());
-                string SemId1 = PinCheck(js["SemId"].ToString());
-                string NofDays1 = PinCheck(js["NofDays"].ToString());
-                string StartDate1 = PinCheck(js["StartDate"].ToString());
-                string EndDate1 = PinCheck(js["EndDate"].ToString());
-                string ReAdmissionEndDate1 = PinCheck(js["ReAdmissionEndDate"].ToString());
+                string Id1 = NumberCheck(js["Id"].ToString(), "Id");
+                string AcademicYearId1 = PinCheck(js["AcademicYearId"].ToString(), "AcademicYear");
+                string SessionId1 = PinCheck(js["SessionId"].ToString(), "Session");
+                string SchemeId1 = PinCheck(js["SchemeId"].ToString(), "Scheme");
+                string SemId1 = PinCheck(js["SemId"].ToString(), "Sem");
+                string NofDays1 = PinCheck(js["NofDays"].ToString(), "NofDays");
+                string StartDate1 = PinCheck(js["StartDate"].ToString(), "StartDate");
+                string EndDate1 = PinCheck(js["EndDate"].ToString(), "EndDate");
+                string ReAdmissionEndDate1 = PinCheck(js["ReAdmissionEndDate"].ToString(), "ReAdmissionEndDate");
                 if (StartDate1 != "YES")
                 {
                     return StartDate1;
@@ -18633,13 +18230,13 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string academicYearId = NumberCheck(AcademicYearId.ToString());
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string examTypeId = NumberCheck(ExamTypeId.ToString());
-                string schemeid = NumberCheck(Schemeid.ToString());
-                string Branchid = NumberCheck(branchid.ToString());
-                string Semid = NumberCheck(semid.ToString());
+                string academicYearId = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string examTypeId = NumberCheck(ExamTypeId.ToString(), "ExamType");
+                string schemeid = NumberCheck(Schemeid.ToString(), "Scheme");
+                string Branchid = NumberCheck(branchid.ToString(), "Branch");
+                string Semid = NumberCheck(semid.ToString(), "Sem");
 
 
                 if (academicYearId != "YES")
@@ -18696,13 +18293,13 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string academicYearId = NumberCheck(AcademicYearId.ToString());
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string examTypeId = NumberCheck(ExamTypeId.ToString());
-                string examdate = DateCheck(ExamDate.ToString());
-                string examSession = PinCheck(ExamSession.ToString());
-                string Schemeid = NumberCheck(schemeid.ToString());
+                string academicYearId = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string examTypeId = NumberCheck(ExamTypeId.ToString(), "ExamType");
+                string examdate = DateCheck(ExamDate.ToString(), "ExamDate");
+                string examSession = PinCheck(ExamSession.ToString(), "ExamSession");
+                string Schemeid = NumberCheck(schemeid.ToString(), "Scheme");
 
 
                 if (academicYearId != "YES")
@@ -18762,11 +18359,11 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string academicYearId = NumberCheck(AcademicYearId.ToString());
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string examTypeId = NumberCheck(ExamTypeId.ToString());
-                string Pcode = PinCheck(pcode.ToString());
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string academicYearId = NumberCheck(AcademicYearId.ToString(), "AcademicYear");
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string examTypeId = NumberCheck(ExamTypeId.ToString(), "ExamType");
+                string Pcode = PinCheck(pcode.ToString(), "PCode");
 
 
 
@@ -18983,7 +18580,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
                 //var jobject = JsonConvert.DeserializeObject<JsonObject>(JsonConvert.SerializeObject(js[i]));
-                string Scheme1 = PinCheck(js["ExamHall"].ToString());
+                string Scheme1 = PinCheck(js["ExamHall"].ToString(),"ExamHall");
                 if (Scheme1 != "YES")
                 {
                     return Scheme1;
@@ -19450,7 +19047,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-              var pin1 = PinCheck(Pin);
+              var pin1 = PinCheck(Pin,"Pin");
                 if (pin1 != "YES")
                 {
                     return pin1;
@@ -19625,11 +19222,11 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string DataType = NumberCheck(request["DataType"].ToString());
-                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString());
-                string Exammonthyearid = NumberCheck(request["Exammonthyearid"].ToString());
-                string CollegeCode = NumberCheck(request["CollegeCode"].ToString());
-                string BranchCode = NameCheck(request["BranchCode"].ToString());
+                string DataType = NumberCheck(request["DataType"].ToString(), "DataType");
+                string AcademicYearId = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
+                string Exammonthyearid = NumberCheck(request["Exammonthyearid"].ToString(), "ExamMonthYear");
+                string CollegeCode = NumberCheck(request["CollegeCode"].ToString(), "CollegeCode");
+                string BranchCode = NameCheck(request["BranchCode"].ToString(), "BranchCode");
 
 
                 if (DataType != "YES")
