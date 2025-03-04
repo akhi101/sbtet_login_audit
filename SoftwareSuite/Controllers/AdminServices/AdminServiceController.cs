@@ -103,17 +103,17 @@ namespace SoftwareSuite.Controllers.AdminServices
             {
                 PreExaminationController PreExamination = new PreExaminationController();
 
-                string examId1 = PreExamination.NumberCheck(ReqData.examId.ToString());
-                string semid1 = PreExamination.NumberCheck(ReqData.semid.ToString());
-                string AcademicYearId1 = PreExamination.NumberCheck(ReqData.AcademicYearId.ToString());
-                string userName1 = PreExamination.PinCheck(ReqData.userName);
-                string fromDate1 = PreExamination.PinCheck(ReqData.fromDate);
-                string toDate1 = PreExamination.PinCheck(ReqData.toDate);
-                string fineDate1 = PreExamination.PinCheck(ReqData.fineDate);
-                string fine1 = PreExamination.NumberCheck(ReqData.fine.ToString());
-                string Studenttypeid1 = PreExamination.NumberCheck(ReqData.Studenttypeid.ToString());
-                string schemeid1 = PreExamination.NumberCheck(ReqData.schemeid.ToString());
-                string ExamMonthYearId1 = PreExamination.NumberCheck(ReqData.ExamMonthYearId.ToString());
+                string examId1 = PreExamination.NumberCheck(ReqData.examId.ToString(), "Exam");
+                string semid1 = PreExamination.NumberCheck(ReqData.semid.ToString(),"Sem");
+                string AcademicYearId1 = PreExamination.NumberCheck(ReqData.AcademicYearId.ToString(), "AcademicYear");
+                string userName1 = PreExamination.PinCheck(ReqData.userName,"UserName");
+                string fromDate1 = PreExamination.PinCheck(ReqData.fromDate,"FromDate");
+                string toDate1 = PreExamination.PinCheck(ReqData.toDate, "ToDate");
+                string fineDate1 = PreExamination.PinCheck(ReqData.fineDate, "FineDate");
+                string fine1 = PreExamination.NumberCheck(ReqData.fine.ToString(), "Fine");
+                string Studenttypeid1 = PreExamination.NumberCheck(ReqData.Studenttypeid.ToString(), "StudentType");
+                string schemeid1 = PreExamination.NumberCheck(ReqData.schemeid.ToString(), "Scheme");
+                string ExamMonthYearId1 = PreExamination.NumberCheck(ReqData.ExamMonthYearId.ToString(), "ExamMonthYear");
 
                 if (examId1 != "YES")
                 {

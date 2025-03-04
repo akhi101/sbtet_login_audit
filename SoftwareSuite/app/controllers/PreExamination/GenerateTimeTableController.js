@@ -572,7 +572,7 @@
             $scope.LoadImg = true;
                   
 
-            var setholidays = PreExaminationService.SetHolidaysForTimeTable($scope.arr, parseInt($scope.selAcademicYear), parseInt($scope.selSession), parseInt($scope.monthyear), parseInt($scope.SelStudentType), parseInt($scope.examtype));
+            var setholidays = PreExaminationService.SetHolidaysForTimeTable($scope.arr, parseInt($scope.selAcademicYear).toString(), parseInt($scope.selSession), parseInt($scope.monthyear).toString(), parseInt($scope.SelStudentType).toString(), parseInt($scope.examtype).toString());
             setholidays.then(function (dat) {
                 //var dat = JSON.parse(dat);
                 //try {

@@ -1715,7 +1715,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
         [AuthorizationFilter][HttpGet, ActionName("PinCheck")]
-        public string PinCheck(string DataType)
+        public string PinCheck(string DataType,string DataType1)
 
         {
             try
@@ -1728,7 +1728,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -1764,20 +1764,20 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         [AuthorizationFilter]
         [HttpGet, ActionName("ExamMonthYearCheck")]
-        public string ExamMonthYearCheck(string DataType)
+        public string ExamMonthYearCheck(string DataType,string DataType1)
 
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex(@"^(C\d{2}-)?(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)-\d{4}$");
+                    Regex regex = new Regex(@"^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|january|february|march|april|may|june|july|august|september|october|november|december|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)-\d{4}$");
                     if (!regex.IsMatch(DataType))
                     {
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -1812,7 +1812,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("NumberCheck")]
-        public string NumberCheck(string DataType)
+        public string NumberCheck(string DataType,string DataType1)
         {
             try
             {
@@ -1822,7 +1822,7 @@ namespace SoftwareSuite.Controllers.MasterSetting
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -1855,14 +1855,14 @@ namespace SoftwareSuite.Controllers.MasterSetting
         }
 
         [AuthorizationFilter][HttpGet, ActionName("SetExamMonthYear")]
-        public string SetExamMonthYear(int DataTypeId, string ExamMonthYear, int ExamMonthYearId, int SequenceId)
+        public string SetExamMonthYear(string DataTypeId, string ExamMonthYear, string ExamMonthYearId, string SequenceId)
         {
             try
             {
-                string ExamMonthYear1 = ExamMonthYearCheck(ExamMonthYear);
-                string DataTypeId1 = NumberCheck(DataTypeId.ToString());
-                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString());
-                string SequenceId1 = NumberCheck(SequenceId.ToString());
+                string ExamMonthYear1 = ExamMonthYearCheck(ExamMonthYear, "ExamMonthYear");
+                string DataTypeId1 = NumberCheck(DataTypeId.ToString(), "DataType");
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string SequenceId1 = NumberCheck(SequenceId.ToString(), "Sequence");
                 if (ExamMonthYear1 != "YES")
                 {
                     return ExamMonthYear1;
@@ -1883,10 +1883,10 @@ namespace SoftwareSuite.Controllers.MasterSetting
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
-                param[0] = new SqlParameter("@Datatypeid", DataTypeId);
+                param[0] = new SqlParameter("@Datatypeid", int.Parse(DataTypeId));
                 param[1] = new SqlParameter("@ExamMonthYear", ExamMonthYear);
-                param[2] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[3] = new SqlParameter("@SequenceId", SequenceId);
+                param[2] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[3] = new SqlParameter("@SequenceId", int.Parse(SequenceId));
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_CreateOrUpdateExamMonthYear", param);
                 return JsonConvert.SerializeObject(dt);
             }

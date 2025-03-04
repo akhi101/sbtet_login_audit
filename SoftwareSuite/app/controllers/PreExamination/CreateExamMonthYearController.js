@@ -22,7 +22,7 @@ define(['app'], function (app) {
                 alert("Enter exam month and year.");
                 return;
             }
-            var ApprovalList = PreExaminationService.SetExamMonthYear(datatypeid,$scope.ExamMonthYear,0,0);
+            var ApprovalList = PreExaminationService.SetExamMonthYear(datatypeid.toString(), $scope.ExamMonthYear.toString(), "0", "0");
             ApprovalList.then(function (res) {
 
                 // Check if the response is a JSON string
@@ -111,43 +111,52 @@ define(['app'], function (app) {
                 alert("Enter SequenceId.");
                 return;
             }
-            var SetSemester = PreExaminationService.SetExamMonthYear(datatypeid, data.ExamYearMonth, parseInt(data.Id), parseInt(data.SequenceId))
-            SetSemester.then(function (response) {
-                var res = JSON.parse(res);
-                try {
-                    var res = JSON.parse(res);
-                }
-                catch
-                {
-
-                }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.Status) {
-                    // var keys = Object.keys(res);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = res.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+            var SetSemester = PreExaminationService.SetExamMonthYear(datatypeid.toString(), data.ExamYearMonth.toString(), parseInt(data.Id).toString(), parseInt(data.SequenceId).toString())
+            SetSemester.then(function (res) {
+                // Check if the response is a JSON string
+                if (typeof res === "string") {
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                } else
-               // var response = JSON.parse(response)
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
+                else {
+
+
                     if (res[0].ResponceCode == '200') {
                         alert(res[0].ResponceDescription)
-                    $scope.GetExamYearMonth();
+                        $scope.GetExamYearMonth();
                     } else if (res[0].ResponceCode == '400') {
                         alert(res[0].ResponceDescription);
                         $scope.GetExamYearMonth();
-                } else {
-                    alert('Something Went Wrong')
+                    } else {
+                        alert('Something Went Wrong')
+                    }
+
+
                 }
+                    
             },
                 function (error) {
                     alert("something Went Wrong")
