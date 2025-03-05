@@ -192,7 +192,7 @@
                         if (authData.SystemUserTypeId == 2) {
                             
                             $scope.isPrincipalTable = true;
-                            var ApprovalList = PreExaminationService.getApprovalSingleList(authData.SystemUserTypeId, authData.College_Code, "", "", $scope.Student.id);
+                            var ApprovalList = PreExaminationService.getApprovalSingleList(authData.SystemUserTypeId.toString(), authData.College_Code.toString(), "", "", $scope.Student.id.toString());
                             ApprovalList.then(function (response) {
                                 if (response.Status) {
                                     // var keys = Object.keys(res);

@@ -335,7 +335,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-        //[AuthorizationFilter]
+        [AuthorizationFilter]
 
         [HttpGet, ActionName("GetStudentServicesCounts")]
         public HttpResponseMessage GetStudentServicesCounts()
@@ -3696,7 +3696,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
-
+        [AuthorizationFilter()]
         [HttpGet, ActionName("EnableFeePayment")]
         public string EnableFeePayment(string ExamMonthYear, string Pin, string studenttypeid, string ExamFee, string LateFee, string TatkalFee, string PremiumTatkalFee, string Semid = "0")
         {
@@ -9300,7 +9300,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex(@"^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])| (0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.\d{3})?)?$");
+                    Regex regex = new Regex(@"^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])|(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})(?:[T ](0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
@@ -11833,7 +11833,7 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
-
+        [AuthorizationFilter()]
         [HttpPost, ActionName("UpdateTender")]
         public HttpResponseMessage UpdateTender([FromBody] TenderData TenderData)
 
@@ -14901,17 +14901,25 @@ namespace SoftwareSuite.Controllers.PreExamination
             }
         }
 
+        public class Approvelist
+        {
+            public string UserTypeId { get; set; }
+            public string collegeCode { get; set; }
+            public string branchcode { get; set; }
+            public string semester { get; set; }
+            public string StudentTypeId { get; set; }
+        }
 
         [AuthorizationFilter()][HttpPost, ActionName("getApprovalSingleList")]
-        public HttpResponseMessage getApprovalSingleList([FromBody] JsonObject request)
+        public HttpResponseMessage getApprovalSingleList([FromBody] Approvelist request)
         {
             try
             {
-                string UserTypeId = NumberCheck(request["UserTypeId"].ToString(), "UserType");
-                string collegeCode = NumberCheck(request["collegeCode"].ToString(), "CollegeCode");
-                string branchcode = NumberCheck(request["branchcode"].ToString(), "BranchCode");
-                string semester = PinCheck(request["semester"].ToString(), "Semester");
-                string StudentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
+                string UserTypeId = NumberCheck(request.UserTypeId.ToString(), "UserType");
+                string collegeCode = NumberCheck(request.collegeCode.ToString(), "CollegeCode");
+                string branchcode = NumberCheck(request.branchcode.ToString(), "BranchCode");
+                string semester = PinCheck(request.semester.ToString(), "Semester");
+                string StudentTypeId = NumberCheck(request.StudentTypeId.ToString(), "StudentType");
 
 
                 if (UserTypeId != "YES")
@@ -14937,11 +14945,11 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
-                param[0] = new SqlParameter("@UserTypeId", request["UserTypeId"]);
-                param[1] = new SqlParameter("@CollegeCode", request["collegeCode"]);
-                param[2] = new SqlParameter("@BranchCode", request["branchcode"]);
-                param[3] = new SqlParameter("@Semester", request["semester"]);
-                param[4] = new SqlParameter("@StudentTypeId", request["StudentTypeId"]);
+                param[0] = new SqlParameter("@UserTypeId", int.Parse(request.UserTypeId));
+                param[1] = new SqlParameter("@CollegeCode", request.collegeCode);
+                param[2] = new SqlParameter("@BranchCode", request.branchcode);
+                param[3] = new SqlParameter("@Semester", request.semester);
+                param[4] = new SqlParameter("@StudentTypeId", int.Parse(request.StudentTypeId));
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SFP_GET_CondonationPinList", param);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
                 return response;
@@ -15371,7 +15379,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()][HttpGet, ActionName("getAdminExamCentersList")]
-        public HttpResponseMessage getAdminExamCentersList(int ExamMonthYearId, int StudentTypeId, int ExamTypeID = 0)
+        public HttpResponseMessage getAdminExamCentersList(string ExamMonthYearId, string StudentTypeId, string ExamTypeID = "0")
         {
             try
             {
@@ -15383,20 +15391,23 @@ namespace SoftwareSuite.Controllers.PreExamination
                 if (examMonthYearId != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return response1;
                 }
                 else if (studentTypeId != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return response1;
                 }
                 if (examtypeid != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examtypeid);
+                    return response1;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
-                param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[1] = new SqlParameter("@StudentTypeId", StudentTypeId);
-                param[2] = new SqlParameter("@ExamTypeID", ExamTypeID);
+                param[0] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[1] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
+                param[2] = new SqlParameter("@ExamTypeID", int.Parse(ExamTypeID));
                 var dt = dbHandler.ReturnDataWithStoredProcedure("ADM_SFP_GET_CollegeExaminationCenterList", param);
 
                 return Request.CreateResponse(HttpStatusCode.OK, dt);
@@ -16888,8 +16899,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
-       [HttpGet, ActionName("GetWebSiteVisiterCount")]
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("GetWebSiteVisiterCount")]
         public HttpResponseMessage GetWebSiteVisiterCount()
         {
             try
@@ -18226,7 +18237,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateData")]
-        public string GetTimeTableUpdateData(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int ExamTypeId, int Schemeid, int branchid, int semid)
+        public string GetTimeTableUpdateData(string AcademicYearId, string ExamMonthYearId, string StudentTypeId, string ExamTypeId, string Schemeid, string branchid, string semid)
         {
             try
             {
@@ -18241,41 +18252,41 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (schemeid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                    return schemeid;
                 }
                 else if (Branchid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Branchid);
+                    return Branchid;
                 }
                 else if (Semid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Semid);
+                    return Semid;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[7];
-                param[0] = new SqlParameter("@AcademicYearId", AcademicYearId);
-                param[1] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[2] = new SqlParameter("@StudentTypeId", StudentTypeId);
-                param[3] = new SqlParameter("@ExamTypeId", ExamTypeId);
-                param[4] = new SqlParameter("@Schemeid", Schemeid);
-                param[5] = new SqlParameter("@branchid", branchid);
-                param[6] = new SqlParameter("@semid", semid);
+                param[0] = new SqlParameter("@AcademicYearId", int.Parse(AcademicYearId));
+                param[1] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[2] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
+                param[3] = new SqlParameter("@ExamTypeId", int.Parse(ExamTypeId));
+                param[4] = new SqlParameter("@Schemeid", int.Parse(Schemeid));
+                param[5] = new SqlParameter("@branchid", int.Parse(branchid));
+                param[6] = new SqlParameter("@semid", int.Parse(semid));
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_TimeTableSchemeBranchSemester", param);
                 return JsonConvert.SerializeObject(dt);
             }
@@ -18289,7 +18300,7 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateDataByDate")]
-        public string GetTimeTableUpdateDataByDate(int AcademicYearId, int ExamMonthYearId, int StudentTypeId, int ExamTypeId, DateTime ExamDate, string ExamSession, int schemeid)
+        public string GetTimeTableUpdateDataByDate(string AcademicYearId, string ExamMonthYearId, string StudentTypeId, string ExamTypeId, string ExamDate, string ExamSession, string schemeid)
         {
             try
             {
@@ -18304,41 +18315,41 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (examdate != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examdate);
+                    return examdate;
                 }
                 else if (examSession != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examSession);
+                    return examSession;
                 }
                 else if (Schemeid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Schemeid);
+                    return Schemeid;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[7];
-                param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[1] = new SqlParameter("@AcademicYearId", AcademicYearId);
-                param[2] = new SqlParameter("@StudentTypeId", StudentTypeId);
-                param[3] = new SqlParameter("@ExamTypeId", ExamTypeId);
-                param[4] = new SqlParameter("@ExamDate", ExamDate);
+                param[0] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[1] = new SqlParameter("@AcademicYearId", int.Parse(AcademicYearId));
+                param[2] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
+                param[3] = new SqlParameter("@ExamTypeId", int.Parse(ExamTypeId));
+                param[4] = new SqlParameter("@ExamDate", DateTime.Parse(ExamDate));
                 param[5] = new SqlParameter("@ExamSession", ExamSession);
-                param[6] = new SqlParameter("@schemeid", schemeid);
+                param[6] = new SqlParameter("@schemeid", int.Parse(schemeid));
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_TimeTableByDateSession", param);
                 return JsonConvert.SerializeObject(dt);
             }
@@ -18355,7 +18366,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()][HttpGet, ActionName("GetTimeTableUpdateDataByPcode")]
-        public string GetTimeTableUpdateDataByPcode(int ExamMonthYearId, int AcademicYearId, int StudentTypeId, int ExamTypeId, int pcode)
+        public string GetTimeTableUpdateDataByPcode(string ExamMonthYearId, string AcademicYearId, string StudentTypeId, string ExamTypeId, string pcode)
         {
             try
             {
@@ -18369,33 +18380,33 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (Pcode != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Pcode);
+                    return Pcode;
                 }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
 
-                param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[1] = new SqlParameter("@AcademicYearId", AcademicYearId);
-                param[2] = new SqlParameter("@StudentTypeId", StudentTypeId);
-                param[3] = new SqlParameter("@ExamTypeId", ExamTypeId);
-                param[4] = new SqlParameter("@pcode", pcode);
+                param[0] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[1] = new SqlParameter("@AcademicYearId", int.Parse(AcademicYearId));
+                param[2] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
+                param[3] = new SqlParameter("@ExamTypeId", int.Parse(ExamTypeId));
+                param[4] = new SqlParameter("@pcode", int.Parse(pcode));
 
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_GET_TimeTableByPcode", param);
                 return JsonConvert.SerializeObject(dt);
@@ -18572,31 +18583,82 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         }
 
+        public class HallDetails
+        {
+            public string datatypeid { get; set; }
+            public string CollegeCode { get; set; }
+            public string Json { get; set; }
+        }
+
+        public class HallJson
+        {
+            public string Id { get; set; }
+            public string ExamHall { get; set; }
+            public string Rows { get; set; }
+            public string Columns { get; set; }
+            public string NoOfStudentsPerBeanch { get; set; }
+            public string IsActive { get; set; }
+
+        }
+
         [AuthorizationFilter()][HttpPost, ActionName("SetExaminationHallData")]
-        public string SetExaminationHallData([FromBody] JsonObject data)
+        public string SetExaminationHallData([FromBody] HallDetails data)
         {
             try
             {
 
-                var js = JsonConvert.DeserializeObject<JsonObject>(Convert.ToString(data["Json"]));
-                //var jobject = JsonConvert.DeserializeObject<JsonObject>(JsonConvert.SerializeObject(js[i]));
-                string Scheme1 = PinCheck(js["ExamHall"].ToString(),"ExamHall");
-                if (Scheme1 != "YES")
-                {
-                    return Scheme1;
-                }
-                //var js = JsonConvert.DeserializeObject<ArrayList>(Convert.ToString(data["Json"]));
+                // Step 1: Extract and deserialize "Json" field into a list
+                var examHalls = JsonConvert.DeserializeObject<List<HallJson>>(data.Json);
 
-                //for (int i = 0; i < js.Count; i++)
-                //{
-                    
-                //}
+                // Step 2: Process each exam hall record
+                foreach (var hall in examHalls)
+                {
+                    // Extract & validate hall-specific fields
+                    string HallId = NumberCheck(hall.Id.ToString(), "HallId");
+                    string ExamHall = PinCheck(hall.ExamHall.ToString(), "ExamHall");
+                    string Rows = NumberCheck(hall.Rows.ToString(), "Rows");
+                    string Columns = NumberCheck(hall.Columns.ToString(), "Columns");
+                    string NoOfStudentsPerBench = NumberCheck(hall.NoOfStudentsPerBeanch.ToString(), "NoOfStudentsPerBench");
+                    string IsActive = NumberCheck(hall.IsActive.ToString(), "IsActive");
+                    if (HallId != "YES")
+                    {
+                        return HallId;
+                    }
+                    else if (ExamHall != "YES")
+                    {
+                        return ExamHall;
+                    }
+                    else if (Rows != "YES")
+                    {
+                        return Rows;
+                    }
+                    else if (Columns != "YES")
+                    {
+                        return Columns;
+                    }
+                    else if (NoOfStudentsPerBench != "YES")
+                    {
+                        return NoOfStudentsPerBench;
+                    }
+                }
+
+                string DataType = NumberCheck(data.datatypeid.ToString(), "DataType");
+                string CollegeCode = NumberCheck(data.CollegeCode.ToString(), "CollegeCode");
+
+                if (DataType != "YES")
+                {
+                    return DataType;
+                }
+                else if (CollegeCode != "YES")
+                {
+                    return CollegeCode;
+                }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[3];
-                param[0] = new SqlParameter("@datatypeid", data["datatypeid"]);
-                param[1] = new SqlParameter("@CollegeCode", data["CollegeCode"]);
-                param[2] = new SqlParameter("@Json", data["Json"].ToString());
+                param[0] = new SqlParameter("@datatypeid", int.Parse(data.datatypeid));
+                param[1] = new SqlParameter("@CollegeCode", int.Parse(data.CollegeCode));
+                param[2] = new SqlParameter("@Json", data.Json.ToString());
                 var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_SeatingPlanCollegeExamRooms", param);
                 return JsonConvert.SerializeObject(dt);
             }
@@ -18607,20 +18669,100 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
+        public class SeatingRequest
+        {
+            public string datatypeid { get; set; }
+            public string StudentTypeId { get; set; }
+            public string CollegeCode { get; set; }
+            public string ExamMonthYearId { get; set; }
+            public string ExamTypeId { get; set; }
+            public string Json { get; set; } // This is a JSON array as a string
+        }
 
+        public class ExamHallData
+        {
+            public string Id { get; set; }
+            public string ExamHall { get; set; }
+            public string Rows { get; set; }
+            public string Colums { get; set; }
+            public string NoOfStudentsPerBeanch { get; set; }
+        }
         [AuthorizationFilter()][HttpPost, ActionName("SetSeatingExaminationHallData")]
-        public string SetSeatingExaminationHallData([FromBody] JsonObject data)
+        public string SetSeatingExaminationHallData([FromBody] SeatingRequest seatdata)
         {
             try
             {
+                string DataType = NumberCheck(seatdata.datatypeid.ToString(), "DataType");
+                string StudentType = NumberCheck(seatdata.StudentTypeId.ToString(), "StudentType");
+                string CollegeCode = NumberCheck(seatdata.CollegeCode.ToString(), "CollegeCode");
+                string ExamMonthYearId = NumberCheck(seatdata.ExamMonthYearId.ToString(), "ExamMonthYear");
+                string ExamTypeId = NumberCheck(seatdata.ExamTypeId.ToString(), "ExamType");
+
+                // Step 1: Extract and deserialize "Json" field into a list
+                var examHalls = JsonConvert.DeserializeObject<List<ExamHallData>>(seatdata.Json);
+
+                // Step 2: Process each exam hall record
+                foreach (var hall in examHalls)
+                {
+                    // Extract & validate hall-specific fields
+                    string HallId = NumberCheck(hall.Id.ToString(), "HallId");
+                    string ExamHall = PinCheck(hall.ExamHall.ToString(), "ExamHall");
+                    string Rows = NumberCheck(hall.Rows.ToString(), "Rows");
+                    string Columns = NumberCheck(hall.Colums.ToString(), "Columns");
+                    string NoOfStudentsPerBench = NumberCheck(hall.NoOfStudentsPerBeanch.ToString(), "NoOfStudentsPerBench");
+                    if (HallId != "YES")
+                    {
+                        return HallId;
+                    }
+                    else if (ExamHall != "YES")
+                    {
+                        return ExamHall;
+                    }
+                    else if (Rows != "YES")
+                    {
+                        return Rows;
+                    }
+                    else if (Columns != "YES")
+                    {
+                        return Columns;
+                    }
+                    else if (NoOfStudentsPerBench != "YES")
+                    {
+                        return NoOfStudentsPerBench;
+                    }
+                }
+
+
+                if (DataType != "YES")
+                {
+                    return DataType;
+                }
+                else if (StudentType != "YES")
+                {
+                    return StudentType;
+                }
+                else if (CollegeCode != "YES")
+                {
+                    return CollegeCode;
+                }
+                else if (ExamMonthYearId != "YES")
+                {
+                    return ExamMonthYearId;
+                }
+                else if (ExamTypeId != "YES")
+                {
+                    return ExamTypeId;
+                }
+
+               
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
-                param[0] = new SqlParameter("@datatypeid", data["datatypeid"]);
-                param[1] = new SqlParameter("@StudentTypeId", data["StudentTypeId"]);
-                param[2] = new SqlParameter("@CollegeCode", data["CollegeCode"]);
-                param[3] = new SqlParameter("@ExamMonthYearId", data["ExamMonthYearId"]);
-                param[4] = new SqlParameter("@ExamTypeId", data["ExamTypeId"]);
-                param[5] = new SqlParameter("@Json", data["Json"].ToString());
+                param[0] = new SqlParameter("@datatypeid", seatdata.datatypeid);
+                param[1] = new SqlParameter("@StudentTypeId", seatdata.StudentTypeId);
+                param[2] = new SqlParameter("@CollegeCode", seatdata.CollegeCode);
+                param[3] = new SqlParameter("@ExamMonthYearId", seatdata.ExamMonthYearId);
+                param[4] = new SqlParameter("@ExamTypeId", seatdata.ExamTypeId);
+                param[5] = new SqlParameter("@Json", seatdata.Json.ToString());
                 var dt = dbHandler.ReturnDataWithStoredProcedure("USP_SET_SeatingPlanExamRooms", param);
                 return JsonConvert.SerializeObject(dt);
             }

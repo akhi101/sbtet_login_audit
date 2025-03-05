@@ -4,9 +4,16 @@
         const $ctrl = this;
         $ctrl.$onInit = () => {
             $scope.academicYear = 14;
-
+            var authData = JSON.parse(sessionStorage.getItem('user'));
+            $scope.userType = authData.SystemUserTypeId;
+            if ($scope.userType == 2 || $scope.userType == 3) {
+                alert("UnAuthorized Access")
+                $state.go('Dashboard');
+                return;
+            }
             $scope.getadmincategory()
         }
+
 
         var AcademicYears = AcademicService.getAcademicYears()
         AcademicYears.then(function (response) {

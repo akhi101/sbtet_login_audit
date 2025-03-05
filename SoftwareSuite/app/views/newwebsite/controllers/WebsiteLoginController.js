@@ -149,7 +149,6 @@ define(['app'], function (app) {
             let finalPayload = { ...requestData, NameofUser: hmacSignature };
 
             AdminService.ValidateUserLoginCaptcha(finalPayload).then(function (response) {
-                console.log("API Response:", response);
                 if (response.MESSAGE) {
                     showDecryptedMessage(response.MESSAGE);
                     $scope.GetCaptchaData();
@@ -190,10 +189,8 @@ define(['app'], function (app) {
 
                         };
                         sessionStorage.setItem("user", JSON.stringify($localStorage.authorizationData));
-                        console.log(sessionStorage)
                         // Wait for a small delay before redirecting (ensures data is set properly)
                         setTimeout(() => {
-                            //console.log("Redirecting to Dashboard...");
                             $scope.GetCaptchaData();
                             $state.go("Dashboard", {}, { reload: true });
                         }, 500); 

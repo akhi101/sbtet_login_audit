@@ -204,8 +204,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
-                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
                 if (examMonthYearId != "YES")
                 {
                     HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
@@ -216,8 +216,8 @@ namespace SoftwareSuite.Controllers.PreExamination
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[2];             
-                param[0] = new SqlParameter("@ExamMonthYearId", request["ExamMonthYearId"]);
-                param[1] = new SqlParameter("@StudentTypeId", request["StudentTypeId"]);            
+                param[0] = new SqlParameter("@ExamMonthYearId", int.Parse(request["ExamMonthYearId"].ToString()));
+                param[1] = new SqlParameter("@StudentTypeId", int.Parse(request["StudentTypeId"].ToString()));            
                 var dt = dbHandler.ReturnDataWithStoredProcedureTable("USP_SET_TimeTablePublishIntoMasterTables", param);
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, dt);
                 return response;
@@ -326,54 +326,8 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
         [AuthorizationFilter()]
-        [HttpGet, ActionName("CheckFee")]
-        public string CheckFee(int DataType)
-        {
-            try
-            {
-                if (DataType != 0)
-                {
-                    Regex regex = new Regex("[0-9]");
-                    // Regex regex = new Regex("^[0-9\\s\\-\\/.,#]+$");
-                    if (!regex.IsMatch(DataType.ToString()))
-                    {
-                        var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
-                        var plaintext2 = "status";
-                        var plaintext3 = "description";
-
-                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
-                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
-
-                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
-                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
-                        string Status = Encryption.Encrypt(plaintext2, key, iv);
-                        string Description = Encryption.Encrypt(plaintext3, key, iv);
-                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
-                        //  return Content;
-                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
-                        return res;
-                    }
-                    else
-                    {
-                        return "YES";
-                    }
-                }
-                else
-                {
-                    return "YES";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        [AuthorizationFilter()]
         [HttpGet, ActionName("PinCheck")]
-        public string PinCheck(string DataType)
+        public string PinCheck(string DataType, string DataType1)
 
         {
             try
@@ -386,7 +340,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -423,7 +377,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("NameCheck")]
-        public string NameCheck(string DataType)
+        public string NameCheck(string DataType, string DataType1)
 
         {
             try
@@ -436,7 +390,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -471,7 +425,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("GenderCheck")]
-        public string GenderCheck(string DataType)
+        public string GenderCheck(string DataType, string DataType1)
 
         {
             try
@@ -482,7 +436,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -516,7 +470,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("MobileNumberCheck")]
-        public string MobileNumberCheck(string DataType)
+        public string MobileNumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -526,7 +480,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -560,7 +514,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("EmailCheck")]
-        public string EmailCheck(string DataType)
+        public string EmailCheck(string DataType, string DataType1)
         {
             try
             {
@@ -570,7 +524,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -605,7 +559,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("NumberCheck")]
-        public string NumberCheck(string DataType)
+        public string NumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -615,7 +569,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -650,17 +604,17 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("DateCheck")]
-        public string DateCheck(string DataType)
+        public string DateCheck(string DataType, string DataType1)
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex("^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
+                    Regex regex = new Regex(@"^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])| (0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})(?:[T ](0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.\d{3})?)?$");
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -695,7 +649,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyThreeDigitCheck")]
-        public string OnlyThreeDigitCheck(string DataType)
+        public string OnlyThreeDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -705,7 +659,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -740,7 +694,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("DataCheck1")]
-        public string DataCheck1(string DataType)
+        public string DataCheck1(string DataType, string DataType1)
         {
             try
             {
@@ -750,7 +704,51 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
+                    }
+                    else
+                    {
+                        return "YES";
+                    }
+                }
+                else
+                {
+                    return "YES";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [AuthorizationFilter()]
+        [HttpGet, ActionName("OnlyTwoDigitCheck")]
+        public string OnlyTwoDigitCheck(string DataType, string DataType1)
+        {
+            try
+            {
+                if (DataType != "")
+                {
+                    Regex regex = new Regex("^\\d{2}$");
+                    if (!regex.IsMatch(DataType))
+                    {
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -784,7 +782,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyFourDigitCheck")]
-        public string OnlyFourDigitCheck(string DataType)
+        public string OnlyFourDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -794,7 +792,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -827,11 +825,9 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
 
 
-
-
         [AuthorizationFilter()]
         [HttpGet, ActionName("OnlyTwelveDigitCheck")]
-        public string OnlyTwelveDigitCheck(string DataType)
+        public string OnlyTwelveDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -840,7 +836,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{12}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -860,7 +871,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("CollegeNameCheck")]
-        public string CollegeNameCheck(string DataType)
+        public string CollegeNameCheck(string DataType, string DataType1)
         {
             try
             {
@@ -869,7 +880,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^[a-zA-Z\\s,]+$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -886,43 +912,44 @@ namespace SoftwareSuite.Controllers.PreExamination
                 return ex.Message;
             }
         }
+
         [AuthorizationFilter()]
         [HttpPost, ActionName("TimeTablePdfAdmin")]
         public string TimeTablePdfAdmin([FromBody] JsonObject request)
         {
             try
             {
-                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
-                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
-                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
-                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
-                string schemeid = NumberCheck(request["SchemeId"].ToString());
-                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString(), "ExamType");
+                string schemeid = NumberCheck(request["SchemeId"].ToString(), "Scheme");
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString(), "DataType");
 
 
                 if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (schemeid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                    return schemeid;
                 }
                 else if (dataTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                    return dataTypeId;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
@@ -956,37 +983,37 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
-                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
-                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
-                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
-                string schemeid = NumberCheck(request["SchemeId"].ToString());
-                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString(), "ExamType");
+                string schemeid = NumberCheck(request["SchemeId"].ToString(), "Scheme");
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString(), "DataType");
 
 
                 if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (schemeid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                    return schemeid;
                 }
                 else if (dataTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                    return dataTypeId;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];
@@ -1036,37 +1063,37 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string academicYearId = NumberCheck(request["AcademicYearId"].ToString());
-                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString());
-                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString());
-                string examTypeId = NumberCheck(request["ExamTypeId"].ToString());
-                string schemeid = NumberCheck(request["SchemeId"].ToString());
-                string dataTypeId = NumberCheck(request["DataTypeId"].ToString());
+                string academicYearId = NumberCheck(request["AcademicYearId"].ToString(), "AcademicYear");
+                string examMonthYearId = NumberCheck(request["ExamMonthYearId"].ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(request["StudentTypeId"].ToString(), "StudentType");
+                string examTypeId = NumberCheck(request["ExamTypeId"].ToString(), "ExamType");
+                string schemeid = NumberCheck(request["SchemeId"].ToString(), "Scheme");
+                string dataTypeId = NumberCheck(request["DataTypeId"].ToString(), "DataType");
 
 
                 if (academicYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, academicYearId);
+                    return academicYearId;
                 }
                 else if (examMonthYearId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examMonthYearId);
+                    return examMonthYearId;
                 }
                 else if (studentTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, studentTypeId);
+                    return studentTypeId;
                 }
                 else if (examTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, examTypeId);
+                    return examTypeId;
                 }
                 else if (schemeid != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, schemeid);
+                    return schemeid;
                 }
                 else if (dataTypeId != "YES")
                 {
-                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, dataTypeId);
+                    return dataTypeId;
                 }
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];

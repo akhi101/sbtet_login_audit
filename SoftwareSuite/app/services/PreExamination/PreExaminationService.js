@@ -418,15 +418,32 @@
             return promise;
         }
 
-        this.SetExaminationHallData = function (paramObject) {
+        this.SetExaminationHallData = function (datatypeid, CollegeCode, Json) {
+            var paramObject = {
+                "datatypeid": datatypeid,
+                "CollegeCode": CollegeCode,
+                "Json": Json
+            };
             var promise = DataAccessService.postData('api/PreExamination/SetExaminationHallData', paramObject);
             return promise;
         }
-
-        this.SetSeatingExaminationHallData = function (paramObject) {
+        this.SetSeatingExaminationHallData = function (datatypeid, StudentTypeId, CollegeCode, ExamMonthYearId, ExamTypeId, Json) {
+            var paramObject = {
+                "datatypeid": datatypeid,
+                "StudentTypeId": StudentTypeId,
+                "CollegeCode": CollegeCode,
+                "ExamMonthYearId": ExamMonthYearId,
+                "ExamTypeId": ExamTypeId,
+                "Json": Json
+            };
             var promise = DataAccessService.postData('api/PreExamination/SetSeatingExaminationHallData', paramObject);
             return promise;
         }
+
+        //this.SetSeatingExaminationHallData = function (paramObject) {
+        //    var promise = DataAccessService.postData('api/PreExamination/SetSeatingExaminationHallData', paramObject);
+        //    return promise;
+        //}
         this.SeatingPlanPdf = function (paramObject) {
             var promise = DataAccessService.getDataWithPara('api/PreExamination/SeatingPlanPdf', paramObject);
             return promise;

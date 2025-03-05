@@ -79,7 +79,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("PinCheck")]
-        public string PinCheck(string DataType)
+        public string PinCheck(string DataType,string DataType1)
 
         {
             try
@@ -92,7 +92,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Pin " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -129,7 +129,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("NameCheck")]
-        public string NameCheck(string DataType)
+        public string NameCheck(string DataType, string DataType1)
 
         {
             try
@@ -142,7 +142,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input " + DataType;
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -177,7 +177,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("GenderCheck")]
-        public string GenderCheck(string DataType)
+        public string GenderCheck(string DataType, string DataType1)
 
         {
             try
@@ -188,7 +188,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -222,7 +222,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("MobileNumberCheck")]
-        public string MobileNumberCheck(string DataType)
+        public string MobileNumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -232,7 +232,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -266,7 +266,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("EmailCheck")]
-        public string EmailCheck(string DataType)
+        public string EmailCheck(string DataType, string DataType1)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -310,8 +310,8 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
         [AuthorizationFilter()]
-        [AuthorizationFilter][HttpGet, ActionName("OnlyThreeDigitCheck")]
-        public string OnlyThreeDigitCheck(string DataType)
+        [HttpGet, ActionName("OnlyThreeDigitCheck")]
+        public string OnlyThreeDigitCheck(string DataType, string DataType1)
         {
             try
             {
@@ -320,7 +320,22 @@ namespace SoftwareSuite.Controllers.PreExamination
                     Regex regex = new Regex("^\\d{3}$");
                     if (!regex.IsMatch(DataType))
                     {
-                        return "NO";
+                        var plaintext = "400";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
+                        var plaintext2 = "status";
+                        var plaintext3 = "description";
+
+                        string key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 key
+                        string iv = "u4I0j3AQrwJnYHkgQFwVNw==";     // AES IV
+
+                        string resstatus = Encryption.Encrypt(plaintext, key, iv);
+                        string resdescription = Encryption.Encrypt(plaintext1, key, iv);
+                        string Status = Encryption.Encrypt(plaintext2, key, iv);
+                        string Description = Encryption.Encrypt(plaintext3, key, iv);
+                        // string Content = new StringContent("{\"" + Status + "\" : \"" + resstatus + "\", \"" + Description + "\" : \"" + resdescription + "\"}", Encoding.UTF8, "application/json")
+                        //  return Content;
+                        var res = JsonConvert.SerializeObject("{\"Status\" : \"" + resstatus + "\",\"Description\" : \"" + resdescription + "\"}");
+                        return res;
                     }
                     else
                     {
@@ -340,7 +355,7 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("NumberCheck")]
-        public string NumberCheck(string DataType)
+        public string NumberCheck(string DataType, string DataType1)
         {
             try
             {
@@ -350,7 +365,7 @@ namespace SoftwareSuite.Controllers.PreExamination
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -384,17 +399,17 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [HttpGet, ActionName("DateCheck")]
-        public string DateCheck(string DataType)
+        public string DateCheck(string DataType,string DataType1)
         {
             try
             {
                 if (DataType != "")
                 {
-                    Regex regex = new Regex("^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}(?: (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
+                    Regex regex = new Regex(@"^(\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])|(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4})(?:[T ](0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]))?$");
                     if (!regex.IsMatch(DataType))
                     {
                         var plaintext = "400";
-                        var plaintext1 = "Invalid Input";
+                        var plaintext1 = "Invalid " + DataType1 + " :- " + DataType;
                         var plaintext2 = "status";
                         var plaintext3 = "description";
 
@@ -427,14 +442,14 @@ namespace SoftwareSuite.Controllers.PreExamination
         }
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpPost, ActionName("GetFeePaymentReports")]
-        public string GetFeePaymentReports(int StudentTypeId, string StartDate, string EndDate, int examType)
+        public string GetFeePaymentReports(string StudentTypeId, string StartDate, string EndDate, string examType)
         {
             try
             {
-                string StudentTypeId1 = NumberCheck(StudentTypeId.ToString());
-                string StartDate1 = DateCheck(StartDate.ToString());
-                string EndDate1 = DateCheck(EndDate.ToString());
-                string examType1 = NumberCheck(examType.ToString());
+                string StudentTypeId1 = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string StartDate1 = DateCheck(StartDate.ToString(), "StartDate");
+                string EndDate1 = DateCheck(EndDate.ToString(), "EndDate");
+                string examType1 = NumberCheck(examType.ToString(), "ExamType");
               
 
                 if (StudentTypeId1 != "YES")
@@ -457,10 +472,10 @@ namespace SoftwareSuite.Controllers.PreExamination
                 var dbHandler = new dbHandler();
                 string StrQuery = "usp_SFP_GET_FeePaymentReports ";
                 var param = new SqlParameter[4];
-                param[0] = new SqlParameter("@StudentTypeId", StudentTypeId);
+                param[0] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
                 param[1] = new SqlParameter("@StartDate", StartDate);
                 param[2] = new SqlParameter("@EndDate", EndDate);
-                param[3] = new SqlParameter("@examType", examType);
+                param[3] = new SqlParameter("@examType", int.Parse(examType));
                 var ds = dbHandler.ReturnDataWithStoredProcedure(StrQuery, param);
                 var filename = "TransactionReport-" + Guid.NewGuid().ToString() + ".xlsx";
                 var eh = new ExcelHelper();
@@ -771,10 +786,10 @@ namespace SoftwareSuite.Controllers.PreExamination
         {
             try
             {
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string collegeCode = NumberCheck(CollegeCode.ToString());
-                string examTypeId = NumberCheck(ExamTypeId.ToString());
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string collegeCode = NumberCheck(CollegeCode.ToString(), "CollegeCode");
+                string examTypeId = NumberCheck(ExamTypeId.ToString(), "ExamType");
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
 
                 if (studentTypeId != "YES")
                 {
@@ -1077,16 +1092,16 @@ namespace SoftwareSuite.Controllers.PreExamination
 
         [AuthorizationFilter()]
         [AuthorizationFilter][HttpGet, ActionName("NrReports")]
-        public string NrReports(int ExamMonthYearId, int StudentTypeId, string CollegeCode, string ExamDate, int ExamTypeId)
+        public string NrReports(string ExamMonthYearId, string StudentTypeId, string CollegeCode, string ExamDate, string ExamTypeId)
         {
             string NRReportDir = @"Reports\NR\";
             try
             {
-                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString());
-                string studentTypeId = NumberCheck(StudentTypeId.ToString());
-                string collegeCode = NumberCheck(CollegeCode.ToString());
-                string examDate = DateCheck(ExamDate.ToString());
-                string examTypeId = NumberCheck(ExamTypeId.ToString());
+                string examMonthYearId = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYear");
+                string studentTypeId = NumberCheck(StudentTypeId.ToString(), "StudentType");
+                string collegeCode = NumberCheck(CollegeCode.ToString(), "CollegeCode");
+                string examDate = DateCheck(ExamDate.ToString(), "ExamDate");
+                string examTypeId = NumberCheck(ExamTypeId.ToString(), "ExamType");
 
 
                 if (examMonthYearId != "YES")
@@ -1113,11 +1128,11 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
-                param[0] = new SqlParameter("@ExamMonthYearId", ExamMonthYearId);
-                param[1] = new SqlParameter("@StudentTypeId", StudentTypeId);
+                param[0] = new SqlParameter("@ExamMonthYearId", int.Parse(ExamMonthYearId));
+                param[1] = new SqlParameter("@StudentTypeId", int.Parse(StudentTypeId));
                 param[2] = new SqlParameter("@CollegeCode", CollegeCode);
                 param[3] = new SqlParameter("@ExamDate", ExamDate);
-                param[4] = new SqlParameter("@ExamType", ExamTypeId);
+                param[4] = new SqlParameter("@ExamType", int.Parse(ExamTypeId));
                 DataSet ds = dbHandler.ReturnDataWithStoredProcedure("USP_SFP_GET_NR_BAC_Test", param);
                 GenerateNR GenerateNR = new GenerateNR();
                 var pdf = GenerateNR.GetNrPdf(ds, NRReportDir);
