@@ -96,34 +96,52 @@ define(['app'], function (app) {
 
         $scope.getNRStudentDetails = function (ExamMonthYearId, StudentType, ExamDate, ExamType) {
             $scope.LoadImg = true;
-            var getNrReports = PreExaminationService.NrReports(ExamMonthYearId, StudentType, authData.College_Code.toString(), ExamDate, ExamType);
+            var getNrReports = PreExaminationService.NrReports(ExamMonthYearId.toString(), StudentType.toString(), authData.College_Code.toString(), ExamDate.toString(), ExamType.toString());
             getNrReports.then(function (res) {
-                $scope.LoadImg = false;
-                if (response.Status) {
-                    // var keys = Object.keys(res);
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
-                    }
-                    $scope.ExamMonthYear = "";
+                function isUUID(res) {
+                    var uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    return uuidRegex.test(res);
                 }
-                else if (res.length > 0) {
-                    if (res.length > 4) {
-                        window.location.href = '/Reports/' + res + '.pdf';
+
+                // Example Usage
+                if (isUUID(res)) {
+                    $scope.LoadImg = false;
+                    if (res.length > 0) {
+                        if (res.length > 4) {
+                            window.location.href = '/Reports/' + res + '.pdf';
+                        } else {
+                            alert("No NR Report Present");
+                        }
                     } else {
                         alert("No NR Report Present");
                     }
                 } else {
-                    alert("No NR Report Present");
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+                            $scope.LoadImg = false;
+                        }
+                    }
                 }
             }, function (err) {
                 $scope.LoadImg = false;

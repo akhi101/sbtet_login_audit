@@ -8,6 +8,7 @@
         $scope.ReportFound = false;
         $scope.Noreports = false;
         $scope.GetMasterschemeSem = [];
+        $scope.PincodeMasterschemeSem = [];
         $scope.seminfo = [];
         $scope.schemeinfo = [];
         $scope.Branchinfo = [];
@@ -134,36 +135,55 @@
                 return;
             }
           
-         
-            var PublishTimetabledata = PreExaminationService.PublishTimetable(parseInt($scope.monthyear1), parseInt($scope.SelStudentType1));
-            PublishTimetabledata.then(function (data) {
-              
-                try { var response = JSON.parse(data) } catch (err) { }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
+            var PublishTimetabledata = PreExaminationService.PublishTimetable(parseInt($scope.monthyear1).toString(), parseInt($scope.SelStudentType1).toString());
+            PublishTimetabledata.then(function (response) {
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
+                // Check if the response is a JSON string
+                if (typeof response !== "string") {
+                    var data = String(response);  // Convert to string
+                }
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                data = data.trim();  // Now trim() will work
+
+
+                if (!data.startsWith("[")) {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (response[0].ResponceCode == '200') {
-                    alert(response[0].ResponceDescription);
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
 
-                } else {
-                    alert('Something Went Wrong')
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
 
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
+                else {
+                    if (response[0].ResponseCode == '200') {
+                        alert(response[0].ResponseDescription);
+
+                    } else {
+                        alert('Something Went Wrong')
+
+                    }
+                }
+
             }, function (error) {
               
             });
@@ -203,43 +223,63 @@
             $scope.ReportFound = false;
             $scope.Noreports = false;
 
-            var SchemeSem = PreExaminationService.GetTimeTableUpdateData($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType, $scope.selscheme, $scope.selsem, $scope.examtype , $scope.selbranch);
+            var SchemeSem = PreExaminationService.GetTimeTableUpdateData($scope.selAcademicYear.toString(), $scope.monthyear.toString(), $scope.SelStudentType.toString(), $scope.selscheme.toString(), $scope.selsem.toString(), $scope.examtype.toString(), $scope.selbranch.toString());
             SchemeSem.then(function (data) {
-                try {
-                    var data = JSON.parse(data)
-                } catch (err)
-                {
-
+                // Check if the response is a JSON string
+                if (typeof data !== "string") {
+                    data = String(data);  // Convert to string
                 }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
+                data = data.trim();  // Now trim() will work
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                if (!data.startsWith("[")) {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (data.length > 0) {
-                    $scope.ReportFound = true;
-                    $scope.Noreports = false;
-                    $scope.GetMasterschemeSem = data;
-                    for (var j = 1; j < data.length + 1; j++) {
-                        $scope['edit' + j] = true;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
                     }
-                } else {
-                    $scope.ReportFound = false;
-                    $scope.Noreports = true;
                 }
+                else {
+                    var data = JSON.parse(data);
+
+                    if (data.length > 0) {
+                        $scope.ReportFound = true;
+                        $scope.Noreports = false;
+                        $scope.GetMasterschemeSem = data;
+                        for (var j = 1; j < data.length + 1; j++) {
+                            $scope['edit' + j] = true;
+                        }
+                    } else {
+                        $scope.ReportFound = false;
+                        $scope.Noreports = true;
+                    }
+
+
+
+                }
+               
+                
             }, function (error) {
                 $scope.GetMasterschemeSem = [];
                 $scope.ReportFound = fale;
@@ -296,38 +336,61 @@
             $scope.ReportFound1 = false;
             $scope.Noreports1 = false;
 
-            var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByPcode($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType, $scope.examtype, $scope.PCode);
+            var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByPcode($scope.selAcademicYear.toString(), $scope.monthyear.toString(), $scope.SelStudentType.toString(), $scope.examtype.toString(), $scope.PCode.toString());
             SchemeSem.then(function (data) {
-                try { var data = JSON.parse(data) } catch (err) { }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
+                // Check if the response is a JSON string
+                if (typeof data !== "string") {
+                    data = String(data);  // Convert to string
+                }
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
+                data = data.trim();  // Now trim() will work
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                if (!data.startsWith("[")) {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (data.length > 0) {
-                    $scope.ReportFound1 = true;
-                    $scope.Noreports1 = false;
-                    $scope.GetMasterschemeSem = data;
-                    for (var j = 1; j < data.length + 1; j++) {
-                        $scope['edit' + j] = true;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
                     }
-                } else {
-                    $scope.ReportFound1 = false;
-                    $scope.Noreports1 = true;
                 }
+                else {
+                    var data = JSON.parse(data);
+                    if (data.length > 0) {
+                        $scope.ReportFound1 = true;
+                        $scope.Noreports1 = false;
+                        $scope.PincodeMasterschemeSem = data;
+                        for (var j = 1; j < data.length + 1; j++) {
+                            $scope['edit' + j] = true;
+                        }
+                    } else {
+                        $scope.ReportFound1 = false;
+                        $scope.Noreports1 = true;
+                    }
+
+
+
+                }
+                
             }, function (error) {
                 $scope.GetMasterschemeSem = [];
                 $scope.ReportFound1 = false;
@@ -390,38 +453,58 @@
             $scope.GetMasterSessions = [];
             $scope.ReportFound2 = false;
             $scope.Noreports2 = false;
-            var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByDate($scope.selAcademicYear, $scope.monthyear, $scope.SelStudentType,$scope.examtype, $scope.ExamDate, $scope.ExamSession, $scope.selscheme);
+            var SchemeSem = PreExaminationService.GetTimeTableUpdateDataByDate($scope.selAcademicYear.toString(), $scope.monthyear.toString(), $scope.SelStudentType.toString(), $scope.examtype.toString(), $scope.ExamDate.toString(), $scope.ExamSession.toString(), $scope.selscheme.toString());
             SchemeSem.then(function (data) {
-                try { var data = JSON.parse(data) } catch (err) { }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
+                // Check if the response is a JSON string
+                if (typeof data !== "string") {
+                    data = String(data);  // Convert to string
+                }
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
+                data = data.trim();  // Now trim() will work
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                if (!data.startsWith("[")) {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (data.length > 0) {
-                    $scope.ReportFound2 = true;
-                    $scope.Noreports2 = false;
-                    $scope.GetMasterschemeSem = data;
-                    for (var j = 1; j < data.length + 1; j++) {
-                        $scope['edit' + j] = true;
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
                     }
-                } else {
-                    $scope.ReportFound2 = false;
-                    $scope.Noreports2 = true;
                 }
+                else {
+                    var data = JSON.parse(data);
+                    if (data.length > 0) {
+                        $scope.ReportFound2 = true;
+                        $scope.Noreports2 = false;
+                        $scope.GetMasterschemeSem = data;
+                        for (var j = 1; j < data.length + 1; j++) {
+                            $scope['edit' + j] = true;
+                        }
+                    } else {
+                        $scope.ReportFound2 = false;
+                        $scope.Noreports2 = true;
+                    }
+                }
+                
             }, function (error) {
                 $scope.GetMasterschemeSem = [];
                 $scope.ReportFound2 = false;
@@ -482,7 +565,7 @@
                 "ExamSession": data.ExamSession, "Remarks": Remarks
             }         
 
-            var SetTimeTableSessionSchemeSemesters = PreExaminationService.SetTimeTableUpdateData(datatypeid, json)
+            var SetTimeTableSessionSchemeSemesters = PreExaminationService.SetTimeTableUpdateData(datatypeid.toString(), json)
             SetTimeTableSessionSchemeSemesters.then(function (response) {
                 try { var response = JSON.parse(response) } catch (err) { }
                 if (response[0].ResponceCode == '200') {
@@ -604,51 +687,70 @@
             var DataTypeId = 1;
             $scope.LoadImg = true;
             $scope.gentmetbl = true;
-            var getpdfTimeTableData = PreExaminationService.TimeTablePdfAdmin(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
+            var getpdfTimeTableData = PreExaminationService.TimeTablePdfAdmin(parseInt($scope.selAcademicYear1).toString(), parseInt($scope.monthyear1).toString(), parseInt($scope.SelStudentType1).toString(), parseInt($scope.examtype1).toString(), parseInt($scope.selscheme1).toString(), DataTypeId.toString());
             getpdfTimeTableData.then(function (data) {
-                $scope.gentmetbl = false;
+                // Check if the response is a JSON string
+                if (typeof data !== "string") {
+                    data = String(data);  // Convert to string
+                }
 
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
+                data = data.trim();  // Now trim() will work
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                if (!data.startsWith("[")) {
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (data.length > 0) {
-                    if (data.length > 4) {
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
 
-                        $scope.LoadImg = false;
-                        $scope.Result = true;
-                        var location = '/Reports/' + data + '.pdf';
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
 
-                        var url = window.location.origin + location;
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
 
-                        window.open(url);
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
 
+                        }
+                    }
+                } else {
+                    $scope.gentmetbl = false;
+
+                    if (data.length > 0) {
+                        if (data.length > 4) {
+
+                            $scope.LoadImg = false;
+                            $scope.Result = true;
+                            var location = '/Reports/' + data + '.pdf';
+
+                            var url = window.location.origin + location;
+
+                            window.open(url);
+
+                        } else {
+                            $scope.LoadImg = false;
+                            alert("Timetable not Present");
+                        }
                     } else {
                         $scope.LoadImg = false;
                         alert("Timetable not Present");
                     }
-                } else {
+                    //$scope.ResultNotFound = false;
+                    //$scope.ResultFound = false;
                     $scope.LoadImg = false;
-                    alert("Timetable not Present");
-                }
-                //$scope.ResultNotFound = false;
-                //$scope.ResultFound = false;
-                $scope.LoadImg = false;
 
+                }
+                
 
             }, function (error) {
                 $scope.gentmetbl = false;
@@ -685,43 +787,69 @@
             var DataTypeId = 2
            
             $scope.gentmetbl = true;
-            var getpdfTimeTableData = PreExaminationService.TimeTableXlsxAdmin(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
+            var getpdfTimeTableData = PreExaminationService.TimeTableXlsxAdmin(parseInt($scope.selAcademicYear1).toString(), parseInt($scope.monthyear1).toString(), parseInt($scope.SelStudentType1).toString(), parseInt($scope.examtype1).toString(), parseInt($scope.selscheme1).toString(), DataTypeId.toString());
             getpdfTimeTableData.then(function (data) {
-                $scope.gentmetbl = false;
-
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
-                    }
-                    $scope.ExamMonthYear = "";
+                // Ensure data is a string
+                if (typeof data !== "string") {
+                    data = String(data);
                 }
-                else if (data.length > 0) {
-                    if (data.length > 4) {
-                        $scope.Result = true;
-                        var location = data;
-                        window.location.href = location;
 
+                data = data.trim(); // Remove spaces
+                if (data.startsWith("/")) {
+                    $scope.gentmetbl = false;
+
+                    if (data.length > 0) {
+                        if (data.length > 4) {
+                            $scope.Result = true;
+                            var location = data;
+                            window.location.href = location;
+
+                        } else {
+                            alert("Timetable not Present");
+                        }
                     } else {
                         alert("Timetable not Present");
                     }
-                } else {
-                    alert("Timetable not Present");
+                    //$scope.ResultNotFound = false;
+                    //$scope.ResultFound = false;
+                    $scope.LoadImg = false;
+                    
                 }
-                //$scope.ResultNotFound = false;
-                //$scope.ResultFound = false;
-                $scope.LoadImg = false;
+
+
+
+
+                
+                else {
+                    // Check if the response is a JSON string
+
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
+               
 
 
             }, function (error) {
@@ -766,43 +894,63 @@
 
             var DataTypeId = 3
             $scope.gentmetbl = true;
-            var getpdfTimeTableData = PreExaminationService.TimeTableEdepXlsx(parseInt($scope.selAcademicYear1), parseInt($scope.monthyear1), parseInt($scope.SelStudentType1), parseInt($scope.examtype1), parseInt($scope.selscheme1), DataTypeId);
+            var getpdfTimeTableData = PreExaminationService.TimeTableEdepXlsx(parseInt($scope.selAcademicYear1).toString(), parseInt($scope.monthyear1).toString(), parseInt($scope.SelStudentType1).toString(), parseInt($scope.examtype1).toString(), parseInt($scope.selscheme1).toString(), DataTypeId.toString());
             getpdfTimeTableData.then(function (data) {
-                $scope.gentmetbl = false;
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (data.Status) {
-                    // var keys = Object.keys(res);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = data.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = data.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
-                    }
-                    $scope.ExamMonthYear = "";
+                // Ensure data is a string
+                if (typeof data !== "string") {
+                    data = String(data);
                 }
-                else if (data.length > 0) {
-                    if (data.length > 4) {
 
-                        var location = data;
-                        window.location.href = location;
+                data = data.trim(); // Remove spaces
+                if (data.startsWith("/")) {
+                    $scope.gentmetbl = false;
+                    if (data.length > 0) {
+                        if (data.length > 4) {
 
+                            var location = data;
+                            window.location.href = location;
+
+                        } else {
+                            alert("Timetable not Present");
+                        }
                     } else {
                         alert("Timetable not Present");
                     }
-                } else {
-                    alert("Timetable not Present");
-                }
-                //$scope.ResultNotFound = false;
-                //$scope.ResultFound = false;
-                $scope.LoadImg = false;
+                    //$scope.ResultNotFound = false;
+                    //$scope.ResultFound = false;
+                    $scope.LoadImg = false;
 
+                }
+
+                else {
+                    // Check if the response is a JSON string
+
+                    var res1 = JSON.parse(data);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
 
             }, function (error) {
                 $scope.gentmetbl = false;

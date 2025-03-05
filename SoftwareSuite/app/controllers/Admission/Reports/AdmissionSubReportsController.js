@@ -1,7 +1,13 @@
 ﻿define(['app'], function (app) {
     app.controller("AdmissionSubReportsController", function ($scope, $state, $stateParams, $localStorage, AppSettings,$location, Excel, $timeout,AdmissionService, PreExaminationService, AssessmentService, StudentWiseService, StudentResultService) {
-        var authData = $localStorage.authorizationData;
-       
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.UserTypeId = authData.SystemUserTypeId;
+        if ($scope.UserTypeId == 2 || $scope.UserTypeId == 3) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard');
+            return;
+        }
         if (authData == undefined) {
             $state.go('login');
         } else {
@@ -11,7 +17,7 @@
         $scope.loading = false;
 
       
-        $scope.UserTypeId = authData.SystemUserTypeId;
+        //$scope.UserTypeId = authData.SystemUserTypeId;
         if ($scope.UserTypeId == 1) {
 
             var localData = $localStorage.AdmReportData

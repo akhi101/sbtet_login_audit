@@ -144,7 +144,7 @@
 
 
         $scope.Submit = function () {
-
+            $scope.Jsonarr = [];
             var datatypeid = 1
 
             if ($scope.ExaminationHall == null || $scope.ExaminationHall == undefined || $scope.ExaminationHall == "") {
@@ -168,44 +168,75 @@
                 return;
             }
 
-            var json = {
-                "Id": 0, "ExamHall": $scope.ExaminationHall, "Rows": parseInt($scope.HallRows), "Columns": parseInt($scope.HallColumns), "NoOfStudentsPerBeanch": 0, "IsActive": 1               
-            }
-            var parmobj = { "datatypeid": datatypeid, "CollegeCode": $scope.CollegeCode, "Json": json}
-            var SetExaminationHallData = PreExaminationService.SetExaminationHallData(parmobj)
+            $scope.Jsonarr.push({ "Id": "0", "ExamHall": $scope.ExaminationHall.toString(), "Rows": parseInt($scope.HallRows).toString(), "Columns": parseInt($scope.HallColumns).toString(), "NoOfStudentsPerBeanch": "0", "IsActive": "1" })
+
+            //var Json = {
+            //    "Id": "0", "ExamHall": $scope.ExaminationHall.toString(), "Rows": parseInt($scope.HallRows).toString(), "Columns": parseInt($scope.HallColumns).toString(), "NoOfStudentsPerBeanch": "0", "IsActive": "1"               
+            //}
+
+            //var parmobj = {
+            //    "datatypeid": datatypeid.toString(),
+            //    "CollegeCode": $scope.CollegeCode.toString(),
+            //    "Json": json
+            //}
+            var SetExaminationHallData = PreExaminationService.SetExaminationHallData(datatypeid.toString(), $scope.CollegeCode.toString(), JSON.stringify($scope.Jsonarr))
             SetExaminationHallData.then(function (response) {
-                var response = JSON.parse(response);
-                try {
-                    var response = JSON.parse(response);
+                // Check if the response is a JSON string
+                if (typeof response !== "string") {
+                    response = String(response);  // Convert to string
                 }
-                catch
-                {
 
-                }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(response);
+                response = response.trim();  // Now trim() will work
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                if (!response.startsWith("{")) {
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                } else
-                if (response.Table[0].ResponceCode == '200') {
-                    alert(response.Table[0].ResponceDescription);
-                    $scope.GetDetails();
-                } else {
-                    alert('Something Went Wrong');
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+                            $scope.LoadImg = false;
+                        }
+                    }
+                }
+                else {
+
+                    var response = JSON.parse(response);
+                    try {
+                        var response = JSON.parse(response);
+                    }
+                    catch
+                    {
+
+                    }
+
+                    if (response.Table[0].ResponceCode == '200') {
+                        alert(response.Table[0].ResponceDescription);
+                        $scope.GetDetails();
+                    } else {
+                        alert('Something Went Wrong');
+
+                    }
 
                 }
+
             },
                 function (error) {
                     alert("something Went Wrong");

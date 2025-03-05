@@ -71,36 +71,60 @@
             if (ExamType === undefined || ExamType == '') {
                 ExamType = 1;
             }
-            var GetTransaction = PreExaminationService.GetFeePaymentReports(studenttType, fromdate.toString(), todate.toString(), ExamType);
+            var GetTransaction = PreExaminationService.GetFeePaymentReports(studenttType.toString(), fromdate.toString(), todate.toString(), ExamType.toString());
             GetTransaction.then(function (response) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(res);
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
+                // Ensure data is a string
+                if (typeof response !== "string") {
+                    response = String(response);
+                }
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
+                response = response.trim(); // Remove spaces
+                if (response.startsWith("/")) {
+                    if (response != null && response.length > 1) {
+                        var location = window.location.origin
+                        window.location.href = '/Reports' + response;
+                        $scope.NoResult = false;
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                    } else {
+                        alert("Error Generating The Report");
+                        $scope.NoResult = true;
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (response != null && response.length > 1) {
-                    var location = window.location.origin
-                    window.location.href = '/Reports' + response;
-                    $scope. NoResult = false;
-
-                } else {
-                    alert("Error Generating The Report");
-                    $scope. NoResult = true;
 
                 }
+
+                else {
+                    // Check if the response is a JSON string
+
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
+
+                
             },
                 function (error) {
                     alert("error data is not getting");

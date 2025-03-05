@@ -66,82 +66,96 @@
             $scope.loading = true;
             $scope.result = false;
 
-            var getAdminExamCenters = PreExaminationService.getAdminExamCentersList($scope.Examyear,$scope.StudentType ,$scope.ExaminationType);
+            var getAdminExamCenters = PreExaminationService.getAdminExamCentersList($scope.Examyear.toString(), $scope.StudentType.toString(), $scope.ExaminationType.toString());
             getAdminExamCenters.then(function (response) {
-                //  console.log(response);
-                // var response = JSON.parse(response);
-                //console.log(response);
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (response.Status) {
-                    // var keys = Object.keys(res);
-
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = response.Status;
-
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = response.Description;
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                // Check if the response is a JSON string
+                if (typeof response === "string") {
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
 
                     }
-                    $scope.ExamMonthYear = "";
-                }
-                else if (response.Table.length > 0) {
-                    $scope.GetCollegeCenters = response.Table;
-                  
-                    var finalarr = [];
-                    finalarr = response.Table;
-                    // if($scope.StudentType == 2){
-                    //     $scope.ExaminationType = 10;  
-                    //   }
-                    // var getExamCenters = PreExaminationService.getExaminationCentersList($scope.Student.id, $scope.current_schemeid, $scope.currentAcademicYear, $scope.currentYearMonth);
-                    var getExamCenters = PreExaminationService.getExaminationCentersList($scope.Examyear, $scope.StudentType, $scope.ExaminationType);
-                    getExamCenters.then(function (response) {
-                        //  var response = JSON.parse(res);
-                        //console.log(response);
-                        var ExamCentertable = [];
-                        $scope.ExamCenters = response.Table;
-                        $scope.loading = false;
-                        $scope.result = true;
-                        ExamCentertable = response.Table
-                        if (response.Table.length > 0) {
-                            finalarr = finalarr.map((obj) => {
-                                ExamCentertable.forEach(function (val) {
-                                    if (val.ExaminationCenterId === obj.ExaminationCenterId) {
-                                        obj.ExaminationCenterName = val.ExaminationCenter;
-                                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
 
-                                })
-                                return obj;
-                            })
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
                         }
-                        //   console.log(finalarr);
-                        $scope.finalarr = finalarr;
-                    },
-                     function (error) {
-                         //alert("error while loading semesters");
-                         var err = JSON.parse(error);
-                         //    console.log(err.Message);          
-                     });
-
-                    $scope.loading = false;
-                    $scope.Noresult = false;
-                    $scope.result = true;
-                    //} else {
-                    //    $scope.loading = false;
-                    //    $scope.Noresult = true;
-                    //    $scope.result = false;
-                    //}
-                } else {
-                    alert("No Data Found");
-                 //   $scope.edit = false;
-                    $scope.loading = false;
-                    $scope.Noresult = true;
-                    $scope.result = false;
+                    }
                 }
+                else {
+                    if (response.Table.length > 0) {
+                        $scope.GetCollegeCenters = response.Table;
+
+                        var finalarr = [];
+                        finalarr = response.Table;
+                        // if($scope.StudentType == 2){
+                        //     $scope.ExaminationType = 10;  
+                        //   }
+                        // var getExamCenters = PreExaminationService.getExaminationCentersList($scope.Student.id, $scope.current_schemeid, $scope.currentAcademicYear, $scope.currentYearMonth);
+                        var getExamCenters = PreExaminationService.getExaminationCentersList($scope.Examyear, $scope.StudentType, $scope.ExaminationType);
+                        getExamCenters.then(function (response) {
+                            //  var response = JSON.parse(res);
+                            //console.log(response);
+                            var ExamCentertable = [];
+                            $scope.ExamCenters = response.Table;
+                            $scope.loading = false;
+                            $scope.result = true;
+                            ExamCentertable = response.Table
+                            if (response.Table.length > 0) {
+                                finalarr = finalarr.map((obj) => {
+                                    ExamCentertable.forEach(function (val) {
+                                        if (val.ExaminationCenterId === obj.ExaminationCenterId) {
+                                            obj.ExaminationCenterName = val.ExaminationCenter;
+                                        }
+
+                                    })
+                                    return obj;
+                                })
+                            }
+                            //   console.log(finalarr);
+                            $scope.finalarr = finalarr;
+                        },
+                            function (error) {
+                                //alert("error while loading semesters");
+                                var err = JSON.parse(error);
+                                //    console.log(err.Message);          
+                            });
+
+                        $scope.loading = false;
+                        $scope.Noresult = false;
+                        $scope.result = true;
+                        //} else {
+                        //    $scope.loading = false;
+                        //    $scope.Noresult = true;
+                        //    $scope.result = false;
+                        //}
+                    } else {
+                        alert("No Data Found");
+                        //   $scope.edit = false;
+                        $scope.loading = false;
+                        $scope.Noresult = true;
+                        $scope.result = false;
+                    }
+                }
+
+
+
+
+                
             },
             function (error) {
                 //alert("error while loading Data");
@@ -314,8 +328,8 @@
             setExaminationCenters.then(function (response) {               
                 alert("Data Saved Successfully");
                 $scope.edit = true;
-                $scope.update = false;                
-                var getAdminExamCenters = PreExaminationService.getAdminExamCentersList($scope.Examyear, $scope.StudentType, $scope.ExaminationType);
+                $scope.update = false;
+                var getAdminExamCenters = PreExaminationService.getAdminExamCentersList($scope.Examyear.toString(), $scope.StudentType.toString(), $scope.ExaminationType.toString());
                 getAdminExamCenters.then(function (response) {
                     //  console.log(response);
                     // var response = JSON.parse(response);

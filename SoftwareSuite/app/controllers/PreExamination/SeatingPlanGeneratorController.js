@@ -132,7 +132,7 @@
             $scope.hallarr = [];
             angular.forEach($scope.Hallinfo, function (value, key) {
                 if (value.selected === true) {
-                    $scope.hallarr.push({ "Id": value.Id, "ExamHall": value.ExamHall, "Rows": value.Rows, "Colums": value.Columns, "NoOfStudentsPerBeanch": 1 })
+                    $scope.hallarr.push({ "Id": value.Id.toString(), "ExamHall": value.ExamHall.toString(), "Rows": value.Rows.toString(), "Colums": value.Columns.toString(), "NoOfStudentsPerBeanch": "1" })
                 }
             });
         }
@@ -195,7 +195,7 @@
             angular.forEach($scope.Hallinfo, function (value, key) {
                 if (value.selected === true) {
                     $scope.hallarr.push({
-                        "Id": value.Id, "ExamHall": value.ExamHall, "Rows": value.Rows, "Colums": value.Columns, "NoOfStudentsPerBeanch": 1})
+                        "Id": value.Id.toString(), "ExamHall": value.ExamHall.toString(), "Rows": value.Rows.toString(), "Colums": value.Columns.toString(), "NoOfStudentsPerBeanch": "1"})
                 }
             });
         }
@@ -244,26 +244,94 @@
             }
 
 
-            var hallparmobj = { "datatypeid": 1, "StudentTypeId": parseInt($scope.studentTypeId), "CollegeCode": $scope.CollegeCode, "ExamMonthYearId": parseInt($scope.selectedEmy), "ExamTypeId": $scope.examtype, "Json": $scope.hallarr } 
+            //var hallparmobj =
+            //{
+            //    "datatypeid": "1",
+            //    "StudentTypeId": parseInt($scope.studentTypeId).toString(),
+            //    "CollegeCode": $scope.CollegeCode.toString(),
+            //    "ExamMonthYearId": parseInt($scope.selectedEmy).toString(),
+            //    "ExamTypeId": $scope.examtype.toString(),
+            //    "Json": $scope.hallarr
+            //} 
            
             $scope.LoadImg = true;
-            var SetSeatingExaminationHallData = PreExaminationService.SetSeatingExaminationHallData(hallparmobj);
+            var SetSeatingExaminationHallData = PreExaminationService.SetSeatingExaminationHallData("1", parseInt($scope.studentTypeId).toString(), $scope.CollegeCode.toString(), parseInt($scope.selectedEmy).toString(), $scope.examtype.toString(), JSON.stringify($scope.hallarr));
             SetSeatingExaminationHallData.then(function (res) {
-                try { var res = JSON.parse(res) } catch (err) { }
-                if (res.Table[0].ResponceCode == '200') {
-                    alert(res.Table[0].ResponceDescription);
-                    $scope.generateSeatingPlan();
-                } else {
-                    alert("something went wrong, while adding exam halls");
-                    $scope.LoadImg = false;
+
+                // Check if the response is a JSON string
+                if (typeof res !== "string") {
+                    res = String(res);  // Convert to string
                 }
-               
+
+                res = res.trim();  // Now trim() will work
+
+
+                if (!res.startsWith("{")) {
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+                            $scope.LoadImg = false;
+                        }
+                    }
+                }
+                else {
+
+                    try { var res = JSON.parse(res) } catch (err) { }
+                    if (res.Table[0].ResponceCode == '200') {
+                        alert(res.Table[0].ResponceDescription);
+                        $scope.generateSeatingPlan();
+                    } else {
+                        alert("something went wrong, while adding exam halls");
+                        $scope.LoadImg = false;
+                    }
+
+
+                }
+
+
               
             }, function (err) {
                 $scope.LoadImg = false;
             });
         }
-     
+        $scope.decryptParameter2 = function () {
+            var base64Key = "iT9/CmEpJz5Z1mkXZ9CeKXpHpdbG0a6XY0Fj1WblmZA="; // AES-256 Key
+            var base64IV = "u4I0j3AQrwJnYHkgQFwVNw=="; // AES IV
+            var ciphertext = $scope.EncStatusDescription2; // Encrypted text (Base64)
+
+            var key = CryptoJS.enc.Base64.parse(base64Key);
+            var iv = CryptoJS.enc.Base64.parse(base64IV);
+
+            // Decrypt the ciphertext
+            var decrypted = CryptoJS.AES.decrypt(ciphertext, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC, // Ensure CBC mode
+                padding: CryptoJS.pad.Pkcs7, // Ensure PKCS7 padding
+            });
+
+            // Convert decrypted data to a UTF-8 string
+            $scope.decryptedText2 = decrypted.toString(CryptoJS.enc.Utf8);
+            $scope.decryptedParameter2 = $scope.decryptedText2;
+        };
         $scope.generateSeatingPlan = function () {
             $scope.LoadImg = true;
             var seatingparmobj = { "StudentTypeId": parseInt($scope.studentTypeId), "CollegeCode": $scope.CollegeCode, "ExamDate": $scope.selectedExamDate, "timeSlot": $scope.timeSlot, "ExamMonthYearId": parseInt($scope.selectedEmy), "ExamTypeId": $scope.examtype} 

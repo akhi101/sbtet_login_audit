@@ -3616,7 +3616,7 @@ namespace SoftwareSuite.Controllers.AdminServices
             }
         }
 
-        //[AuthorizationFilter]
+        [AuthorizationFilter]
         [HttpGet, ActionName("getCirculars")]
         public string getCirculars()
         {
