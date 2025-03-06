@@ -8795,6 +8795,24 @@ namespace SoftwareSuite.Controllers.PreExamination
                 {
                     return Price;
                 }
+                string Title = PinCheck(request["Name"].ToString());
+                if (Title != "YES")
+                {
+                   
+                    return Title;
+                }
+                string Price1 = NumberCheck(request["Price"].ToString());
+                if (Price1 != "YES")
+                {
+
+                    return Price1;
+                }
+                string ChallanPrefix1 = PinCheck(request["ChallanPrefix"].ToString());
+                if (ChallanPrefix1 != "YES")
+                {
+
+                    return ChallanPrefix1;
+                }
                 var dbHandler = new dbHandler();
                     var param = new SqlParameter[8];
                     param[0] = new SqlParameter("@DataTypeId", request["DataTypeId"]);
@@ -11514,7 +11532,13 @@ namespace SoftwareSuite.Controllers.PreExamination
                 relativePath = TenderPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
                 TenderUrl = relativePath;
 
-               
+                string Title = PinCheck(TenderData.Title);
+                if (Title != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                    return response1;
+                }
+
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Title", TenderData.Title);
@@ -11752,7 +11776,12 @@ namespace SoftwareSuite.Controllers.PreExamination
                 File.WriteAllBytes(CircularPath, PrincipalimageBytes);
                 relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
                 CircularUrl = relativePath;
-
+                string Title = PinCheck(CircularData.Title);
+                if (Title != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                    return response1;
+                }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
@@ -11994,8 +12023,13 @@ namespace SoftwareSuite.Controllers.PreExamination
                 File.WriteAllBytes(CircularPath, PrincipalimageBytes);
                 relativePath = CircularPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, GetWebAppRoot()).Replace(@"\", "/");
                 DownloadUrl = relativePath;
+                string Title = PinCheck(DownloadData.Title);
+                if (Title != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                    return response1;
+                }
 
-               
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[4];
                 param[0] = new SqlParameter("@Url", DownloadUrl);
@@ -12530,6 +12564,12 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                         TenderUrl = TenderData.Url;
                     }
+                    string Title = PinCheck(TenderData.Title);
+                    if (Title != "YES")
+                    {
+                        HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                        return response1;
+                    }
                     var dbHandler = new dbHandler();
                     var param = new SqlParameter[5];
                     param[0] = new SqlParameter("@Title", TenderData.Title);
@@ -12975,6 +13015,12 @@ namespace SoftwareSuite.Controllers.PreExamination
 
                     CircularUrl = CircularData.Url;
                 }
+                string Title = PinCheck(CircularData.Title);
+                if (Title != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                    return response1;
+                }
                 //  return path;
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[5];
@@ -13417,6 +13463,13 @@ namespace SoftwareSuite.Controllers.PreExamination
 
 
                     CircularUrl = DownloadData.Url;
+                }
+
+                string Title = PinCheck(DownloadData.Title);
+                if (Title != "YES")
+                {
+                    HttpResponseMessage response1 = Request.CreateResponse(HttpStatusCode.OK, Title);
+                    return response1;
                 }
                 //  return path;
                 var dbHandler = new dbHandler();
