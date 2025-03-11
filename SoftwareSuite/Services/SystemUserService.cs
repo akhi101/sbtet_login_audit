@@ -47,7 +47,6 @@ namespace SoftwareSuite.Services
             }
             base.OnAuthorization(actionContext);
         }
-        [AuthorizationFilter]
         public bool validatetoken(string token)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "TokenStore.txt"; // Define file path

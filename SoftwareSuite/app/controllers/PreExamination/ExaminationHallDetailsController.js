@@ -85,6 +85,7 @@
         }
 
         $scope.Updatesemesterdat = function (data, ind) {
+            $scope.Jsonarr = [];
             $scope['edit' + ind] = true;
 
             var ele2 = document.getElementsByClassName("enabletable" + ind);
@@ -118,21 +119,71 @@
                 return;
             }
 
-            var json = {
-                "Id": data.Id, "ExamHall": data.ExamHall, "Rows": parseInt(data.Rows), "Columns": parseInt(data.Columns), "NoOfStudentsPerBeanch": 0, "IsActive": 1
-            }
-            var parmobj = { "datatypeid": datatypeid, "CollegeCode": $scope.CollegeCode, "Json": json }          
+            //var json = {
+            //    "Id": data.Id.toString(), "ExamHall": data.ExamHall.toString(), "Rows": parseInt(data.Rows).toString(), "Columns": parseInt(data.Columns).toString(), "NoOfStudentsPerBeanch": "0", "IsActive": "1"
+            //}
+            $scope.Jsonarr.push({ "Id": data.Id.toString(), "ExamHall": data.ExamHall.toString(), "Rows": parseInt(data.Rows).toString(), "Columns": parseInt(data.Columns).toString(), "NoOfStudentsPerBeanch": "0", "IsActive": "1" })
 
-            var SetExaminationHallData = PreExaminationService.SetExaminationHallData(parmobj)
+            //var parmobj = { "datatypeid": datatypeid, "CollegeCode": $scope.CollegeCode, "Json": json }          
+
+            var SetExaminationHallData = PreExaminationService.SetExaminationHallData(datatypeid.toString(), $scope.CollegeCode.toString(), JSON.stringify($scope.Jsonarr))
             SetExaminationHallData.then(function (response) {
-                try { var response = JSON.parse(response) } catch (err) { }
-                if (response.Table[0].ResponceCode == '200') {
-                    alert(response.Table[0].ResponceDescription);
+                // Check if the response is a JSON string
+                if (typeof response !== "string") {
+                    response = String(response);  // Convert to string
+                }
 
-                } else {
-                    alert('Something Went Wrong')
+                response = response.trim();  // Now trim() will work
+
+
+                if (!response.startsWith("{")) {
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+                            $scope.LoadImg = false;
+                        }
+                    }
+                }
+                else {
+
+                    var response = JSON.parse(response);
+                    try {
+                        var response = JSON.parse(response);
+                    }
+                    catch
+                    {
+
+                    }
+
+                    if (response.Table[0].ResponceCode == '200') {
+                        alert(response.Table[0].ResponceDescription);
+
+                    } else {
+                        alert('Something Went Wrong')
+
+                    }
 
                 }
+
             },
                 function (error) {
                     alert("something Went Wrong")

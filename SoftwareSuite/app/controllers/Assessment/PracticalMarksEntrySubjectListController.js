@@ -2,7 +2,14 @@
 
     app.controller("PracticalMarksEntrySubjectListController", function ($scope, $http, $localStorage, $state, $uibModal, $stateParams, $location, AppSettings, PaymentService, PreExaminationService, MarksEntryService, MenuService, AssessmentService, PracticalsService) {
 
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 1 || $scope.userType == 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard');
+            return;
+        }
         $scope.BranchId = authData.BranchId;
         $scope.College_Code = authData.College_Code;
         $scope.CollegeId = authData.CollegeID

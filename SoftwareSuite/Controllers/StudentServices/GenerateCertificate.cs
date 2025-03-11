@@ -5260,7 +5260,7 @@ This is to certify that Mr/Ms<b class='border_btm' > {BonafideData[0].Name ?? "-
                    + "<head>"
                    + $"<title></title>"
                    + $@"<link href = '{AppDomain.CurrentDomain.BaseDirectory}\contents\css\bootstrap.min.css' rel = 'stylesheet'  type = 'text/css' />"
-                   + $@"<script src= '{AppDomain.CurrentDomain.BaseDirectory}\scripts\jquery-3.3.1.min.js'></script>"
+                   + $@"<script src= '{AppDomain.CurrentDomain.BaseDirectory}\scripts\jquery.min.js'></script>"
                     + @"<style type='text/css'>
                             .myHr {
                                 color: #000;

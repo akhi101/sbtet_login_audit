@@ -83,7 +83,7 @@
             getPromise.then(function (data) {
                 if (data.ResponceCode == "200") {
                     alert(data.ResponceDescription);
-                    RedirectToListPage();
+                    $scope.logOut();
                 } else {
                     alert(data.ResponceDescription);
                     $scope.OldPassword = "";
@@ -101,29 +101,12 @@
             function RedirectToListPage() {
                 $state.go('index.WebsiteLogin');
             }
-            $scope.logOut = function () {
-             
-                sessionStorage.loggedIn = "no";
-                sessionStorage.clear();
-                delete $localStorage.authorizationData;
-                var logUser = SystemUserService.postUserLogout($scope.userName);
-                logUser.then(function (response) {
-                    console.log(response);
-                }, function (err) {
-                    alert(err);
-                });
-                var InsertLoginList = MenuService.GetUpdateLogoutInfo(AppSettings.LoggedUserId, $scope.userName);
-                InsertLoginList.then(function (Districtdata, status, headers, config, error) {
-                }, function (error) {
-                    alert(error);
-                });
-                $scope.authentication = {
-                    isAuth: false,
-                    UserId: 0,
-                    userName: ""
-                };
-                $state.go('index.WebsiteLogin')
-            }
-        });
+        $scope.logOut = function () {
+            sessionStorage.loggedIn = "no";
+            var GetUserLogout = SystemUserService.getUserLogout();
+            $state.go('index.WebsiteLogin');
+
+        }
+    });
     });
 

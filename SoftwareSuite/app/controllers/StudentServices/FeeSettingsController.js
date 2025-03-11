@@ -110,41 +110,60 @@
 
             
             var datatypeid = 1
-            var AddFeeSettings = PreExaminationService.AddFeeSettings(datatypeid, 0, $scope.ServiceName, 1, $scope.Amount,$scope.ServiceType, $scope.ChallanPrefix,$scope.UserName)
+            var AddFeeSettings = PreExaminationService.AddFeeSettings(datatypeid.toString(), "0", $scope.ServiceName.toString(), "1", $scope.Amount.toString(), $scope.ServiceType.toString(), $scope.ChallanPrefix.toString(), $scope.UserName.toString())
             AddFeeSettings.then(function (response) {
                 try {
                     var res = JSON.parse(response);
-                } catch (err) { }
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                var res = JSON.parse(res);
-                if (res.Status) {
-                    // var keys = Object.keys(res);
+                }
+                catch
+                {
 
-                    //   $scope.statusKey = keys[0];
-                    $scope.statusValue = res.Status;
+                }
+                if (typeof res === "object") {
+                    if (res[0].ResponseCode == '200') {
+                        alert(res[0].ResponseDescription);
 
-                    // $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res.Description;
+                    }
+                    else if (res[0].ResponseCode == '400') {
+                        alert(res[0].ResponseDescription);
 
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
+                    } else {
+                        alert('Something Went Wrong')
 
                     }
                 }
 
-                if (res[0].ResponseCode == '200') {
-                    alert(res[0].ResponseDescription);
+                else {
 
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
-                else if (res[0].ResponseCode == '400') {
-                    alert(res[0].ResponseDescription);
 
-                } else {
-                    alert('Something Went Wrong')
 
-                }
+                
             },
                 function (error) {
                     alert("something Went Wrong")
@@ -246,21 +265,64 @@
             
 
 
-            var feesett = PreExaminationService.UpdateFeeSettings(datatypeid, data.Id, data.Name, data.Is_Active, data.Price, data.ServiceType, data.ChallanPrefix, $scope.UserName)
+            var feesett = PreExaminationService.UpdateFeeSettings(datatypeid.toString(), data.Id.toString(), data.Name.toString(), data.Is_Active.toString() == true ? 1 : 0, data.Price.toString(), data.ServiceType.toString(), data.ChallanPrefix.toString(), $scope.UserName.toString())
             feesett.then(function (response) {
-                try { var response = JSON.parse(response) } catch (err) { }
-                if (response[0].StatusCode == '200') {
-                    alert(response[0].StatusDescription);
-                    $scope.getfeesettingsdata();
-
-                } else if (response[0].StatusCode == '400') {
-                    alert(response[0].StatusDescription);
-                    $scope.getfeesettingsdata();
-
-                } else {
-                    alert('Something Went Wrong')
+                try {
+                    var res = JSON.parse(response);
+                }
+                catch
+                {
 
                 }
+                if (typeof res === "object") {
+                    if (res[0].StatusCode == '200') {
+                        alert(res[0].StatusDescription);
+                        $scope.getfeesettingsdata();
+
+                    } else if (res[0].StatusCode == '400') {
+                        alert(res[0].StatusDescription);
+                        $scope.getfeesettingsdata();
+
+                    } else {
+                        alert('Something Went Wrong')
+
+                    }
+                }
+
+                else {
+
+                    var res1 = JSON.parse(response);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+                }
+
+
+
+
+
+               
             },
                 function (error) {
                     alert("something Went Wrong")

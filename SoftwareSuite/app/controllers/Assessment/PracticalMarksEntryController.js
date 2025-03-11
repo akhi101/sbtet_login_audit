@@ -1,7 +1,14 @@
 ﻿define(['app'], function (app) {
     app.controller("PracticalMarksEntryController", function ($scope, $http, $uibModal, $localStorage, $state, $stateParams, AppSettings, MenuService, AssessmentService, MarksEntryService, PreExaminationService) {
 
-        var authData = $localStorage.authorizationData;
+        //var authData = $localStorage.authorizationData;
+        var authData = JSON.parse(sessionStorage.getItem('user'));
+        $scope.userType = authData.SystemUserTypeId;
+        if ($scope.userType == 1 || $scope.userType == 2) {
+            alert("UnAuthorized Access")
+            $state.go('Dashboard');
+            return;
+        }
         $scope.userName = authData.userName;
         AppSettings.userName = authData.userName;
         var BranchCode = authData.userName;
