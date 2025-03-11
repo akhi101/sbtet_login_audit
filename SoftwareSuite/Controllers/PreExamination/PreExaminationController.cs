@@ -1,4 +1,4 @@
-﻿extern alias itextalias;
+extern alias itextalias;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.FileProviders;
 using System;
