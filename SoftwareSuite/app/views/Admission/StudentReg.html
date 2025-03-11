@@ -778,7 +778,7 @@
                             <div class="form-group ">
                                 <label for="stdAadhaar">Aadhaar No :</label>
                                 <input type="text" minlength="12" maxlength="12" name="stdAadhaar" class="form-control input-sm" id="stdAadhaar"
-                                       ng-model="StudentReg.AadharNo" ng-disabled="true" no-Special-Char>
+                                       ng-model="maskedAadhaar" ng-disabled="true" no-Special-Char>
                                 <!-- <span ng-show="studentRegForm.stdAadhaar.$dirty && studentRegForm.stdAadhaar.$invalid">
                                     <span ng-show="hasError('stdAadhaar', 'required')">Aadhaar no is required</span>
                                 </span> -->
@@ -943,14 +943,14 @@
                                 <div class="form-group">
                                     <label for="stdFatherAadhaar">Father Aadhaar No :</label>
                                     <input type="text" class="form-control input-sm" id="stdFatherAadhaar"
-                                           ng-Model="StudentReg.FatherAadhaarNo" no-Special-Char>
+                                           ng-Model="maskedFAadhaar" no-Special-Char>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="stdMotherAadhaar">Mother Aadhaar No :</label>
                                     <input type="text" class="form-control input-sm" id="stdMotherAadhaar"
-                                           ng-Model="StudentReg.MotherAadhaarNo" no-Special-Char>
+                                           ng-Model="maskedMAadhaar" no-Special-Char>
                                 </div>
                             </div>
                             <div class="col-md-4">

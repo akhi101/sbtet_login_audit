@@ -284,7 +284,7 @@ define(['app'], function (app) {
                     //}
                     var AcademicYearId = $scope.AcademicId;
                     authData.AcdYrID = AcademicYearId;
-                    var hodData = AdmissionService.GetDataForAdmissionDashboard(authData.SysUserID, $scope.college.trim(), $scope.AcademicYearId);
+                    var hodData = AdmissionService.GetDataForAdmissionDashboard(authData.SysUserID, $scope.college, $scope.AcademicYearId);
                     hodData.then(function (hodData, status, headers, config, error) {
                         $scope.hodData = hodData;
                         console.log($scope.hodData);

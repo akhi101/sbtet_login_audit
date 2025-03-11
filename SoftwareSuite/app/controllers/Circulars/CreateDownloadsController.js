@@ -237,33 +237,48 @@
             $scope.error = false;
             $scope.data = false;
             var notificationdate = moment($scope.enD).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UploadDownload($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType, notificationdate, $scope.CreatDownloadsFileName);
+            var uploadexcl = AdminService.UploadDownload($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType.toString(), notificationdate.toString(), $scope.CreatDownloadsFileName);
             uploadexcl.then(function (res) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.hasOwnProperty(keyToExclude)) {
-                    var keys = Object.keys(res);
 
-                    $scope.statusKey = keys[0];
-                    $scope.statusValue = res[$scope.statusKey];
-
-                    $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res[$scope.descriptionKey];
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
+                if (typeof res === "object" && Array.isArray(res)) {
+                    if (res[0].ResponceCode == '200') {
+                        $scope.loading = false;
+                        //$scope.error = false;
+                        //$scope.data = true;
+                        alert(res[0].ReponceDescription)
+                        $scope.getDownloads();
                     }
                 }
 
-                else if (res[0].ResponceCode == '200') {
-                    $scope.loading = false;
-                    //$scope.error = false;
-                    //$scope.data = true;
-                    alert(res[0].ReponceDescription)
-                    $scope.getDownloads();
+                else {
+
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
+
             }, function (err) {
                 $scope.loading = false;
                 $scope.error = false;
@@ -295,7 +310,7 @@
                 ele2[j].style['-moz-appearance'] = "none";
             }
         }
-       
+
         $scope.Updatesemesterdat = function (data, ind, Title) {
 
             var file = document.getElementById("studentFile" + ind);
@@ -324,35 +339,48 @@
             else {
                 $scope.FileNmae = $scope.CreatDownloadsFileName;
             }
-            var uploadexcl = AdminService.UpdateDownloads($scope.updatepdffile, $scope.FileNmae, data.Title, data.CircularTypeId, NotificationDate, data.ID);
+            var uploadexcl = AdminService.UpdateDownloads($scope.updatepdffile, $scope.FileNmae, data.Title, data.CircularTypeId.toString(), NotificationDate.toString(), data.ID.toString());
             uploadexcl.then(function (res) {
-
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.hasOwnProperty(keyToExclude)) {
-                    var keys = Object.keys(res);
-
-                    $scope.statusKey = keys[0];
-                    $scope.statusValue = res[$scope.statusKey];
-
-                    $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res[$scope.descriptionKey];
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
+                if (typeof res === "object") {
+                    if (res[0].ResponceCode == '200' && Array.isArray(res)) {
+                        $scope.updatepdffile = '';
+                        $scope.loading = false;
+                        //$scope.error = false;
+                        //$scope.data = true;
+                        alert(res[0].ReponceDescription)
+                        $scope.getDownloads();
                     }
                 }
 
-                else if (res[0].ResponceCode == '200') {
-                    $scope.updatepdffile = '';
-                    $scope.loading = false;
-                    //$scope.error = false;
-                    //$scope.data = true;
-                    alert(res[0].ReponceDescription)
-                    $scope.getDownloads();
+                else {
+
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
+
             }, function (err) {
                 $scope.loading = false;
                 $scope.error = false;

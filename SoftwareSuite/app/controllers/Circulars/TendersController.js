@@ -16,7 +16,7 @@
             $scope.getcirculars();
             //$scope.usertypes()
             //   var usertypeid = 1
-          
+
 
             var today = new Date();
             var dd = today.getDate();
@@ -105,33 +105,48 @@
             }
             var TenderDate = moment(data.TenderDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var EndDate = moment(data.EndDate).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.UpdateTender($scope.updatepdffile, $scope.FileNmae, data.Title, TenderDate,EndDate, data.Id);
+            var uploadexcl = AdminService.UpdateTender($scope.updatepdffile, $scope.FileNmae, data.Title, TenderDate.toString(), EndDate.toString(), data.Id.toString());
             uploadexcl.then(function (res) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.hasOwnProperty(keyToExclude)) {
-                    var keys = Object.keys(res);
-
-                    $scope.statusKey = keys[0];
-                    $scope.statusValue = res[$scope.statusKey];
-
-                    $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res[$scope.descriptionKey];
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
+                if (typeof res === "object") {
+                    if (res[0].Code == '200') {
+                        $scope.updatepdffile = '';
+                        $scope.loading = false;
+                        //$scope.error = false;
+                        //$scope.data = true;
+                        alert(res[0].Message)
+                        $scope.getcirculars();
                     }
                 }
-                else if (res[0].Code == '200') {
-                    $scope.updatepdffile = '';
-                    $scope.loading = false;
-                    //$scope.error = false;
-                    //$scope.data = true;
-                    alert(res[0].Message)
-                    $scope.getcirculars();
+
+                else {
+
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
                 }
+
             }, function (err) {
                 $scope.loading = false;
                 $scope.error = false;
@@ -165,9 +180,9 @@
                     for (var j = 0; j < $scope.Circulars.length; j++) {
                         $scope.Circulars[j].TenderDate = $scope.Circulars[j].TenderDate.replace("T", " ");
                         $scope.Circulars[j].EndDate = $scope.Circulars[j].EndDate.replace("T", " ");
-                      
+
                     }
-                 
+
                     for (var j = 0; j < $scope.Circulars.length; j++) {
                         var url = $scope.Circulars[j].Url
                         var filename = url.substring(url.lastIndexOf('/') + 1);
@@ -180,13 +195,13 @@
                     $scope.error = true;
                 }
             },
-                    function (error) {
+                function (error) {
 
-                        console.log(error);
-                        $scope.loading = false;
-                        $scope.data = false;
-                        $scope.error = true;
-                    });
+                    console.log(error);
+                    $scope.loading = false;
+                    $scope.data = false;
+                    $scope.error = true;
+                });
         }
 
 
@@ -298,7 +313,7 @@
             var file = input.files[0];
             $scope.TenderFileName = file.name;
 
-            var allowedTypes = ['image/jpeg', 'image/png','application/pdf'];
+            var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 
             if (file) {
                 if (allowedTypes.indexOf(file.type) === -1) {
@@ -394,32 +409,46 @@
             $scope.data = false;
             var StartDate = moment($scope.StartDate).format("YYYY-MM-DD HH:mm:ss.SSS");
             var EndDate = moment($scope.EndDate).format("YYYY-MM-DD HH:mm:ss.SSS");
-            var uploadexcl = AdminService.SetTender($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType, StartDate, EndDate, $scope.TenderFileName);
+            var uploadexcl = AdminService.SetTender($scope.addpdffile, file.value.split("\\").pop(), $scope.Description, $scope.CircularType, StartDate.toString(), EndDate.toString(), $scope.TenderFileName);
             uploadexcl.then(function (res) {
-                const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                if (res.hasOwnProperty(keyToExclude)) {
-                    var keys = Object.keys(res);
-
-                    $scope.statusKey = keys[0];
-                    $scope.statusValue = res[$scope.statusKey];
-
-                    $scope.descriptionKey = keys[1];
-                    $scope.descriptionValue = res[$scope.descriptionKey];
-
-                    $scope.EncStatusDescription2 = $scope.descriptionValue;
-                    if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                        $scope.decryptParameter2();
-                        alert($scope.decryptedParameter2);
-
+                if (typeof res === "object" && Array.isArray(res)) {
+                    if (res[0].Code == '200') {
+                        $scope.loading = false;
+                        //$scope.error = false;
+                        //$scope.data = true;
+                        alert(res[0].Message)
+                        $scope.getcirculars();
                     }
                 }
 
-                else if (res[0].Code == '200') {
-                    $scope.loading = false;
-                    //$scope.error = false;
-                    //$scope.data = true;
-                    alert(res[0].Message)
-                    $scope.getcirculars();
+                else {
+
+                    var res1 = JSON.parse(res);
+                    try {
+                        var res2 = JSON.parse(res1);
+                    }
+                    catch
+                    {
+
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res2.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res2.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res2.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+                    }
+
                 }
             }, function (err) {
                 $scope.loading = false;

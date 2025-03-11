@@ -3647,7 +3647,7 @@
             'Dashboard.AdmissionDashboard.Admission.StudentReg': {
                 url: "/StudentRegList/StudentReg",
                 templateUrl: 'app/views/Admission/StudentReg.html',
-                dependencies: ['controllers/Admission/StudentRegController', 'services/Admission/StudentRegService', 'directives/saDate']
+                dependencies: ['controllers/Admission/StudentRegController', 'services/Admission/StudentRegService', 'services/SystemAdministration/SystemUserService', 'directives/saDate']
             },
             'Dashboard.AdmissionDashboard.ReleaseAadhaar': {
                 url: "/ReleaseAadhaar",

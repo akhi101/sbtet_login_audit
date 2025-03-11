@@ -16,7 +16,7 @@ namespace SoftwareSuite.BLL
     public class StudentRegBLL
     {
         [AuthorizationFilter]
-        public DataSet PostStudentReg(PolytechStudent StudentReg)
+        public string PostStudentReg(PolytechStudent StudentReg)
         {
             dbHandler dbHandler = new dbHandler();
             try

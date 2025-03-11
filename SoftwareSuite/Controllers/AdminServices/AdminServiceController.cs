@@ -863,7 +863,6 @@ namespace SoftwareSuite.Controllers.AdminServices
         }
 
 
-        [AuthorizationFilter]
         [HttpGet, ActionName("getUserLogout")]
         public void getUserLogout()
         {

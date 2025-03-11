@@ -4,9 +4,16 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Web;
+using System.Web.Http;
+using SoftwareSuite.Controllers.PreExamination;
 using SoftwareSuite.Models.Admission;
 using SoftwareSuite.Models.Database;
+using SoftwareSuite.Models.Security;
+using static SoftwareSuite.Controllers.PreExamination.PreExaminationController;
+using System.Text.RegularExpressions;
 
 namespace SoftwareSuite.Controllers.Admission
 {
@@ -51,10 +58,117 @@ namespace SoftwareSuite.Controllers.Admission
                 throw ex;
             }
         }
-
+ 
         [AuthorizationFilter]
-        public static DataSet PostStudentReg(PolytechStudent polyStu, dbHandler dbHandler)
+        public static string PostStudentReg(PolytechStudent polyStu, dbHandler dbHandler)
         {
+            PreExaminationController preexamcont = new PreExaminationController();
+            string DecryptedAadhar = preexamcont.GetDecryptedData(polyStu.AadharNo);
+            string DecryptedMAadhar = preexamcont.GetDecryptedData(polyStu.MotherAadhaarNo);
+            string DecryptedFAadhar = preexamcont.GetDecryptedData(polyStu.FatherAadhaarNo);
+
+
+            string MotherName = preexamcont.NameCheck(polyStu.MotherName.ToString(), "MotherName");
+            string StudentRecided = preexamcont.NumberCheck(polyStu.StudentRecided.ToString(), "StudentRecided");
+            string QualificationId = preexamcont.NumberCheck(polyStu.QualificationId.ToString(), "QualificationId");
+            string HouseNo = preexamcont.NameCheck(polyStu.HouseNo.ToString(), "HouseNo");
+            string VillageorTown = preexamcont.NameCheck(polyStu.VillageorTown.ToString(), "VillageorTown");
+            string DistrictId = preexamcont.NumberCheck(polyStu.DistrictId.ToString(), "DistrictId");
+            string MandalId = preexamcont.NumberCheck(polyStu.MandalId.ToString(), "MandalId");
+            string Pincode = preexamcont.NumberCheck(polyStu.Pincode.ToString(), "Pincode");
+            string EmailId = preexamcont.EmailCheck(polyStu.EmailId.ToString(), "EmailId");
+            string ParentContact = preexamcont.MobileNumberCheck(polyStu.ParentContact.ToString(), "ParentContact");
+            string StudentContact = preexamcont.MobileNumberCheck(polyStu.StudentContact.ToString(), "StudentContact");
+            string FatherAadhaarNo = preexamcont.OnlyTwelveDigitCheck(polyStu.FatherAadhaarNo.ToString(), "FatherAadhaarNo");
+            string MotherAadhaarNo = preexamcont.OnlyTwelveDigitCheck(polyStu.MotherAadhaarNo.ToString(), "MotherAadhaarNo");
+            string Income = preexamcont.NumberCheck(polyStu.Income.ToString(), "Income");
+            string Occupation = preexamcont.NameCheck(polyStu.Occupation.ToString(), "Occupation");
+            string BankId = preexamcont.NumberCheck(polyStu.BankId.ToString(), "BankId");
+            string BankAccountNo = preexamcont.NumberCheck(polyStu.BankAccountNo.ToString(), "BankAccountNo");
+            string IfscCode = preexamcont.PinCheck(polyStu.IfscCode.ToString(), "IfscCode");
+            string BankBranch = preexamcont.PinCheck(polyStu.BankBranch.ToString(), "BankBranch");
+            string CasteNo = preexamcont.PinCheck(polyStu.CasteNo.ToString(), "CasteNo");
+
+            if (MotherName != "YES")
+            {
+                return MotherName;
+            }
+            else if (StudentRecided != "YES")
+            {
+                return StudentRecided;
+            }
+            else if (QualificationId != "YES")
+            {
+                return QualificationId;
+            }
+            else if (VillageorTown != "YES")
+            {
+                return VillageorTown;
+            }
+            else if (HouseNo != "YES")
+            {
+                return HouseNo;
+            }
+            else if (DistrictId != "YES")
+            {
+                return DistrictId;
+            }
+            else if (MandalId != "YES")
+            {
+                return MandalId;
+            }
+            else if (Pincode != "YES")
+            {
+                return Pincode;
+            }
+            else if (EmailId != "YES")
+            {
+                return EmailId;
+            }
+            else if (ParentContact != "YES")
+            {
+                return ParentContact;
+            }
+            else if (StudentContact != "YES")
+            {
+                return StudentContact;
+            }
+            else if (FatherAadhaarNo != "YES")
+            {
+                return FatherAadhaarNo;
+            }
+            else if (MotherAadhaarNo != "YES")
+            {
+                return MotherAadhaarNo;
+            }
+            else if (Income != "YES")
+            {
+                return Income;
+            }
+            else if (Occupation != "YES")
+            {
+                return Occupation;
+            }
+            else if (BankId != "YES")
+            {
+                return BankId;
+            }
+            else if (BankAccountNo != "YES")
+            {
+                return BankAccountNo;
+            }
+            else if (IfscCode != "YES")
+            {
+                return IfscCode;
+            }
+            else if (BankBranch != "YES")
+            {
+                return BankBranch;
+            }
+            else if (CasteNo != "YES")
+            {
+                return CasteNo;
+            }
             try
             {
                 string StrQuery = "usp_ManageStudent";
@@ -154,7 +268,7 @@ namespace SoftwareSuite.Controllers.Admission
                 param[29].Value = polyStu.IsPhysicallyHandicaped ? 1 : 0;
 
                 param[30] = new SqlParameter("@AadharNo", SqlDbType.VarChar, 30);
-                param[30].Value = polyStu.AadharNo ?? "";
+                param[30].Value = DecryptedAadhar ?? "";
 
                 param[31] = new SqlParameter("@EmailId", SqlDbType.VarChar, 100);
                 param[31].Value = polyStu.EmailId ?? "";
@@ -228,8 +342,9 @@ namespace SoftwareSuite.Controllers.Admission
                 param[54] = new SqlParameter("@TsEpassRequired", SqlDbType.Bit);
                 param[54].Value = polyStu.TsEpassRequired ? 1 : 0;
                 #endregion
-
-                return dbHandler.ReturnDataWithStoredProcedure(StrQuery, param);
+                var dt = new DataSet();
+                dt=dbHandler.ReturnDataWithStoredProcedure(StrQuery, param);
+                return "Updated Successfully";
             }
             catch (Exception ex)
             {
