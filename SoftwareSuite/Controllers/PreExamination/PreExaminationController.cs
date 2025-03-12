@@ -6863,38 +6863,38 @@ namespace SoftwareSuite.Controllers.PreExamination
             try
             {
 
-                //string ExamMonthYearId1 = NumberCheck(ExamMonthYearId);
-                //string MinCredits1 = NumberCheck(MinCredits);
-                //string Day1 = NumberCheck(Day);
-                //string Month1 = NumberCheck(Month);
-                //string Year1 = NumberCheck(Year);
-                //string pin1 = PinCheck(PIN);
+                string ExamMonthYearId1 = NumberCheck(ExamMonthYearId.ToString(), "ExamMonthYearId1");
+                string MinCredits1 = NumberCheck(MinCredits.ToString(), "MinCredits");
+                string Day1 = NumberCheck(Day.ToString(), "Day");
+                string Month1 = NumberCheck(Month.ToString(), "Month");
+                string Year1 = NumberCheck(Year.ToString(), "Year");
+                string pin1 = PinCheck(PIN.ToString(), "PIN");
 
 
-                //if (ExamMonthYearId1 != "YES")
-                //{
-                //    return ExamMonthYearId1;
-                //}
-                //if (MinCredits1 != "YES")
-                //{
-                //    return MinCredits1;
-                //}
-                //if (Day1 != "YES")
-                //{
-                //    return Day1;
-                //}
-                //if (Month1 != "YES")
-                //{
-                //    return Month1;
-                //}
-                //if (Year1 != "YES")
-                //{
-                //    return Year1;
-                //}
-                //if (pin1 != "YES")
-                //{
-                //    return pin1;
-                //}
+                if (ExamMonthYearId1 != "YES")
+                {
+                    return ExamMonthYearId1;
+                }
+                if (MinCredits1 != "YES")
+                {
+                    return MinCredits1;
+                }
+                if (Day1 != "YES")
+                {
+                    return Day1;
+                }
+                if (Month1 != "YES")
+                {
+                    return Month1;
+                }
+                if (Year1 != "YES")
+                {
+                    return Year1;
+                }
+                if (pin1 != "YES")
+                {
+                    return pin1;
+                }
 
                 var dbHandler = new dbHandler();
                 var param = new SqlParameter[6];

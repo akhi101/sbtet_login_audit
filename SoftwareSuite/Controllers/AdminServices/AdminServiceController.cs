@@ -718,7 +718,7 @@ namespace SoftwareSuite.Controllers.AdminServices
         private static readonly TimeSpan NonceExpiration = TimeSpan.FromMinutes(1);
         private string json;
 
-     
+
         [HttpPost, ActionName("ValidateUserLoginCaptcha")]
         public async Task<HttpResponseMessage> ValidateUserLoginCaptcha([FromBody] SecureRequest requestData)
         {
@@ -740,11 +740,11 @@ namespace SoftwareSuite.Controllers.AdminServices
                 param[1] = new SqlParameter("@Captcha", decryptedCaptcha);
                 var dt = new dbHandler().ReturnDataWithStoredProcedureTable("USP_GET_ExamsCaptchaSessionLog", param);
 
-                if (dt.Rows[0]["ResponseCode"].ToString() == "400"  || dt.Rows[0]["IsUsed"].ToString() == "True")
+                if (dt.Rows[0]["ResponseCode"].ToString() == "400" || dt.Rows[0]["IsUsed"].ToString() == "True")
                 {
                     return EncryptedResponse("Invalid Captcha");
                 }
-                MarkCaptchaValidated(decryptedSessionId,decryptedCaptcha,true);
+                MarkCaptchaValidated(decryptedSessionId, decryptedCaptcha, true);
                 string decryptedLoginName = GetDecryptedData(requestData.LoginName);
 
                 byte[] saltBytes = Convert.FromBase64String(requestData.Salt);
@@ -830,7 +830,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                             t.ExpiryDate,
                             AuthTokenId = authTokenId
                         },
-                        
+
                     });
 
                     return response;

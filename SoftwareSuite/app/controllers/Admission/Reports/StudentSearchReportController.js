@@ -50,18 +50,18 @@ define(['app'], function (app) {
             }
         };
         $scope.flagValues = [
-            { flagName: true, flagValue:true },
-             { flagName: false, flagValue:false }
+            { flagName: true, flagValue: true },
+            { flagName: false, flagValue: false }
         ]
 
         $scope.genders = [
-          { gender:"Male", Id: 1},
-           { gender:"Female", Id: 2}
+            { gender: "Male", Id: 1 },
+            { gender: "Female", Id: 2 }
         ]
 
         $scope.govtEmployeee = [
-          { Name: true, Value:"1" },
-           { Name: false, Value:"0" }
+            { Name: true, Value: "1" },
+            { Name: false, Value: "0" }
         ]
         $scope.searchtxt = "";
         $scope.DownloadExcelResult = function (tableId) {
@@ -81,7 +81,7 @@ define(['app'], function (app) {
         }
         var mid1list = [];
         $scope.AddMarksById = function (data) {
-        
+
             var isvalied = false;
 
             data.mid1 = data.mid1.trim();
@@ -116,9 +116,9 @@ define(['app'], function (app) {
             }
 
             if (data.mid1 != null && data.mid1 != "" && isvalied) {
-              
+
                 if (mid1list.length > 0) {
-                    for (var i = 0 ; i < mid1list.length ; i++) {
+                    for (var i = 0; i < mid1list.length; i++) {
                         if (mid1list[i].id == data.id) {
                             mid1list[i].mid1 = data.mid1;
                             mid1list[i].mid2 = data.mid2;
@@ -139,11 +139,11 @@ define(['app'], function (app) {
                     mid1list.push(mid1data);
                 }
             }
-      
+
         }
 
         $scope.viewValues = function (key, value) {
-         
+
         }
 
         var tempId = [];
@@ -154,12 +154,12 @@ define(['app'], function (app) {
             };
         }
 
-        $scope.AddMarksByIds = function (data) {       
+        $scope.AddMarksByIds = function (data) {
             if (data.mid1 > data.Mid1Max_Marks) {
                 alert("Marks Entered should not be greater than maximum marks.");
                 $('#' + data.id).val('');
                 if (markslist.length > 0) {
-                    for (var i = 0 ; i < markslist.length; i++) {
+                    for (var i = 0; i < markslist.length; i++) {
                         if (markslist[i].id == data.id) {
                             markslist[i].mid1 = '';
                             data.mid1 = '';
@@ -169,13 +169,13 @@ define(['app'], function (app) {
                 return;
             }
 
-         
+
 
             if (data.mid2 > data.Mid2Max_Marks) {
                 alert("Marks Entered should not be greater than maximum marks.");
                 $('#' + data.id).val('');
                 if (markslist.length > 0) {
-                    for (var i = 0 ; i < markslist.length; i++) {
+                    for (var i = 0; i < markslist.length; i++) {
                         if (markslist[i].id == data.id) {
                             markslist[i].mid2 = '';
                             data.mid2 = '';
@@ -188,7 +188,7 @@ define(['app'], function (app) {
                 alert("Marks Entered should not be greater than maximum marks.");
                 $('#' + data.id).val('');
                 if (markslist.length > 0) {
-                    for (var i = 0 ; i < markslist.length; i++) {
+                    for (var i = 0; i < markslist.length; i++) {
                         if (markslist[i].id == data.id) {
                             markslist[i].internals = '';
                             data.internal = '';
@@ -201,7 +201,7 @@ define(['app'], function (app) {
                 alert("Marks Entered should not be greater than maximum marks.");
                 $('#' + data.id).val('');
                 if (markslist.length > 0) {
-                    for (var i = 0 ; i < markslist.length; i++) {
+                    for (var i = 0; i < markslist.length; i++) {
                         if (markslist[i].id == data.id) {
                             markslist[i].endexam = '';
                             data.endexam = '';
@@ -210,8 +210,8 @@ define(['app'], function (app) {
                 }
                 return;
             }
-         
-            
+
+
             if (data.mid1) {
                 data.mid1 = data.mid1.trim();
                 if (data.mid1 != null && data.mid1 != "") {
@@ -254,31 +254,31 @@ define(['app'], function (app) {
                     }
                 }
             }
-            if (data.endexam) {     
-            data.endexam = data.endexam.trim();
-            if (data.endexam != null && data.endexam != "") {
-                if (isNaN(data.endexam)) {
-                    if (data.endexam.toUpperCase() == 'AB' || data.endexam.toUpperCase() == 'MP' || data.endexam.toUpperCase() == 'DC' || data.endexam.toUpperCase() == 'TC' || data.endexam.toUpperCase() == 'DT') {
-                        isvalied = true;
+            if (data.endexam) {
+                data.endexam = data.endexam.trim();
+                if (data.endexam != null && data.endexam != "") {
+                    if (isNaN(data.endexam)) {
+                        if (data.endexam.toUpperCase() == 'AB' || data.endexam.toUpperCase() == 'MP' || data.endexam.toUpperCase() == 'DC' || data.endexam.toUpperCase() == 'TC' || data.endexam.toUpperCase() == 'DT') {
+                            isvalied = true;
+                        } else {
+                            isvalied = false;
+                        }
                     } else {
-                        isvalied = false;
+                        isvalied = true;
                     }
-                } else {
-                    isvalied = true;
                 }
-            }
             }
 
             if (data.mid1 != null && data.mid1 != "" || data.mid2 != null && data.mid2 != "" || data.internal != null && data.internal != "" ||
                 data.endexam != null && data.endexam != "") {
                 if (markslist.length == '0') {
-                 
+
                     var marksdata = $scope.addDatas(data.id, data.mid1, data.mid2, data.internal, data.endexam);
                     markslist.push(marksdata);
 
 
                 } else if (markslist.length > 0) {
-                    for (var i = 0 ; i < markslist.length; i++) {
+                    for (var i = 0; i < markslist.length; i++) {
                         if (markslist[i].id == data.id) {
                             markslist[i].mid1 = data.mid1;
                             markslist[i].mid2 = data.mid2;
@@ -295,8 +295,8 @@ define(['app'], function (app) {
                         }
                     }
                 }
-              
-            }      
+
+            }
 
         }
         $scope.uploadPhoto = function () {
@@ -467,7 +467,7 @@ define(['app'], function (app) {
 
 
         $scope.search = function () {
-          //  $scope.searchResult = true;
+            //  $scope.searchResult = true;
             $scope.LoadImg = true;
             $scope.StudentDetailsFound = false;
             var filter = $scope.filter;
@@ -484,28 +484,10 @@ define(['app'], function (app) {
                     {
 
                     }
-                    var res = JSON.parse(res);
-                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
-                    if (res.Status) {
-                        // var keys = Object.keys(res);
-
-                        //   $scope.statusKey = keys[0];
-                        $scope.statusValue = res.Status;
-
-                        // $scope.descriptionKey = keys[1];
-                        $scope.descriptionValue = res.Description;
-
-                        $scope.EncStatusDescription2 = $scope.descriptionValue;
-                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
-                            $scope.decryptParameter2();
-                            alert($scope.decryptedParameter2);
-
-                        }
+                    if (res.length > 0) {
+                        // var res = JSON.parse(response);
                         $scope.searchResult = true;
                         $scope.LoadImg = false;
-
-                        var res = JSON.parse(response);
-
                         $scope.MaskedAadhar = res[0].Aadhar;
                         $scope.MaskedFAadhar = res[0].FAadhar;
                         $scope.MaskedMAadhar = res[0].MAadhar;
@@ -518,80 +500,10 @@ define(['app'], function (app) {
 
                         $scope.Table1Details1 = JSON.parse($scope.Table1Details)
                         $scope.Table1Details = $scope.Table1Details1.Table[0];
-                    }else
-                        if ($scope.Table1Details1.Table.length > 0 || $scope.Table1Details1.Table1.length > 0 || $scope.Table1Details1.Table2.length > 0) {
-                         
-                        if ($scope.Table1Details1.Table.length == 0) {
-                            $scope.Table = false;
-                            alert("No Data Found in Assessment")
-                        } else if ($scope.Table1Details1.Table1.lengthh == 0) {
-                            $scope.Table = false;
-                            alert("No Data Found in Attendance")
-                        } else if ($scope.Table1Details1.Table2.length == 0) {
-                            $scope.Table = false;
-                            alert("No Data Found in Addmission")
-                        } else{
-                             $scope.Table = true;
-                         }
-                        $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
-                        if ($scope.Table1Details1.Table1.length > 0){
-                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
-                            $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
-                            $scope.attName = $scope.Table1Details1.Table1[0].name;
-                        }
-                        try {
-                            $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
-
-                            if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
-                                $scope.polycet = false;
-                            } else {
-                                $scope.polycet = true;;
-                            }
-
-                            //$scope.StudentPhoto = Res[0].StudentPhoto;
-                            //$scope.StudentSign = Res[0].StudentSign;
-
-                            $scope.signatureurl = Res[0].StudentSign;
-                            $scope.userPicurl = Res[0].StudentPhoto;
-                            $scope.userPic = $scope.userPicurl.replace(/^"|"$/g, '');
-                            $scope.signature = $scope.signatureurl.replace(/^"|"$/g, '');
-                        } catch (err) { }
-                        //$('#userImg').attr('src', $scope.userPic);
-                        //$("#stdPhotoImg").attr('src', $scope.signature);
-                    
-                        $scope.studentData = $scope.StudentSearchReportStats;
-                        $scope.updateMandals($scope.AdmissioneReports.DistrictId)
+                    } else {
+                        var res = JSON.parse(res);
                     }
-                    else {
-                        $scope.searchResult = false;
-                        $scope.LoadImg = false;
-                        $scope.StudentDetailsFound = false;
-                        alert("Data Not Found");
-                        $scope.StudentSearchReportStats = [];
-                        return;
-                    }
-                }, function (error) {
-                    $scope.searchResult = false;
-                    $scope.LoadImg = false;
-                    $scope.StudentDetailsFound = false;
-                    alert("error");
 
-                });
-            } else if ($scope.placeholder == 'Aadhaar no') {
-                $('#stdPhotoImg').attr('src', '');
-                $('#userImg').attr('src', '');
-                var SearchstudentInfos = ReportService.GetSudentByAadhaar(filter);
-                SearchstudentInfos.then(function (response) {
-                    var res = JSON.parse(response);
-                    try {
-                        var res = JSON.parse(response);
-                    }
-                    catch
-                    {
-
-                    }
-                    var res = JSON.parse(res);
                     const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
                     if (res.Status) {
                         // var keys = Object.keys(res);
@@ -608,46 +520,157 @@ define(['app'], function (app) {
                             alert($scope.decryptedParameter2);
 
                         }
-                  
-                    
-                    $scope.searchResult = true;
+
+
+
+                    } else
+                        if ($scope.Table1Details1.Table.length > 0 || $scope.Table1Details1.Table1.length > 0 || $scope.Table1Details1.Table2.length > 0) {
+
+                            if ($scope.Table1Details1.Table.length == 0) {
+                                $scope.Table = false;
+                                alert("No Data Found in Assessment")
+                            } else if ($scope.Table1Details1.Table1.lengthh == 0) {
+                                $scope.Table = false;
+                                alert("No Data Found in Attendance")
+                            } else if ($scope.Table1Details1.Table2.length == 0) {
+                                $scope.Table = false;
+                                alert("No Data Found in Addmission")
+                            } else {
+                                $scope.Table = true;
+                            }
+                            $scope.StudentDetailsFound = true;
+                            $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
+                            if ($scope.Table1Details1.Table1.length > 0) {
+                                $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
+                                $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
+                                $scope.attName = $scope.Table1Details1.Table1[0].name;
+                            }
+                            try {
+                                $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
+
+                                if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
+                                    $scope.polycet = false;
+                                } else {
+                                    $scope.polycet = true;;
+                                }
+
+                                //$scope.StudentPhoto = Res[0].StudentPhoto;
+                                //$scope.StudentSign = Res[0].StudentSign;
+
+                                $scope.signatureurl = Res[0].StudentSign;
+                                $scope.userPicurl = Res[0].StudentPhoto;
+                                $scope.userPic = $scope.userPicurl.replace(/^"|"$/g, '');
+                                $scope.signature = $scope.signatureurl.replace(/^"|"$/g, '');
+                            } catch (err) { }
+                            //$('#userImg').attr('src', $scope.userPic);
+                            //$("#stdPhotoImg").attr('src', $scope.signature);
+
+                            $scope.studentData = $scope.StudentSearchReportStats;
+                            $scope.updateMandals($scope.AdmissioneReports.DistrictId)
+                        }
+                        else {
+                            $scope.searchResult = false;
+                            $scope.LoadImg = false;
+                            $scope.StudentDetailsFound = false;
+                            alert("Data Not Found");
+                            $scope.StudentSearchReportStats = [];
+                            return;
+                        }
+                }, function (error) {
+                    $scope.searchResult = false;
                     $scope.LoadImg = false;
+                    $scope.StudentDetailsFound = false;
+                    alert("error");
 
-                    $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+                });
+            } else if ($scope.placeholder == 'Aadhaar no') {
+                $('#stdPhotoImg').attr('src', '');
+                $('#userImg').attr('src', '');
+                var SearchstudentInfos = ReportService.GetSudentByAadhaar(filter);
+                SearchstudentInfos.then(function (response) {
+                    // var res = JSON.parse(response);
+                    try {
+                        var res = JSON.parse(response);
+                    }
+                    catch
+                    {
 
-                    $scope.Table1Details = response[0].Data;
+                    }
+                    if (res.length > 0) {
+                        // var res = JSON.parse(response);
+                        $scope.searchResult = true;
+                        $scope.LoadImg = false;
+                        $scope.MaskedAadhar = res[0].Aadhar;
+                        $scope.MaskedFAadhar = res[0].FAadhar;
+                        $scope.MaskedMAadhar = res[0].MAadhar;
 
-                    $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+
+
+
+                        $scope.Table1Details = res[0].Data;
+
+
+                        $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                        $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    } else {
+                        var res = JSON.parse(res);
+                    }
+                    const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
+                    if (res.Status) {
+                        // var keys = Object.keys(res);
+
+                        //   $scope.statusKey = keys[0];
+                        $scope.statusValue = res.Status;
+
+                        // $scope.descriptionKey = keys[1];
+                        $scope.descriptionValue = res.Description;
+
+                        $scope.EncStatusDescription2 = $scope.descriptionValue;
+                        if ($scope.statusValue == '6tEGN7Opkq9eFqVERJExVw==') {
+                            $scope.decryptParameter2();
+                            alert($scope.decryptedParameter2);
+
+                        }
+
+
+                        $scope.searchResult = true;
+                        $scope.LoadImg = false;
+
+                        $scope.MaskedAadhar = JSON.parse(response[0].Aadhar);
+
+                        $scope.Table1Details = response[0].Data;
+
+                        $scope.Table1Details1 = JSON.parse($scope.Table1Details)
                         $scope.Table1Details = $scope.Table1Details1.Table[0];
                     } else
-                    if ($scope.Table1Details1.Table.length > 0) {
-                      
-                        $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
-                        if ($scope.Table1Details1.Table1.length > 0){
-                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
-                            $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
-                            $scope.attName = $scope.Table1Details1.Table1[0].name;
+                        if ($scope.Table1Details1.Table.length > 0) {
+
+                            $scope.StudentDetailsFound = true;
+                            $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
+                            if ($scope.Table1Details1.Table1.length > 0) {
+                                $scope.StudentAttendanceReports = $scope.Table1Details1.Table1;
+                                $scope.StudentPin = $scope.Table1Details1.Table1[0].Pin;
+                                $scope.attName = $scope.Table1Details1.Table1[0].name;
+                            }
+                            $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
+                            if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
+                                $scope.polycet = false;
+                            } else {
+                                $scope.polycet = true;;
+                            }
+                            $scope.signature = $scope.Table1Details1.Table2[0].CandidateSign;
+                            $scope.userPic = $scope.Table1Details1.Table2[0].ProfilePhoto;
+                            $('#userImg').attr('src', $scope.userPic);
+                            $("#stdPhotoImg").attr('src', $scope.signature);
+
+                            $scope.studentData = $scope.StudentSearchReportStats;
+                            $scope.updateMandals($scope.AdmissioneReports.DistrictId)
                         }
-                        $scope.AdmissioneReports = $scope.Table1Details1.Table2[0];
-                        if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
-                            $scope.polycet = false;
-                        } else {
-                            $scope.polycet = true;;
+                        else {
+                            alert("Data Not Found");
+                            $scope.StudentSearchReportStats = [];
+                            return;
                         }
-                        $scope.signature = $scope.Table1Details1.Table2[0].CandidateSign;
-                        $scope.userPic = $scope.Table1Details1.Table2[0].ProfilePhoto;
-                        $('#userImg').attr('src', $scope.userPic);
-                        $("#stdPhotoImg").attr('src', $scope.signature);
-                      
-                        $scope.studentData = $scope.StudentSearchReportStats;
-                        $scope.updateMandals($scope.AdmissioneReports.DistrictId)
-                    }
-                    else {
-                        alert("Data Not Found");
-                        $scope.StudentSearchReportStats = [];
-                        return;
-                    }
                 }, function (error) {
                     $scope.searchResult = false;
                     $scope.LoadImg = false;
@@ -659,15 +682,33 @@ define(['app'], function (app) {
                 $('#userImg').attr('src', '');
                 var SearchstudentInfo = ReportService.GetStudentByattendeeId(filter);
                 SearchstudentInfo.then(function (response) {
-                    var res = JSON.parse(response);
+                    // var res = JSON.parse(response);
                     try {
-                        var res = JSON.parse(response);
+                        var res = response;
                     }
                     catch
                     {
 
                     }
-                    var res = JSON.parse(res);
+                    if (res.length > 0) {
+                        // var res = JSON.parse(response);
+                        $scope.searchResult = true;
+                        $scope.LoadImg = false;
+                        $scope.MaskedAadhar = res[0].Aadhar;
+                        $scope.MaskedFAadhar = res[0].FAadhar;
+                        $scope.MaskedMAadhar = res[0].MAadhar;
+
+
+
+
+                        $scope.Table1Details = res[0].Data;
+
+
+                        $scope.Table1Details1 = JSON.parse($scope.Table1Details)
+                        $scope.Table1Details = $scope.Table1Details1.Table[0];
+                    } else {
+                        var res = JSON.parse(res);
+                    }
                     const keyToExclude = 'm4e/P4LndQ4QYQ8G+RzFmQ==';
                     if (res.Status) {
                         // var keys = Object.keys(res);
@@ -695,35 +736,35 @@ define(['app'], function (app) {
                         $scope.Table1Details1 = JSON.parse($scope.Table1Details)
                         $scope.Table1Details = $scope.Table1Details1.Table[0];
                     }
-                        else
-                    if ($scope.Table1Details1.Table.length > 0) {
-                      
-                        $scope.StudentDetailsFound = true;
-                        $scope.StudentSearchReportStats = $scope.Table1Details1.Table;                       
-                        if ($scope.Table1Details1.Table.length > 0){
-                            $scope.StudentAttendanceReports = $scope.Table1Details1.Table;
-                            $scope.StudentPin = $scope.Table1Details1.Table[0].Pin;
-                            $scope.attName = $scope.Table1Details1.Table[0].name;
+                    else
+                        if ($scope.Table1Details1.Table.length > 0) {
+
+                            $scope.StudentDetailsFound = true;
+                            $scope.StudentSearchReportStats = $scope.Table1Details1.Table;
+                            if ($scope.Table1Details1.Table.length > 0) {
+                                $scope.StudentAttendanceReports = $scope.Table1Details1.Table;
+                                $scope.StudentPin = $scope.Table1Details1.Table[0].Pin;
+                                $scope.attName = $scope.Table1Details1.Table[0].name;
+                            }
+                            $scope.AdmissioneReports = $scope.Table1Details1.Table[0];
+                            if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
+                                $scope.polycet = false;
+                            } else {
+                                $scope.polycet = true;;
+                            }
+                            $scope.signature = $scope.Table1Details1.Table[0].CandidateSign;
+                            $scope.userPic = $scope.Table1Details1.Table[0].ProfilePhoto;
+                            $('#userImg').attr('src', $scope.userPic);
+                            $("#stdPhotoImg").attr('src', $scope.signature);
+                            //      console.log($scope.StudentSearchReportStats)
+                            $scope.studentData = $scope.StudentSearchReportStats;
+                            $scope.updateMandals($scope.AdmissioneReports.DistrictId)
                         }
-                        $scope.AdmissioneReports = $scope.Table1Details1.Table[0];
-                        if ($scope.AdmissioneReports.PolycetHallTicketNo == null || $scope.AdmissioneReports.PolycetHallTicketNo == "") {
-                            $scope.polycet = false;
-                        } else {
-                            $scope.polycet = true;;
+                        else {
+                            alert("Data Not Found");
+                            $scope.StudentSearchReportStats = [];
+                            return;
                         }
-                        $scope.signature = $scope.Table1Details1.Table[0].CandidateSign;
-                        $scope.userPic = $scope.Table1Details1.Table[0].ProfilePhoto;
-                        $('#userImg').attr('src', $scope.userPic);
-                        $("#stdPhotoImg").attr('src', $scope.signature);
-                  //      console.log($scope.StudentSearchReportStats)
-                        $scope.studentData = $scope.StudentSearchReportStats;
-                        $scope.updateMandals($scope.AdmissioneReports.DistrictId)
-                    }
-                    else {
-                        alert("Data Not Found");
-                        $scope.StudentSearchReportStats = [];
-                        return;
-                    }
                 }, function (error) {
                     $scope.searchResult = false;
                     $scope.LoadImg = false;
@@ -768,11 +809,11 @@ define(['app'], function (app) {
         //        alert("No Region Found")
         //    }
         //}, function (error) {
-          
+
         //    alert("error");
         //});
 
-        
+
         var getMiniority = ReportService.GetMiniority();
         getMiniority.then(function (data) {
             if (data.Table.length > 0) {
@@ -810,58 +851,58 @@ define(['app'], function (app) {
         });
         var getBranches = ReportService.GetActiveBranches();
         getBranches.then(function (response) {
-          
+
             $scope.getBranches = response.Table;
         },
-        function (error) {
-            alert("error while loading Branches");
-            var err = JSON.parse(error);
-            console.log(err.Message);
-        });
+            function (error) {
+                alert("error while loading Branches");
+                var err = JSON.parse(error);
+                console.log(err.Message);
+            });
 
         var getSemisters = ReportService.GetActiveSemisters();
         getSemisters.then(function (response) {
-        
+
             $scope.getSemisters = response.Table;
         },
-        function (error) {
-            alert("error while loading Semisters");
-            var err = JSON.parse(error);
-            console.log(err.Message);
-        });
+            function (error) {
+                alert("error while loading Semisters");
+                var err = JSON.parse(error);
+                console.log(err.Message);
+            });
 
         var getSchemes = ReportService.GetSchemes();
         getSchemes.then(function (response) {
-       
+
             $scope.getSchemes = response.Table;
         },
-        function (error) {
-            alert("error while loading Schemes");
-            var err = JSON.parse(error);
-            console.log(err.Message);
-        });
+            function (error) {
+                alert("error while loading Schemes");
+                var err = JSON.parse(error);
+                console.log(err.Message);
+            });
 
         var getSccBoard = ReportService.GetSscBoard();
         getSccBoard.then(function (response) {
-          
+
             $scope.getSscBoard = response.Table;
         },
-        function (error) {
-            alert("error while loading Ssc Data");
-            var err = JSON.parse(error);
-            console.log(err.Message);
-        });
+            function (error) {
+                alert("error while loading Ssc Data");
+                var err = JSON.parse(error);
+                console.log(err.Message);
+            });
 
         var getIncomeCategory = ReportService.GetIncomeCategory();
         getIncomeCategory.then(function (response) {
-          
+
             $scope.getIncomeCategory = response.Table;
         },
-        function (error) {
-            alert("error while loading IncomeCategory");
-            var err = JSON.parse(error);
-            console.log(err.Message);
-        });
+            function (error) {
+                alert("error while loading IncomeCategory");
+                var err = JSON.parse(error);
+                console.log(err.Message);
+            });
 
 
         var getSpecialCategory = ReportService.GetSpecialCategory();
@@ -879,7 +920,7 @@ define(['app'], function (app) {
         var getDistricts = ReportService.GetDistricts();
         getDistricts.then(function (data) {
             if (data.Table.length > 0) {
-               // console.log(data.Table);
+                // console.log(data.Table);
                 $scope.Districts = data.Table;
             } else {
                 alert("No Districts Found")
@@ -892,9 +933,9 @@ define(['app'], function (app) {
         $scope.updateMandals = function (DistrictId) {
             ReportService.GetMandalsForDistrict(DistrictId).then(function (data) {
                 $scope.Mandals = data;
-             
+
             }, function (error) {
-               console.log(error);
+                console.log(error);
             });
         }
 
@@ -921,19 +962,19 @@ define(['app'], function (app) {
 
             alert("error");
         });
-        
+
 
         var getReligion = ReportService.GetReligion();
         getReligion.then(function (data) {
             if (data.Table.length > 0) {
-              
+
             } else {
                 alert("No Religion Found")
             }
         }, function (error) {
 
             alert("error");
-            });
+        });
 
         $scope.closeModal = function () {
             $scope.modalInstance.close();
@@ -944,16 +985,16 @@ define(['app'], function (app) {
 
             if ($scope.StudentPin != null && $scope.StudentPin != "" && $scope.StudentPin != undefined) {
 
-              
-            
-                    $scope.modalInstance = $uibModal.open({
-                        templateUrl: "/app/views/Admission/Reports/StudentAttendanceReport.html",
-                        size: 'xlg',
-                        scope: $scope,
-                        windowClass: 'modal-fit-att',
-                        //backdrop: 'static',
 
-                    });
+
+                $scope.modalInstance = $uibModal.open({
+                    templateUrl: "/app/views/Admission/Reports/StudentAttendanceReport.html",
+                    size: 'xlg',
+                    scope: $scope,
+                    windowClass: 'modal-fit-att',
+                    //backdrop: 'static',
+
+                });
 
                 $scope.months = [];
                 $scope.filteredData = [];
@@ -969,9 +1010,9 @@ define(['app'], function (app) {
                         istr = "" + i;
                     days.push(istr);
                 }
-               // $scope.attName = name;
+                // $scope.attName = name;
                 $scope.days = days
-               // $scope.LoadImg = true;
+                // $scope.LoadImg = true;
                 $scope.showbrancwiseattdata = false;
                 // $scope.getattendance = function () {
                 var getAttendancePinwise = AttendanceService.GetAttendenceDataByPinWise($scope.StudentPin);
@@ -1076,8 +1117,8 @@ define(['app'], function (app) {
             });
         }
         $scope.updatePersonalData = function () {
-      
-          
+
+
             var req = {
                 "StudentId": $scope.AdmissioneReports.studentid == null || $scope.AdmissioneReports.studentid == undefined ? "" : $scope.AdmissioneReports.studentid,
                 "profilephoto": $scope.userPic == null || $scope.userPic == undefined ? "" : $scope.userPic,
@@ -1097,7 +1138,7 @@ define(['app'], function (app) {
                 "PermanentAddress": $scope.AdmissioneReports.PermanentAddress == null || $scope.AdmissioneReports.PermanentAddress == undefined ? "" : $scope.AdmissioneReports.PermanentAddress,
                 "TempararyAddress": $scope.AdmissioneReports.TempararyAddress == null || $scope.AdmissioneReports.TempararyAddress == undefined ? "" : $scope.AdmissioneReports.TempararyAddress,
                 "HouseNo": $scope.AdmissioneReports.HouseNo == null || $scope.AdmissioneReports.HouseNo == undefined ? "" : $scope.AdmissioneReports.HouseNo,
-                "VillageorTown": $scope.AdmissioneReports.VillageorTown  == null || $scope.AdmissioneReports.VillageorTown == undefined ? "" : $scope.AdmissioneReports.VillageorTown ,
+                "VillageorTown": $scope.AdmissioneReports.VillageorTown == null || $scope.AdmissioneReports.VillageorTown == undefined ? "" : $scope.AdmissioneReports.VillageorTown,
                 "DistrictId": $scope.AdmissioneReports.DistrictId == null || $scope.AdmissioneReports.DistrictId == undefined ? "" : $scope.AdmissioneReports.DistrictId,
                 "MandalId": $scope.AdmissioneReports.MandalId == null || $scope.AdmissioneReports.MandalId == undefined ? "" : $scope.AdmissioneReports.MandalId,
                 "Pincode": $scope.AdmissioneReports.Pincode == null || $scope.AdmissioneReports.Pincode == undefined ? "" : $scope.AdmissioneReports.Pincode,
@@ -1107,7 +1148,7 @@ define(['app'], function (app) {
                 "IsFatherGorthEmp": $scope.AdmissioneReports.IsFatherGorthEmp == null || $scope.AdmissioneReports.IsFatherGorthEmp == undefined ? "" : $scope.AdmissioneReports.IsFatherGorthEmp,
                 "Income": $scope.AdmissioneReports.Income == null || $scope.AdmissioneReports.Income == undefined ? "" : $scope.AdmissioneReports.Income,
                 "IncomeCategory": $scope.AdmissioneReports.IncomeCategory == null || $scope.AdmissioneReports.IncomeCategory == undefined ? "" : $scope.AdmissioneReports.IncomeCategory,
-                "Occupation": $scope.AdmissioneReports.Occupation  == null || $scope.AdmissioneReports.Occupation == undefined ? "" :$scope.AdmissioneReports.Occupation,
+                "Occupation": $scope.AdmissioneReports.Occupation == null || $scope.AdmissioneReports.Occupation == undefined ? "" : $scope.AdmissioneReports.Occupation,
                 "CasteNo": $scope.AdmissioneReports.CasteNo == null || $scope.AdmissioneReports.CasteNo == undefined ? "" : $scope.AdmissioneReports.CasteNo,
                 "BankId": $scope.AdmissioneReports.Bank == null || $scope.AdmissioneReports.Bank == undefined ? "" : $scope.AdmissioneReports.Bank,
                 "BankAccountNo": $scope.AdmissioneReports.BankAccountNo == null || $scope.AdmissioneReports.BankAccountNo == undefined ? "" : $scope.AdmissioneReports.BankAccountNo,
@@ -1131,12 +1172,12 @@ define(['app'], function (app) {
                 //"BranchID": $scope.AdmissioneReports.BranchID == null || $scope.AdmissioneReports.BranchID == undefined ? "" : $scope.AdmissioneReports.BranchID,
                 "AttendeeId": $scope.AdmissioneReports.AttendeeId == null || $scope.AdmissioneReports.AttendeeId == undefined ? "" : $scope.AdmissioneReports.AttendeeId,
                 "Activeflag": $scope.AdmissioneReports.ActiveFlag == null || $scope.AdmissioneReports.ActiveFlag == undefined ? "" : $scope.AdmissioneReports.ActiveFlag,
-                "semid":$scope.AdmissioneReports.SemId == null || $scope.AdmissioneReports.SemId == undefined ? "" : $scope.AdmissioneReports.SemId
+                "semid": $scope.AdmissioneReports.SemId == null || $scope.AdmissioneReports.SemId == undefined ? "" : $scope.AdmissioneReports.SemId
             }
 
             var updateData = ReportService.UpdateStudentData(req);
             updateData.then(function (data) {
-               
+
                 if (data == '' || data == null) {
                     $scope.userPic = '';
                     $scope.signature = '';
@@ -1145,9 +1186,9 @@ define(['app'], function (app) {
                 } else {
                     alert(data);
                 }
-             
+
                 //$("#stdPhotoImg").remove()
-              
+
 
                 //$scope.search()
             }, function (error) {
