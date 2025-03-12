@@ -845,7 +845,7 @@ namespace SoftwareSuite.Controllers.AdminServices
                         {
                             loginLocked = true;
                             Task.Run(() => ResetLoginAttempts());
-                            return EncryptedResponse("Account locked for 1 minute.");
+                            return EncryptedResponse("Account locked for 15 minute.");
                         }
                     }
                     return EncryptedResponse("Invalid username or password");
