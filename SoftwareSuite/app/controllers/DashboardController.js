@@ -16,7 +16,7 @@
         function startTimer() {
             logoutTimer = $timeout(function () {
                 logout();
-            }, 10 * 60 * 1000); // 20 minutes
+            }, 15 * 60 * 1000); // 15 minutes
         }
 
         function resetTimer() {
